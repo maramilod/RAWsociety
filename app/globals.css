@@ -1,0 +1,165 @@
+@import "tailwindcss";
+
+
+:root {
+
+  --cta-bg: #2C0F0F;
+--cta-text: #FFFFFF;
+  /* =========================
+     GLOBAL COLORS
+     تستخدم في كل الصفحات
+  ========================= */
+
+  --page-bg: #FBF8F6;
+  --text-main: #352524;
+  --text-muted: #7A7A7A;
+  --text-placeholder: #9A9188;
+
+  --border-default: #D9CFC5;
+
+  --white: #FFFFFF;
+
+
+
+  /* =========================
+     BRAND COLORS
+     الهوية العامة
+  ========================= */
+
+  --brand-orange: #C86C29;
+  --brand-orange-hover: #A95720;
+
+  --brand-dark: #2C0F0F;
+
+
+
+  /* =========================
+     HOME PAGE COLORS
+     الصفحة الرئيسية
+  ========================= */
+
+  --home-card-bg: var(--page-bg);
+  --home-card-border: #E8D1D1;
+
+  --home-icon-bg: #FFF1E6;
+
+  --home-soft-text: #7A7A7A;
+
+
+
+  /* =========================
+     PROFILE / ONBOARDING COLORS
+     صفحة إنشاء البروفايل
+  ========================= */
+
+  --profile-input-bg: #F8F7F4;
+
+  --profile-input-txt: text-black;
+
+    --profile-placeholder-txt: #999999;
+
+
+  --profile-logo-bg: #EEE8DF;
+
+  --profile-icon: #8F8378;
+
+  --profile-button-bg: #2C0F0F;
+
+
+
+
+
+  --section-card-bg: #F4E1E1;
+--border-soft: #E8D1D1;
+--icon-bg: #FFF1E6;
+
+}
+
+
+
+@media (prefers-color-scheme: dark) {
+
+:root {
+
+--cta-bg: #E58B4A;
+--cta-text: #FFFFFF;
+  /* =========================
+     GLOBAL DARK
+  ========================= */
+
+  --page-bg: #000000;
+
+  --text-main: #FFFFFF;
+
+  --text-muted: #A1A1A1;
+
+  --text-placeholder: #777777;
+
+  --border-default: #333333;
+
+  --white: #111111;
+
+
+
+  /* =========================
+     BRAND DARK
+  ========================= */
+
+  --brand-orange: #D97A35;
+
+  --brand-orange-hover: var(--cta-bg);
+
+  --brand-dark: #FFFFFF;
+
+
+
+  /* =========================
+     HOME DARK
+  ========================= */
+
+  --home-card-bg: #171717;
+
+  --home-card-border: #333333;
+
+  --home-icon-bg: var(--cta-bg);
+
+  --home-soft-text: #A1A1A1;
+
+
+
+  /* =========================
+     PROFILE DARK
+  ========================= */
+
+  --profile-input-bg: #111111;
+
+  --profile-placeholder-txt: #fcf3e9;
+
+  --profile-input-txt: text-white;
+
+  --profile-logo-bg: #222222;
+
+  --profile-icon: #999999;
+
+  --profile-button-bg: #FFFFFF;
+
+
+
+
+--icon-bg: #24150D;
+}
+
+
+}
+
+
+
+body {
+
+  background: var(--page-bg);
+
+  color: var(--text-main);
+
+  font-family: Arial, Helvetica, sans-serif;
+
+}
