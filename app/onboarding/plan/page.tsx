@@ -94,14 +94,14 @@ function PlanContent() {
   const handleContinue = () => {
     if (role === "client") {
       if (selected === "free") {
-        router.push("/dashboard");
+        router.push("/explore/free");
       } else {
         // الانتقال لصفحة بيانات العميل والشركة للخطط المدفوعة
         router.push(`/onboarding/client?plan=${selected}`);
       }
     } else {
       if (selected === "free") {
-        router.push("/dashboard");
+        router.push("/explore/free");
       } else {
         // انتقال الكريتور لصفحة الدفع
         router.push(`/onboarding/payment?plan=${selected}&role=creator`);
@@ -213,7 +213,7 @@ function PlanContent() {
         <button
           type="button"
           onClick={handleContinue}
-          className="bg-[var(--brand-dark)] text-white px-8 py-3.5 rounded-xl font-semibold hover:opacity-90 transition"
+          className="bg-[var(--cta-bg)] text-[var(--cta-text)] px-8 py-3.5 rounded-xl font-semibold hover:opacity-90 transition shadow-sm"
         >
           {selected === "free" ? "Continue for Free" : "Continue"}
         </button>

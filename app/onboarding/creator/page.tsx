@@ -113,12 +113,16 @@ export default function CreatorProfileSetup() {
           <select
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="w-full h-14 px-4 rounded-xl border border-gray-300 bg-white font-medium focus:ring-2 focus:ring-[var(--brand-orange)] outline-none"
+            className="w-full h-14 px-4 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 font-medium focus:bg-white focus:border-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/20 outline-none transition"
             required
           >
-            <option value="" disabled>Select your field</option>
+            <option value="" disabled className="text-gray-400">
+              Select your field
+            </option>
             {categories.map((cat) => (
-              <option key={cat} value={cat}>{cat}</option>
+              <option key={cat} value={cat} className="text-gray-900 bg-white py-2">
+                {cat}
+              </option>
             ))}
           </select>
         </div>
