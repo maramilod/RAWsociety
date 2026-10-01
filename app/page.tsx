@@ -18,7 +18,8 @@ export default function Home() {
       <Stats />
 
       <Features />
- <TwoWays />
+      <TwoWays />
+
       <CTA />
      
       <Footer />

@@ -18,6 +18,7 @@ export default function Footer() {
 
             <div
               className="
+              font-logo
               text-5xl
               font-light
               leading-8

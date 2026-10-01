@@ -1,59 +1,68 @@
+import FilmStrip from "@/components/FilmStrip";
+
 export default function Hero() {
   return (
-    <section className="text-center py-24 px-6">
-
-
+    <section
+      className="
+      relative
+      px-6
+      pt-20
+      pb-16
+      text-center
+      md:pt-28
+      md:pb-24
+      "
+    >
       {/* Badge */}
       <span
         className="
-        bg-[var(--home-icon-bg)]
-        text-[var(--text-main)]
-        px-4
-        py-1
+        inline-block
         rounded-full
-        text-xs
+        bg-[var(--hero-badge-bg)]
+        px-6
+        py-2
+        text-sm
+        font-medium
+        text-[var(--text-main)]
         "
       >
-        Our story
+        For brands, businesses &amp; creators
       </span>
-
-
 
       {/* Title */}
       <h1
         className="
-        text-5xl
-        font-black
-        max-w-5xl
         mx-auto
         mt-8
+        max-w-4xl
+        text-4xl
         leading-tight
         text-[var(--text-main)]
+        md:text-6xl
         "
       >
-        WE STARTED RAW SOCIETY BECAUSE TALENT
-        <br />
-        SHOULDN'T WAIT TO BE DISCOVERED
+        Find young creative talent — fast
       </h1>
 
-
-
-      {/* Description */}
+      {/* Subcopy */}
       <p
         className="
-        text-[var(--text-muted)]
-        max-w-3xl
         mx-auto
-        mt-8
-        leading-7
+        mt-6
+        max-w-2xl
+        text-lg
+        text-[var(--text-muted)]
+        md:text-xl
         "
       >
-        Every year, thousands of brilliant young writers, photographers,
-        editors, and developers go unnoticed—not for lack of skill,
-        but lack of access. We built a faster way in.
+        Connect with skilled writers, photographers, designers, and more.
+        Subscribe to unlock unlimited hires.
       </p>
 
-
+      {/* Film strip */}
+      <div className="mt-12">
+        <FilmStrip />
+      </div>
     </section>
   );
 }

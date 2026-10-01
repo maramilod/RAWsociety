@@ -5,7 +5,7 @@ export default function RoleCard({
   onClick,
 }: {
   title: string;
-  description: string;
+  description?: string;
   active?: boolean;
   onClick: () => void;
 }) {

@@ -27,7 +27,7 @@ export default function BrowseFreePlanPage() {
           <p className="text-xs text-[#4a3232] leading-tight mb-2">
             You're on the Free plan — portfolios are locked. Upgrade from 30 LYD/month.
           </p>
-          <Link href="/onboarding/plans">
+          <Link href="/onboarding/plan?role=client">
             <button className="px-3 py-1.5 bg-[#c86d38] text-white text-xs font-semibold rounded-lg hover:opacity-90 transition">
               See plans
             </button>

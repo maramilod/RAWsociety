@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, Suspense } from "react";
+import { useState, useEffect, Suspense } from "react";
 
 function ProfilePageContent() {
   const router = useRouter();
@@ -11,30 +11,97 @@ function ProfilePageContent() {
   const selectedPlan = searchParams.get("plan") || "pro";
   const selectedPrice = searchParams.get("price") || "";
 
+  const [nickname, setNickname] = useState("");
+  const [company, setCompany] = useState("");
   const [industry, setIndustry] = useState("");
   const [companySize, setCompanySize] = useState("");
+  const [services, setServices] = useState<string[]>([]);
   const [budget, setBudget] = useState("");
+  const [description, setDescription] = useState("");
   const [logo, setLogo] = useState<string | null>(null);
+  const [logoFile, setLogoFile] = useState<File | null>(null);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+
+  // Pre-fill with the saved profile (for returning users)
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/profile/client")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const p = data?.profile;
+        if (cancelled || !p) return;
+        setNickname(p.nickname);
+        setCompany(p.company);
+        setIndustry(p.industry);
+        setCompanySize(p.companySize);
+        setServices(p.services);
+        setBudget(p.budget);
+        setDescription(p.description);
+        if (p.logoUrl) setLogo(p.logoUrl);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const handleLogoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (file) {
+      setLogoFile(file);
       setLogo(URL.createObjectURL(file));
     }
   };
 
-  const handleNext = () => {
-    // بناء الرابط ونقل معامل price مع plan
-    const queryParams = new URLSearchParams({
-      role: "client",
-      plan: selectedPlan,
-    });
+  const toggleService = (item: string) => {
+    setServices((prev) =>
+      prev.includes(item) ? prev.filter((s) => s !== item) : [...prev, item]
+    );
+  };
 
-    if (selectedPrice) {
-      queryParams.set("price", selectedPrice);
+  const handleNext = async () => {
+    setError("");
+    setSaving(true);
+    try {
+      // حفظ الملف الشخصي في قاعدة البيانات
+      const form = new FormData();
+      form.set("nickname", nickname);
+      form.set("company", company);
+      form.set("industry", industry);
+      form.set("companySize", companySize);
+      form.set("budget", budget);
+      form.set("description", description);
+      services.forEach((s) => form.append("services", s));
+      if (logoFile) form.set("logo", logoFile);
+
+      const res = await fetch("/api/profile/client", { method: "POST", body: form });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(
+          res.status === 401
+            ? "Please log in first to save your profile."
+            : data.error || "Could not save your profile."
+        );
+        return;
+      }
+
+      // بناء الرابط ونقل معامل price مع plan
+      const queryParams = new URLSearchParams({
+        role: "client",
+        plan: selectedPlan,
+      });
+
+      if (selectedPrice) {
+        queryParams.set("price", selectedPrice);
+      }
+
+      router.push(`/onboarding/payment?${queryParams.toString()}`);
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSaving(false);
     }
-
-    router.push(`/onboarding/payment?${queryParams.toString()}`);
   };
 
   return (
@@ -110,6 +177,9 @@ function ProfilePageContent() {
           <input
             className="w-full h-12 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition"
             placeholder="Nickname"
+            value={nickname}
+            maxLength={60}
+            onChange={(e) => setNickname(e.target.value)}
           />
         </div>
 
@@ -121,6 +191,9 @@ function ProfilePageContent() {
           <input
             className="w-full h-12 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition"
             placeholder="Company name"
+            value={company}
+            maxLength={160}
+            onChange={(e) => setCompany(e.target.value)}
           />
         </div>
 
@@ -184,6 +257,8 @@ function ProfilePageContent() {
               >
                 <input
                   type="checkbox"
+                  checked={services.includes(item)}
+                  onChange={() => toggleService(item)}
                   className="peer h-5 w-5 appearance-none rounded-md border-2 border-[var(--brand-orange)] checked:bg-[var(--brand-orange)] checked:border-[var(--brand-orange)] relative cursor-pointer after:hidden checked:after:block checked:after:absolute checked:after:left-[3px] checked:after:top-[-1px] checked:after:text-white checked:after:content-['✓']"
                 />
 
@@ -228,8 +303,22 @@ function ProfilePageContent() {
           rows={5}
           className="w-full rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] p-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition resize-none"
           placeholder="Tell creators what kind of work you usually need…"
+          value={description}
+          maxLength={2000}
+          onChange={(e) => setDescription(e.target.value)}
         />
       </div>
+
+      {error && (
+        <p role="alert" className="mt-6 text-sm font-medium text-red-600">
+          {error}{" "}
+          {error.startsWith("Please log in") && (
+            <a href="/login" className="underline">
+              Log in
+            </a>
+          )}
+        </p>
+      )}
 
       <div className="flex justify-between mt-8">
         <button
@@ -241,9 +330,10 @@ function ProfilePageContent() {
 
         <button
           onClick={handleNext}
-          className="bg-[var(--cta-bg)] text-[var(--cta-text)] hover:opacity-90 px-8 py-3 rounded"
+          disabled={saving}
+          className="bg-[var(--cta-bg)] text-[var(--cta-text)] hover:opacity-90 px-8 py-3 rounded disabled:opacity-60"
         >
-          Next
+          {saving ? "Saving..." : "Next"}
         </button>
       </div>
     </main>

@@ -45,6 +45,10 @@
 
   --home-soft-text: #7A7A7A;
 
+  --hero-badge-bg: #E2D6F3;
+  --hero-search-border: #D6D3CD;
+  --hero-search-bg: rgba(235, 228, 225, 0.42);
+
 
 
   /* =========================
@@ -125,6 +129,10 @@
 
   --home-soft-text: #A1A1A1;
 
+  --hero-badge-bg: #3A2F4D;
+  --hero-search-border: #333333;
+  --hero-search-bg: rgba(255, 255, 255, 0.05);
+
 
 
   /* =========================
@@ -160,6 +168,30 @@ body {
 
   color: var(--text-main);
 
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-alegreya-sans), sans-serif;
 
 }
+
+h1, h2, h3, h4, h5, h6 {
+
+  font-family: var(--font-alegreya-sc), serif;
+
+  font-weight: 700;
+
+}
+
+.font-logo {
+
+  font-family: var(--font-anta), sans-serif;
+
+}
+
+/* ---------- Arabic (right-to-left) ---------- */
+html[data-i18n="pending"] body { visibility: hidden; }
+html[lang="ar"], html[lang="ar"] body, html[lang="ar"] * {
+  font-family: var(--font-cairo), "Segoe UI", Tahoma, sans-serif !important;
+  letter-spacing: normal !important;
+}
+html[dir="rtl"] .text-left { text-align: right; }
+html[dir="rtl"] .text-right { text-align: left; }
+html[dir="rtl"] input[type="email"], html[dir="rtl"] input[type="url"], html[dir="rtl"] input[type="number"], html[dir="rtl"] input[type="password"] { direction: ltr; text-align: right; }

@@ -1,9 +1,17 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
+import { useSession } from "next-auth/react";
+import LanguageToggle from "@/components/i18n/LanguageToggle";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+  const { data: session, status } = useSession();
+  const loggedIn = status === "authenticated" && !!session?.user;
+  // /dashboard sends each user to the dashboard for their role
+  const ctaHref = loggedIn ? "/dashboard" : "/signup";
+  const ctaLabel = loggedIn ? "My Dashboard" : "Get Started";
 
   return (
     <header
@@ -22,6 +30,7 @@ export default function Navbar() {
         {/* Logo */}
         <div
           className="
+          font-logo
           text-3xl
           font-light
           leading-6
@@ -56,15 +65,20 @@ export default function Navbar() {
 
 
 
+        {/* Language */}
+        <LanguageToggle className="hidden md:block h-10 rounded-full border border-[var(--border-default)] px-4 text-sm font-semibold text-[var(--text-main)] transition hover:border-[var(--brand-dark)]" />
+
         {/* Desktop Button */}
-        <button
+        <Link
+          href={ctaHref}
           className="
             hidden
             md:block
-            px-3
-            py-1
+            px-5
+            py-2
             rounded-full
             border
+            bg-[var(--section-card-bg)]
             border-[var(--brand-dark)]
             text-[var(--brand-dark)]
             text-center
@@ -75,8 +89,8 @@ export default function Navbar() {
             hover:bg-[var(--home-icon-bg)]
           "
         >
-          Get Started
-        </button>
+          {ctaLabel}
+        </Link>
 
 
 
@@ -152,7 +166,11 @@ export default function Navbar() {
 
 
 
-          <button
+          <LanguageToggle className="h-11 rounded-full border border-[var(--border-default)] px-6 text-base font-semibold" />
+
+          <Link
+            href={ctaHref}
+            onClick={() => setOpen(false)}
             className="
               mt-2
               px-6
@@ -162,10 +180,11 @@ export default function Navbar() {
               border-[var(--brand-dark)]
               text-[var(--brand-dark)]
               text-lg
+              text-center
             "
           >
-            Get Started
-          </button>
+            {ctaLabel}
+          </Link>
 
 
         </nav>

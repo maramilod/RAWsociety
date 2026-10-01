@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 export default function CreatorProfileSetup() {
@@ -14,6 +14,36 @@ export default function CreatorProfileSetup() {
     cv: null as File | null,
     portfolioLinks: [""],
   });
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState("");
+  // Files already saved on the server (shown when the user comes back to edit)
+  const [saved, setSaved] = useState<{ avatar: boolean; cover: boolean; cvName: string | null }>({
+    avatar: false,
+    cover: false,
+    cvName: null,
+  });
+
+  // Pre-fill with the saved profile (for returning users)
+  useEffect(() => {
+    let cancelled = false;
+    fetch("/api/profile/creator")
+      .then((res) => (res.ok ? res.json() : null))
+      .then((data) => {
+        const p = data?.profile;
+        if (cancelled || !p) return;
+        setFormData((prev) => ({
+          ...prev,
+          category: p.category,
+          bio: p.bio,
+          portfolioLinks: p.portfolioLinks.length ? p.portfolioLinks : [""],
+        }));
+        setSaved({ avatar: !!p.avatarUrl, cover: !!p.coverUrl, cvName: p.cvName });
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   const categories = [
     "Graphic Design & Branding",
@@ -37,10 +67,37 @@ export default function CreatorProfileSetup() {
     });
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // الانتقال للخطوة التالية: اختيار الخطة
-    router.push("/onboarding/plan?role=creator");
+    setError("");
+    setSaving(true);
+    try {
+      // حفظ الملف الشخصي في قاعدة البيانات
+      const body = new FormData();
+      body.set("category", formData.category);
+      body.set("bio", formData.bio);
+      formData.portfolioLinks.forEach((l) => body.append("links", l));
+      if (formData.avatar) body.set("avatar", formData.avatar);
+      if (formData.cover) body.set("cover", formData.cover);
+      if (formData.cv) body.set("cv", formData.cv);
+
+      const res = await fetch("/api/profile/creator", { method: "POST", body });
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok) {
+        setError(
+          res.status === 401
+            ? "Please log in first to save your profile."
+            : data.error || "Could not save your profile."
+        );
+        return;
+      }
+      // الانتقال للخطوة التالية: اختيار الخطة
+      router.push("/onboarding/plan?role=creator");
+    } catch {
+      setError("Network error. Please try again.");
+    } finally {
+      setSaving(false);
+    }
   };
 
   return (
@@ -73,7 +130,7 @@ export default function CreatorProfileSetup() {
 
           <div className="relative w-full h-40 bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden hover:bg-gray-50 transition cursor-pointer">
             <span className="text-xs font-semibold text-gray-500">
-              {formData.cover ? formData.cover.name : "Click to upload Cover Banner"}
+              {formData.cover ? formData.cover.name : saved.cover ? "Cover saved - click to replace" : "Click to upload Cover Banner"}
             </span>
             <input
               type="file"
@@ -88,7 +145,7 @@ export default function CreatorProfileSetup() {
           <div className="flex items-center gap-4 -mt-10 px-6">
             <div className="relative w-20 h-20 bg-white rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden bg-gray-200 cursor-pointer">
               <span className="text-[10px] font-bold text-gray-500 text-center px-1">
-                {formData.avatar ? "Uploaded" : "Avatar"}
+                {formData.avatar ? "Uploaded" : saved.avatar ? "Saved" : "Avatar"}
               </span>
               <input
                 type="file"
@@ -148,7 +205,7 @@ export default function CreatorProfileSetup() {
           </label>
           <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:bg-gray-50 transition">
             <p className="text-sm text-gray-600 font-medium">
-              {formData.cv ? formData.cv.name : "Click to upload CV file (PDF)"}
+              {formData.cv ? formData.cv.name : saved.cvName ? `${saved.cvName} (saved) - click to replace` : "Click to upload CV file (PDF)"}
             </p>
             <input
               type="file"
@@ -185,6 +242,17 @@ export default function CreatorProfileSetup() {
           </button>
         </div>
 
+        {error && (
+          <p role="alert" className="text-sm font-medium text-red-600">
+            {error}{" "}
+            {error.startsWith("Please log in") && (
+              <a href="/login" className="underline">
+                Log in
+              </a>
+            )}
+          </p>
+        )}
+
         {/* Action Button */}
         <div className="flex justify-between items-center pt-6 border-t border-gray-100">
           <button
@@ -197,9 +265,10 @@ export default function CreatorProfileSetup() {
 
           <button
             type="submit"
-            className="h-14 px-8 rounded-xl bg-[var(--brand-orange)] font-semibold text-white hover:opacity-90 transition"
+            disabled={saving}
+            className="h-14 px-8 rounded-xl bg-[var(--brand-orange)] font-semibold text-white hover:opacity-90 transition disabled:opacity-60"
           >
-            Continue to Plans
+            {saving ? "Saving..." : "Continue to Plans"}
           </button>
         </div>
       </form>
