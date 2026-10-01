@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
+import { currentPlanCode } from "@/lib/subscriptions";
+import { serviceLoad } from "@/lib/service-limits";
+import { creatorRules } from "@/lib/plan-rules";
 import {
   CURRENCY,
   LINK_KINDS,
@@ -54,7 +57,11 @@ export async function GET() {
     ]);
 
     return NextResponse.json({
-      services: await hydrateServices(rows),
+      services: await hydrateServices(rows).then(async (list) => {
+        const loads = await serviceLoad(list.map((s) => s.id));
+        return list.map((s) => ({ ...s, monthly: loads.get(s.id) ?? null }));
+      }),
+      liveLimit: creatorRules(await currentPlanCode(auth.me.id, "creator")).liveServices,
       categories,
       defaultCategoryId: profile?.category_id ?? null,
       hasProfile: !!profile,
@@ -105,6 +112,16 @@ export async function POST(request: Request) {
       return NextResponse.json(
         { error: `You can have up to ${MAX_SERVICES_PER_CREATOR} services.` },
         { status: 400 }
+      );
+    }
+
+    // how many services can be live at once depends on the plan
+    const limit = creatorRules(await currentPlanCode(auth.me.id, "creator")).liveServices;
+    const live = await queryOne<RowDataPacket & { n: number }>("SELECT COUNT(*) AS n FROM services WHERE creator_id = ? AND is_active = 1", [auth.me.id]);
+    if (limit !== null && Number(live?.n ?? 0) >= limit) {
+      return NextResponse.json(
+        { error: `Your plan lets you offer ${limit} services at a time. Pause one of yours or upgrade your plan to add more.`, upgrade: true },
+        { status: 403 }
       );
     }
 

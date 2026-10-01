@@ -88,25 +88,33 @@ function PaymentContent() {
 
   return (
     <main className="max-w-6xl mx-auto px-4 py-8 sm:p-10">
+      {member && (
+        <div className="mx-auto mb-8 max-w-xl">
+          <p className="text-xs font-semibold uppercase tracking-wider text-[var(--text-muted)]">{member.role === "creator" ? "Step 5 of 5" : "Step 3 of 3"}</p>
+          <div className="my-3 h-2 overflow-hidden rounded-full bg-[var(--ui-soft)]">
+            <div className="h-2 w-full rounded-full bg-[var(--brand-orange)]" />
+          </div>
+        </div>
+      )}
       <h1 className="text-3xl sm:text-4xl font-bold text-center">Payment</h1>
 
       {member && !plan && (
-        <p className="mt-10 text-center text-sm text-gray-600">
+        <p className="mt-10 text-center text-sm text-[var(--ui-muted)]">
           We could not find that plan.{" "}
           <button type="button" className="font-semibold underline" onClick={() => router.push(`/onboarding/plan?role=${member.role}`)}>
             Choose a plan
           </button>
         </p>
       )}
-      {!member && !error && <p className="mt-10 text-center text-sm text-gray-500">Loading...</p>}
+      {!member && !error && <p className="mt-10 text-center text-sm text-[var(--ui-muted)]">Loading...</p>}
 
       <div className="grid md:grid-cols-3 gap-8 mt-10">
-        <div className="md:col-span-2 border rounded-xl p-4 sm:p-6">
+        <div className="md:col-span-2 rounded-2xl border border-[var(--border-default)] p-4 sm:p-6">
           <h2 className="font-bold mb-6">Choose payment method</h2>
 
           <div className="space-y-4">
             {["Sadad (Almadar)", "Mobicash", "Local bank card"].map((name) => (
-              <div key={name} aria-disabled="true" className="flex items-center justify-between rounded-lg border border-gray-600/40 bg-gray-500/10 p-4 text-gray-400 cursor-not-allowed">
+              <div key={name} aria-disabled="true" className="flex items-center justify-between rounded-lg border border-gray-600/40 bg-gray-500/10 p-4 text-[var(--ui-muted)] cursor-not-allowed">
                 <span className="flex items-center">
                   <input type="radio" disabled />
                   <span className="ml-4 font-medium">{name}</span>
@@ -122,7 +130,7 @@ function PaymentContent() {
 
           {method === "bank_transfer" && (
             <div className="mt-8 space-y-4">
-              <div className="rounded-lg border border-orange-200 bg-orange-50/40 p-4 text-sm">
+              <div className="rounded-lg border border-orange-200 dark:border-orange-500/30 bg-orange-50/40 p-4 text-sm">
                 <p className="font-semibold">
                   Transfer {price} {currency} to this account:
                 </p>
@@ -135,7 +143,7 @@ function PaymentContent() {
                     ))}
                   </ul>
                 ) : (
-                  <p className="mt-2 text-gray-600">The account details are not set up yet. Please contact support before paying.</p>
+                  <p className="mt-2 text-[var(--ui-muted)]">The account details are not set up yet. Please contact support before paying.</p>
                 )}
               </div>
 
@@ -143,7 +151,7 @@ function PaymentContent() {
               <input className={input} placeholder="Bank you sent the money from" value={senderBank} onChange={(e) => setSenderBank(e.target.value)} />
               <div>
                 <label className="block text-sm font-medium mb-1">
-                  Receipt <span className="font-normal text-gray-500">(optional)</span>
+                  Receipt <span className="font-normal text-[var(--ui-muted)]">(optional)</span>
                 </label>
                 <input type="file" accept={RECEIPT_TYPES.join(",")} onChange={(e) => setReceipt(e.target.files?.[0] ?? null)} className="block w-full text-sm" />
               </div>
@@ -151,38 +159,38 @@ function PaymentContent() {
           )}
 
           {error && (
-            <p role="alert" className="mt-6 text-sm font-medium text-red-600">
+            <p role="alert" className="mt-6 text-sm font-medium text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
         </div>
 
-        <div className="border rounded-xl p-6 h-fit bg-white text-gray-900 shadow-sm">
+        <div className="h-fit rounded-2xl border border-[var(--border-default)] bg-[var(--home-card-bg)] p-6 text-[var(--text-main)] shadow-sm md:sticky md:top-6">
           <h2 className="font-bold text-lg">Order Summary</h2>
 
-          <div className="flex justify-between mt-6 text-sm">
+          <div className="flex justify-between mt-6 text-sm text-[var(--text-muted)]">
             <span>{plan ? `${plan.name} Plan` : "Plan"}</span>
-            <span className="font-semibold">
+            <span className="font-semibold text-[var(--text-main)]">
               {price} {currency}
             </span>
           </div>
 
-          <div className="flex justify-between mt-2 text-sm">
+          <div className="flex justify-between mt-2 text-sm text-[var(--text-muted)]">
             <span>Fees</span>
-            <span className="font-semibold">0 {currency}</span>
+            <span className="font-semibold text-[var(--text-main)]">0 {currency}</span>
           </div>
 
-          <hr className="my-6" />
+          <hr className="my-6 border-[var(--border-default)]" />
 
           <div className="flex justify-between font-bold text-lg">
             <span>Total</span>
-            <span>
+            <span className="text-[var(--brand-orange)]">
               {price} {currency}
             </span>
           </div>
 
           {member?.pending && (
-            <p role="status" className="mt-6 rounded-lg border border-blue-200 bg-blue-50 px-3 py-2 text-sm text-blue-900">
+            <p role="status" className="mt-6 rounded-lg border border-blue-500/40 bg-blue-500/10 px-3 py-2 text-sm text-[var(--text-main)]">
               Your payment for the {member.pending.name} plan is being checked.
             </p>
           )}

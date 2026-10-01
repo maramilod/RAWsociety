@@ -3,6 +3,7 @@
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
+import { useDashboardAccess } from "@/components/useDashboardAccess";
 
 /**
  * Round user-icon button for the top bar. Opens a small menu with
@@ -12,6 +13,7 @@ export default function UserMenu() {
   const { data: session, status } = useSession();
   const [open, setOpen] = useState(false);
   const wrapper = useRef<HTMLDivElement>(null);
+  const { hasDashboard } = useDashboardAccess();
 
   // Close when clicking elsewhere or pressing Escape
   useEffect(() => {
@@ -67,9 +69,15 @@ export default function UserMenu() {
           role="menu"
           className="absolute right-0 top-full z-50 mt-2 w-44 overflow-hidden rounded-xl border border-[var(--border-default)] bg-[var(--white)] py-1 shadow-lg"
         >
-          <Link href="/dashboard" role="menuitem" onClick={() => setOpen(false)} className={itemClass}>
-            Dashboard
-          </Link>
+          {hasDashboard ? (
+            <Link href="/dashboard" role="menuitem" onClick={() => setOpen(false)} className={itemClass}>
+              Dashboard
+            </Link>
+          ) : (
+            <Link href="/onboarding/plan?role=client" role="menuitem" onClick={() => setOpen(false)} className={itemClass}>
+              Membership plans
+            </Link>
+          )}
           <button
             type="button"
             role="menuitem"

@@ -2,9 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { useSession } from "next-auth/react";
 
 export default function CreatorProfileSetup() {
   const router = useRouter();
+  const { data: session } = useSession();
 
   const [formData, setFormData] = useState({
     category: "",
@@ -17,11 +19,29 @@ export default function CreatorProfileSetup() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   // Files already saved on the server (shown when the user comes back to edit)
-  const [saved, setSaved] = useState<{ avatar: boolean; cover: boolean; cvName: string | null }>({
-    avatar: false,
-    cover: false,
+  const [saved, setSaved] = useState<{ avatar: string | null; cover: string | null; cvName: string | null }>({
+    avatar: null,
+    cover: null,
     cvName: null,
   });
+
+  // What the chosen pictures look like: the new file if there is one, otherwise the saved picture
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [coverPreview, setCoverPreview] = useState<string | null>(null);
+  useEffect(() => {
+    if (!formData.avatar) return setAvatarPreview(null);
+    const url = URL.createObjectURL(formData.avatar);
+    setAvatarPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [formData.avatar]);
+  useEffect(() => {
+    if (!formData.cover) return setCoverPreview(null);
+    const url = URL.createObjectURL(formData.cover);
+    setCoverPreview(url);
+    return () => URL.revokeObjectURL(url);
+  }, [formData.cover]);
+  const avatarSrc = avatarPreview ?? saved.avatar;
+  const coverSrc = coverPreview ?? saved.cover;
 
   // Pre-fill with the saved profile (for returning users)
   useEffect(() => {
@@ -37,7 +57,7 @@ export default function CreatorProfileSetup() {
           bio: p.bio,
           portfolioLinks: p.portfolioLinks.length ? p.portfolioLinks : [""],
         }));
-        setSaved({ avatar: !!p.avatarUrl, cover: !!p.coverUrl, cvName: p.cvName });
+        setSaved({ avatar: p.avatarUrl ?? null, cover: p.coverUrl ?? null, cvName: p.cvName });
       })
       .catch(() => {});
     return () => {
@@ -92,7 +112,7 @@ export default function CreatorProfileSetup() {
         return;
       }
       // الانتقال للخطوة التالية: اختيار الخطة
-      router.push("/onboarding/plan?role=creator");
+      router.push("/onboarding/payout");
     } catch {
       setError("Network error. Please try again.");
     } finally {
@@ -107,7 +127,7 @@ export default function CreatorProfileSetup() {
         <p className="text-xs uppercase font-semibold text-[var(--text-muted)] tracking-wider">
           Step 2 of 5
         </p>
-        <div className="h-2 bg-gray-200 rounded-full my-3 overflow-hidden">
+        <div className="h-2 bg-[var(--ui-soft)] rounded-full my-3 overflow-hidden">
           <div className="h-2 w-2/5 bg-[var(--brand-orange)] rounded-full transition-all duration-300" />
         </div>
       </div>
@@ -128,38 +148,54 @@ export default function CreatorProfileSetup() {
             Brand Visuals (Cover & Avatar)
           </label>
 
-          <div className="relative w-full h-40 bg-gray-100 rounded-2xl border-2 border-dashed border-gray-300 flex items-center justify-center overflow-hidden hover:bg-gray-50 transition cursor-pointer">
-            <span className="text-xs font-semibold text-gray-500">
-              {formData.cover ? formData.cover.name : saved.cover ? "Cover saved - click to replace" : "Click to upload Cover Banner"}
-            </span>
-            <input
-              type="file"
-              accept="image/*"
-              className="absolute inset-0 opacity-0 cursor-pointer"
-              onChange={(e) =>
-                setFormData({ ...formData, cover: e.target.files?.[0] || null })
-              }
-            />
-          </div>
-
-          <div className="flex items-center gap-4 -mt-10 px-6">
-            <div className="relative w-20 h-20 bg-white rounded-full border-4 border-white shadow-md flex items-center justify-center overflow-hidden bg-gray-200 cursor-pointer">
-              <span className="text-[10px] font-bold text-gray-500 text-center px-1">
-                {formData.avatar ? "Uploaded" : saved.avatar ? "Saved" : "Avatar"}
-              </span>
+          {/* The profile header as visitors will see it: the cover with the picture on top of it */}
+          <div className="overflow-hidden rounded-2xl border border-[var(--ui-border2)] bg-[var(--ui-surface)]">
+            <div
+              className="relative h-40 w-full cursor-pointer bg-[var(--ui-soft)] bg-cover bg-center transition hover:opacity-90"
+              style={coverSrc ? { backgroundImage: `url(${coverSrc})` } : undefined}
+            >
+              {!coverSrc && (
+                <span className="absolute inset-0 flex items-center justify-center border-2 border-dashed border-[var(--ui-border2)] text-xs font-semibold text-[var(--ui-muted)]">
+                  Click to upload Cover Banner
+                </span>
+              )}
+              {coverSrc && (
+                <span className="absolute bottom-2 right-2 rounded-full bg-black/60 px-3 py-1 text-[11px] font-semibold text-white">
+                  {formData.cover ? formData.cover.name : "Cover saved - click to replace"}
+                </span>
+              )}
               <input
                 type="file"
                 accept="image/*"
-                className="absolute inset-0 opacity-0 cursor-pointer"
-                onChange={(e) =>
-                  setFormData({ ...formData, avatar: e.target.files?.[0] || null })
-                }
+                aria-label="Cover banner"
+                className="absolute inset-0 cursor-pointer opacity-0"
+                onChange={(e) => setFormData({ ...formData, cover: e.target.files?.[0] || null })}
               />
             </div>
-            <p className="text-xs text-[var(--text-muted)] pt-8">
-              Upload a clear profile picture (JPG, PNG).
-            </p>
+
+            <div className="flex items-end gap-4 px-6 pb-5">
+              <div className="relative -mt-10 h-20 w-20 shrink-0 cursor-pointer overflow-hidden rounded-full border-4 border-[var(--ui-surface)] bg-[var(--ui-soft)] shadow-md">
+                {avatarSrc ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarSrc} alt="Your profile picture" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center px-1 text-center text-[10px] font-bold text-[var(--ui-muted)]">Avatar</span>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  aria-label="Profile picture"
+                  className="absolute inset-0 cursor-pointer opacity-0"
+                  onChange={(e) => setFormData({ ...formData, avatar: e.target.files?.[0] || null })}
+                />
+              </div>
+              <div className="min-w-0 pt-3">
+                <p className="truncate text-lg font-bold">{session?.user?.name || "Your name"}</p>
+                <p className="truncate text-sm text-[var(--text-muted)]">{formData.category || "Your specialty"}</p>
+              </div>
+            </div>
           </div>
+          <p className="text-xs text-[var(--text-muted)]">Upload a clear profile picture (JPG, PNG). This is how your profile header will look.</p>
         </div>
 
         {/* Primary Field */}
@@ -170,14 +206,14 @@ export default function CreatorProfileSetup() {
           <select
             value={formData.category}
             onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-            className="w-full h-14 px-4 rounded-xl border border-gray-300 bg-gray-50 text-gray-900 font-medium focus:bg-white focus:border-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/20 outline-none transition"
+            className="w-full h-14 px-4 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-soft)] text-[var(--ui-text)] font-medium focus:bg-white focus:border-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/20 outline-none transition"
             required
           >
-            <option value="" disabled className="text-gray-400">
+            <option value="" disabled className="text-[var(--ui-muted)]">
               Select your field
             </option>
             {categories.map((cat) => (
-              <option key={cat} value={cat} className="text-gray-900 bg-white py-2">
+              <option key={cat} value={cat} className="text-[var(--ui-text)] bg-[var(--ui-surface)] py-2">
                 {cat}
               </option>
             ))}
@@ -194,7 +230,7 @@ export default function CreatorProfileSetup() {
             placeholder="Tell clients about your creative style, experience, and skills..."
             value={formData.bio}
             onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
-            className="w-full p-4 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[var(--brand-orange)] outline-none resize-none"
+            className="w-full p-4 rounded-xl border border-[var(--ui-border2)] focus:ring-2 focus:ring-[var(--brand-orange)] outline-none resize-none"
           />
         </div>
 
@@ -203,8 +239,8 @@ export default function CreatorProfileSetup() {
           <label className="block text-sm font-bold uppercase tracking-wider mb-2">
             Upload CV / Resume (PDF)
           </label>
-          <div className="relative border-2 border-dashed border-gray-300 rounded-xl p-4 text-center cursor-pointer hover:bg-gray-50 transition">
-            <p className="text-sm text-gray-600 font-medium">
+          <div className="relative border-2 border-dashed border-[var(--ui-border2)] rounded-xl p-4 text-center cursor-pointer hover:bg-[var(--ui-soft)] transition">
+            <p className="text-sm text-[var(--ui-muted)] font-medium">
               {formData.cv ? formData.cv.name : saved.cvName ? `${saved.cvName} (saved) - click to replace` : "Click to upload CV file (PDF)"}
             </p>
             <input
@@ -230,7 +266,7 @@ export default function CreatorProfileSetup() {
               placeholder="https://"
               value={link}
               onChange={(e) => handleLinkChange(idx, e.target.value)}
-              className="w-full h-12 px-4 mb-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-[var(--brand-orange)] outline-none text-sm"
+              className="w-full h-12 px-4 mb-3 rounded-xl border border-[var(--ui-border2)] focus:ring-2 focus:ring-[var(--brand-orange)] outline-none text-sm"
             />
           ))}
           <button
@@ -243,7 +279,7 @@ export default function CreatorProfileSetup() {
         </div>
 
         {error && (
-          <p role="alert" className="text-sm font-medium text-red-600">
+          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
             {error}{" "}
             {error.startsWith("Please log in") && (
               <a href="/login" className="underline">
@@ -254,11 +290,11 @@ export default function CreatorProfileSetup() {
         )}
 
         {/* Action Button */}
-        <div className="flex justify-between items-center pt-6 border-t border-gray-100">
+        <div className="flex justify-between items-center pt-6 border-t border-[var(--ui-border2)]">
           <button
             type="button"
             onClick={() => router.back()}
-            className="px-6 py-3 rounded-xl border border-gray-300 font-medium hover:bg-gray-50 transition"
+            className="px-6 py-3 rounded-xl border border-[var(--ui-border2)] font-medium hover:bg-[var(--ui-soft)] transition"
           >
             Back
           </button>
@@ -268,7 +304,7 @@ export default function CreatorProfileSetup() {
             disabled={saving}
             className="h-14 px-8 rounded-xl bg-[var(--brand-orange)] font-semibold text-white hover:opacity-90 transition disabled:opacity-60"
           >
-            {saving ? "Saving..." : "Continue to Plans"}
+            {saving ? "Saving..." : "Continue"}
           </button>
         </div>
       </form>

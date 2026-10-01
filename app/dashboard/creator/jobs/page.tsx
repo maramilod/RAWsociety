@@ -20,7 +20,7 @@ type Board = {
 };
 
 const input =
-  "w-full h-10 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
+  "w-full h-10 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
 const small = "px-3 py-1.5 text-xs font-semibold rounded-lg border transition disabled:opacity-50";
 const formatDate = (iso: string) => new Date(iso).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" });
 
@@ -57,8 +57,8 @@ function ApplyForm({ job, onDone }: { job: JobRow; onDone: () => void }) {
   };
 
   return (
-    <div className="mt-4 space-y-3 rounded-xl border border-[#E5DCD2] bg-[#FDFBF7] p-4">
-      <p className="text-xs text-[#7D6E65]">
+    <div className="mt-4 space-y-3 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-bg)] p-4">
+      <p className="text-xs text-[var(--ui-muted)]">
         Client budget: <span className="font-semibold">{budgetLabel(job.budget)}</span>. Your offer can be the same or different.
       </p>
       <div className="grid max-w-sm grid-cols-2 gap-3">
@@ -79,7 +79,7 @@ function ApplyForm({ job, onDone }: { job: JobRow; onDone: () => void }) {
           maxLength={1500}
           rows={4}
           placeholder="Your experience with this kind of work, how you would approach it, what you need from the client."
-          className="mt-1 w-full resize-none rounded-xl border border-[#D9CFC5] bg-white p-3 text-sm outline-none focus:border-[#C86C29]"
+          className="mt-1 w-full resize-none rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] p-3 text-sm outline-none focus:border-[#C86C29]"
         />
       </label>
       <div className="space-y-2">
@@ -89,7 +89,7 @@ function ApplyForm({ job, onDone }: { job: JobRow; onDone: () => void }) {
               value={l.kind}
               onChange={(e) => setLinks(links.map((x, idx) => (idx === i ? { ...x, kind: e.target.value as LinkKind } : x)))}
               aria-label="Link type"
-              className="h-10 w-32 shrink-0 rounded-xl border border-[#D9CFC5] bg-white px-2 text-sm"
+              className="h-10 w-32 shrink-0 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-2 text-sm"
             >
               {LINK_KIND_OPTIONS.map((o) => (
                 <option key={o.kind} value={o.kind}>
@@ -107,7 +107,7 @@ function ApplyForm({ job, onDone }: { job: JobRow; onDone: () => void }) {
               placeholder="https://link-to-your-earlier-work"
               className={input}
             />
-            <button type="button" aria-label="Remove link" onClick={() => setLinks(links.filter((_, idx) => idx !== i))} className={`${small} border-[#D9CFC5] bg-white`}>
+            <button type="button" aria-label="Remove link" onClick={() => setLinks(links.filter((_, idx) => idx !== i))} className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)]`}>
               ✕
             </button>
           </div>
@@ -116,13 +116,13 @@ function ApplyForm({ job, onDone }: { job: JobRow; onDone: () => void }) {
           type="button"
           disabled={links.length >= MAX_APPLICATION_LINKS}
           onClick={() => setLinks([...links, { kind: "other", url: "" }])}
-          className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}
+          className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}
         >
           + Add a link to earlier work ({links.length}/{MAX_APPLICATION_LINKS})
         </button>
       </div>
       {error && (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
@@ -145,11 +145,11 @@ function JobCard({ job, canApply, outside, anySpecialty, onChanged }: { job: Job
   const status = mine ? applicationStatusLabel(mine.status) : null;
 
   return (
-    <div className="rounded-xl border border-[#EFE8E1] bg-white p-4">
+    <div className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="font-semibold text-[#2C221E]">{job.title}</div>
-          <div className="text-xs text-[#7D6E65]">
+          <div className="font-semibold text-[var(--ui-text)]">{job.title}</div>
+          <div className="text-xs text-[var(--ui-muted)]">
             {job.category.name} · posted {formatDate(job.createdAt)} · {job.applicationsCount} {job.applicationsCount === 1 ? "application" : "applications"}
           </div>
         </div>
@@ -165,10 +165,10 @@ function JobCard({ job, canApply, outside, anySpecialty, onChanged }: { job: Job
         </div>
       )}
 
-      <p className="mt-3 line-clamp-3 whitespace-pre-line text-sm text-[#554f49]">{job.summary}</p>
+      <p className="mt-3 line-clamp-3 whitespace-pre-line text-sm text-[var(--ui-text2)]">{job.summary}</p>
 
       {outside && !mine && (
-        <p className="mt-3 rounded-lg border border-amber-200 bg-amber-50 px-3 py-2 text-xs text-amber-900">
+        <p className="mt-3 rounded-lg border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-3 py-2 text-xs text-amber-900 dark:text-amber-200">
           {anySpecialty
             ? `Note: this job is in ${job.category.name}, which is different from your specialty. You can still apply.`
             : `This job is in ${job.category.name}, outside your specialty. Creators on the Max plan can apply to any specialty.`}
@@ -176,7 +176,7 @@ function JobCard({ job, canApply, outside, anySpecialty, onChanged }: { job: Job
       )}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button type="button" onClick={() => setOpen((v) => !v)} className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+        <button type="button" onClick={() => setOpen((v) => !v)} className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
           {open ? "Hide details" : "View details"}
         </button>
         {!mine && canApply && (!outside || anySpecialty) && (
@@ -185,7 +185,7 @@ function JobCard({ job, canApply, outside, anySpecialty, onChanged }: { job: Job
           </button>
         )}
         {mine && (
-          <span className="text-xs text-[#7D6E65]">
+          <span className="text-xs text-[var(--ui-muted)]">
             Your offer: {mine.price.toLocaleString()} LYD in {mine.days} days
           </span>
         )}
@@ -201,7 +201,7 @@ function JobCard({ job, canApply, outside, anySpecialty, onChanged }: { job: Job
         />
       )}
       {open && (
-        <div className="mt-4 border-t border-[#EFE8E1] pt-4">
+        <div className="mt-4 border-t border-[var(--ui-border)] pt-4">
           <JobDetails job={job} />
         </div>
       )}
@@ -257,14 +257,14 @@ export default function CreatorJobsPage() {
     <button
       type="button"
       onClick={() => setTab(key)}
-      className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${tab === key ? "bg-white text-[#2C221E] shadow-sm" : "text-[#7D6E65] hover:text-[#2C221E]"}`}
+      className={`rounded-lg px-4 py-1.5 text-sm font-medium transition ${tab === key ? "bg-[var(--ui-surface)] text-[var(--ui-text)] shadow-sm" : "text-[var(--ui-muted)] hover:text-[var(--ui-text)]"}`}
     >
       {label}
     </button>
   );
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-6 text-[#2C221E] md:p-10">
+    <div className="min-h-screen bg-[var(--ui-bg)] p-6 text-[var(--ui-text)] md:p-10">
       <div className="mx-auto max-w-5xl">
         <Link href="/dashboard/creator" className="text-sm font-medium text-[#C86C29] hover:underline">
           ← Back to dashboard
@@ -272,10 +272,10 @@ export default function CreatorJobsPage() {
         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Jobs</h1>
-            <p className="mt-1 text-sm text-[#7D6E65]">Work that clients posted. Apply with your price and time.</p>
+            <p className="mt-1 text-sm text-[var(--ui-muted)]">Work that clients posted. Apply with your price and time.</p>
           </div>
           {access && access.canBrowse && (
-            <p className="text-sm text-[#554f49]">
+            <p className="text-sm text-[var(--ui-text2)]">
               {access.limit === null ? (
                 "Unlimited applications (Max plan)"
               ) : (
@@ -288,16 +288,16 @@ export default function CreatorJobsPage() {
         </div>
 
         {error && (
-          <p role="alert" className="mt-6 text-sm font-medium text-red-600">
+          <p role="alert" className="mt-6 text-sm font-medium text-red-600 dark:text-red-400">
             {error}
           </p>
         )}
-        {!board && !error && <p className="mt-6 text-sm text-[#7D6E65]">Loading...</p>}
+        {!board && !error && <p className="mt-6 text-sm text-[var(--ui-muted)]">Loading...</p>}
 
         {board?.locked && (
-          <div className="mt-8 rounded-2xl border border-[#EFE8E1] bg-white p-8 text-center shadow-sm">
+          <div className="mt-8 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-8 text-center shadow-sm">
             <p className="text-lg font-semibold">The jobs board is for Pro and Max members</p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-[#7D6E65]">
+            <p className="mx-auto mt-2 max-w-md text-sm text-[var(--ui-muted)]">
               {board.openCount ? `${board.openCount} ${board.openCount === 1 ? "job is" : "jobs are"} open right now. ` : ""}
               Upgrade to read them and apply. Pro lets you apply to 3 jobs a month, Max has no limit.
             </p>
@@ -308,14 +308,14 @@ export default function CreatorJobsPage() {
         )}
 
         {board && (!board.locked || (apps && apps.length > 0)) && (
-          <div className="mt-8 inline-flex gap-1 rounded-xl bg-[#F7F4F0] p-1">
+          <div className="mt-8 inline-flex gap-1 rounded-xl bg-[var(--ui-soft)] p-1">
             {!board.locked && tabBtn("open", "Open jobs")}
             {tabBtn("mine", `My applications${apps ? ` (${apps.length})` : ""}`)}
           </div>
         )}
 
         {notice && (
-          <p role="alert" className="mt-4 text-sm font-medium text-red-600">
+          <p role="alert" className="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
             {notice}
           </p>
         )}
@@ -338,12 +338,12 @@ export default function CreatorJobsPage() {
                 ))}
               </select>
               <input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Search jobs" aria-label="Search jobs" className={`${input} max-w-xs`} />
-              <button type="submit" className={`${small} h-10 border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+              <button type="submit" className={`${small} h-10 border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
                 Search
               </button>
             </form>
             <div className="mt-5 space-y-4">
-              {board.jobs.length === 0 && <p className="text-sm text-[#7D6E65]">No open jobs match right now. Check back soon.</p>}
+              {board.jobs.length === 0 && <p className="text-sm text-[var(--ui-muted)]">No open jobs match right now. Check back soon.</p>}
               {board.jobs.map((j) => (
                 <JobCard
                   key={j.id}
@@ -356,7 +356,7 @@ export default function CreatorJobsPage() {
               ))}
             </div>
             {access && access.remaining !== null && access.remaining <= 0 && (
-              <p className="mt-5 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900">
+              <p className="mt-5 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200">
                 You used all {access.limit} applications of this month.{" "}
                 <Link href="/dashboard/plan" className="font-semibold underline">
                   Upgrade to Max
@@ -369,15 +369,15 @@ export default function CreatorJobsPage() {
 
         {board && (tab === "mine" || board.locked) && (
           <div className="mt-5 space-y-4">
-            {apps && apps.length === 0 && <p className="text-sm text-[#7D6E65]">You have not applied to any job yet.</p>}
+            {apps && apps.length === 0 && <p className="text-sm text-[var(--ui-muted)]">You have not applied to any job yet.</p>}
             {apps?.map((a) => {
               const st = applicationStatusLabel(a.status);
               return (
-                <div key={a.id} className="rounded-xl border border-[#EFE8E1] bg-white p-4">
+                <div key={a.id} className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
                   <div className="flex flex-wrap items-start justify-between gap-3">
                     <div>
                       <div className="font-semibold">{a.job.title}</div>
-                      <div className="text-xs text-[#7D6E65]">
+                      <div className="text-xs text-[var(--ui-muted)]">
                         {a.job.clientName} · applied {formatDate(a.createdAt)} · client budget {budgetLabel(a.job.budget)}
                       </div>
                     </div>
@@ -386,12 +386,12 @@ export default function CreatorJobsPage() {
                   <p className="mt-2 text-sm">
                     Your offer: <strong>{a.price.toLocaleString()} LYD</strong> in {a.days} days
                   </p>
-                  {a.message && <p className="mt-1 line-clamp-3 whitespace-pre-line text-sm text-[#554f49]">{a.message}</p>}
+                  {a.message && <p className="mt-1 line-clamp-3 whitespace-pre-line text-sm text-[var(--ui-text2)]">{a.message}</p>}
                   {a.status === "accepted" && a.orderNumber && (
-                    <p className="mt-2 text-sm text-green-800">Accepted. Order {a.orderNumber} was created and waits for the client&apos;s payment.</p>
+                    <p className="mt-2 text-sm text-green-800 dark:text-green-200">Accepted. Order {a.orderNumber} was created and waits for the client&apos;s payment.</p>
                   )}
                   {a.status === "pending" && (
-                    <button type="button" onClick={() => withdraw(a)} className={`${small} mt-3 border-red-200 text-red-700 hover:bg-red-50`}>
+                    <button type="button" onClick={() => withdraw(a)} className={`${small} mt-3 border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-200 hover:bg-red-50`}>
                       Withdraw
                     </button>
                   )}

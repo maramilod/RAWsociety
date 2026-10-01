@@ -3,6 +3,9 @@
 import React, { useState, useEffect } from "react";
 import LinkNext from "next/link";
 import { Anta } from "next/font/google";
+import { formatPrice } from "@/components/services/types";
+import ServiceDetailModal from "@/components/services/ServiceDetailModal";
+import UserMenu from "@/components/UserMenu";
 
 const anta = Anta({
   weight: "400",
@@ -11,61 +14,37 @@ const anta = Anta({
   fallback: ["ui-monospace", "SFMono-Regular", "Menlo", "Monaco", "Consolas", "sans-serif"],
 });
 
-const creators = [
-  { 
-    id: 1, 
-    name: "Sara M.", 
-    role: "Photographer", 
-    rate: "60 LYD/hr", 
-    bio: "Editorial & product photography", 
-    rating: "4.9", 
-    reviews: 112, 
-    avatarBg: "bg-amber-700", 
-    tagBg: "bg-amber-100 text-amber-800",
-    isLocked: false 
-  },
-  { 
-    id: 2, 
-    name: "Omar K.", 
-    role: "UI/UX Designer", 
-    rate: "75 LYD/hr", 
-    bio: "Web & mobile interfaces", 
-    rating: "4.8", 
-    reviews: 94, 
-    avatarBg: "bg-purple-600", 
-    tagBg: "bg-purple-100 text-purple-700",
-    isLocked: false 
-  },
-  { 
-    id: 3, 
-    name: "Laila B.", 
-    role: "Content Writer & Copywriter", 
-    rate: "50 LYD/hr", 
-    bio: "Brand storytelling & essays", 
-    rating: "5.0", 
-    reviews: 78, 
-    avatarBg: "bg-emerald-600", 
-    tagBg: "bg-emerald-100 text-emerald-700",
-    isLocked: true 
-  },
-  { 
-    id: 4, 
-    name: "Tariq N.", 
-    role: "Full-Stack Developer", 
-    rate: "90 LYD/hr", 
-    bio: "Laravel & React architectures", 
-    rating: "4.9", 
-    reviews: 130, 
-    avatarBg: "bg-blue-600", 
-    tagBg: "bg-blue-100 text-blue-700",
-    isLocked: true 
-  },
-];
+type Offer = {
+  id: string;
+  title: string;
+  price: number;
+  currency: string;
+  category: string;
+  deliveryDays: number | null;
+  coverUrl: string | null;
+};
+
+const GRADIENTS = ["from-[#ff9447] to-[#5b1d38]", "from-[#C98A64] to-[#4A1D12]", "from-[#B5524A] to-[#2C0F0F]", "from-[#D97A35] to-[#3B1409]"];
 
 export default function ExploreLimited() {
-  const [activeCategory, setActiveCategory] = useState("All");
+  const [offers, setOffers] = useState<Offer[] | null>(null);
+  const [limit, setLimit] = useState(6);
+  const [error, setError] = useState("");
+  const [openId, setOpenId] = useState<string | null>(null);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [showScrollTop, setShowScrollTop] = useState(false);
+
+  // the server decides what a free client may see: a few offers, without the creators
+  useEffect(() => {
+    fetch("/api/explore", { cache: "no-store" })
+      .then((r) => r.json().then((d) => ({ ok: r.ok, d })))
+      .then(({ ok, d }) => {
+        if (!ok) return setError(d.error || "Could not load the offers.");
+        setOffers(d.services ?? []);
+        if (d.limited?.offers) setLimit(d.limited.offers);
+      })
+      .catch(() => setError("Could not load the offers."));
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -85,12 +64,12 @@ export default function ExploreLimited() {
   };
 
   return (
-    <div className="min-h-screen bg-[#f7f5f0] text-[#1c1917] font-sans antialiased flex flex-col items-stretch w-full">
+    <div className="min-h-screen bg-[var(--ex-bg)] text-[var(--ex-text)] font-sans antialiased flex flex-col items-stretch w-full">
       
-      <div className="w-full bg-[#f7f5f0] min-h-screen flex flex-col">
+      <div className="w-full bg-[var(--ex-bg)] min-h-screen flex flex-col">
         
         {/* Navbar */}
-        <header className="border-b border-[#e5e0d8] bg-[#f7f5f0] sticky top-0 z-50">
+        <header className="border-b border-[var(--ex-border)] bg-[var(--ex-bg)] sticky top-0 z-50">
           <div className="w-full px-8 md:px-16 py-5 flex justify-between items-center">
             
             <LinkNext 
@@ -102,10 +81,9 @@ export default function ExploreLimited() {
               <div>society</div>
             </LinkNext>
 
-            <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-[#44403c]">
-              <LinkNext href="#creators" className="hover:text-black transition">Top Talents</LinkNext>
-              <LinkNext href="#categories" className="hover:text-black transition">Categories</LinkNext>
-              <LinkNext href="/onboarding/plan?role=client" className="hover:text-black transition">Membership</LinkNext>
+            <nav className="hidden md:flex items-center space-x-10 text-sm font-medium text-[var(--ex-text2)]">
+              <LinkNext href="#offers" className="hover:text-[var(--ex-text)] transition">Offers</LinkNext>
+              <LinkNext href="/onboarding/plan?role=client" className="hover:text-[var(--ex-text)] transition">Membership</LinkNext>
             </nav>
 
             <div className="flex items-center gap-4">
@@ -115,6 +93,8 @@ export default function ExploreLimited() {
               >
                 <span>Upgrade</span>
               </LinkNext>
+
+              <UserMenu />
 
               <button 
                 onClick={() => setIsMobileMenuOpen(true)}
@@ -138,41 +118,33 @@ export default function ExploreLimited() {
               onClick={() => setIsMobileMenuOpen(false)}
             />
 
-            <div className="relative w-72 bg-[#f7f5f0] border-r border-[#e5e0d8] h-full shadow-2xl p-6 flex flex-col z-10 animate-in slide-in-from-left duration-200">
+            <div className="relative w-72 bg-[var(--ex-bg)] border-r border-[var(--ex-border)] h-full shadow-2xl p-6 flex flex-col z-10 animate-in slide-in-from-left duration-200">
               
-              <div className="flex justify-between items-center mb-8 pb-4 border-b border-[#e5e0d8]">
+              <div className="flex justify-between items-center mb-8 pb-4 border-b border-[var(--ex-border)]">
                 <div className="font-serif font-black text-base tracking-tight leading-none">
                   RAW<br />society
                 </div>
                 <button 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-2 text-gray-500 hover:text-[#c86d38] rounded-full transition"
+                  className="p-2 text-[var(--ex-muted)] hover:text-[#c86d38] rounded-full transition"
                 >
                   ✕
                 </button>
               </div>
 
-              <nav className="flex flex-col space-y-3 text-base font-medium text-[#44403c]">
+              <nav className="flex flex-col space-y-3 text-base font-medium text-[var(--ex-text2)]">
                 <LinkNext 
-                  href="#creators" 
+                  href="#offers" 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
+                  className="p-3 hover:bg-[var(--ex-soft)] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
                 >
-                  <span>Top Talents</span>
-                  <span className="text-xs text-[#c86d38]">→</span>
-                </LinkNext>
-                <LinkNext 
-                  href="#categories" 
-                  onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
-                >
-                  <span>Categories</span>
+                  <span>Offers</span>
                   <span className="text-xs text-[#c86d38]">→</span>
                 </LinkNext>
                 <LinkNext 
                   href="/onboarding/plan?role=client" 
                   onClick={() => setIsMobileMenuOpen(false)}
-                  className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
+                  className="p-3 hover:bg-[var(--ex-soft)] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
                 >
                   <span>Membership</span>
                   <span className="text-xs text-[#c86d38]">→</span>
@@ -184,9 +156,9 @@ export default function ExploreLimited() {
         )}
 
         {/* Free Plan Alert Banner */}
-        <div className="bg-[#f7e8e8] px-8 md:px-16 py-4 border-b border-[#ebd3d3] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-          <p className="text-xs md:text-sm text-[#4a3232] font-medium leading-relaxed">
-            You&apos;re on the Free plan — portfolios are locked. Upgrade from 30 LYD/month to unlock unlimited access.
+        <div className="bg-[var(--ex-note-bg)] px-8 md:px-16 py-4 border-b border-[var(--ex-note-border)] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <p className="text-xs md:text-sm text-[var(--ex-note-text)] font-medium leading-relaxed">
+            You&apos;re on the Free plan: you can see {limit} offers, and the creators behind them stay hidden. Upgrade to see every offer and every creator, and to message them.
           </p>
           <LinkNext href="/onboarding/plan?role=client">
             <button className="px-4 py-2 bg-[#c86d38] text-white text-xs font-bold rounded-xl hover:opacity-90 transition whitespace-nowrap shadow-sm">
@@ -198,81 +170,74 @@ export default function ExploreLimited() {
         {/* Main Content */}
         <main className="px-8 md:px-16 py-10 md:py-14 w-full flex-1">
           
-          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 gap-6 border-b border-[#e5e0d8] pb-6">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between mb-10 gap-6 border-b border-[var(--ex-border)] pb-6">
             <div>
               <span className="text-xs font-semibold tracking-widest uppercase text-[#c86d38] mb-2 block">
                 EXPLORE NETWORK
               </span>
-              <h1 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-wide text-[#1c1917]">
-                BROWSE CREATORS
+              <h1 className="text-3xl md:text-5xl font-serif font-bold uppercase tracking-wide text-[var(--ex-text)]">
+                BROWSE OFFERS
               </h1>
-            </div>
-
-            {/* Category Filter Pills */}
-            <div id="categories" className="flex items-center gap-3 overflow-x-auto pb-2 md:pb-0 scrollbar-none scroll-mt-24">
-              {["All", "Design", "Photo", "Dev"].map((cat) => (
-                <button
-                  key={cat}
-                  onClick={() => setActiveCategory(cat)}
-                  className={`px-5 py-2 rounded-full text-xs font-semibold transition whitespace-nowrap ${
-                    activeCategory === cat
-                      ? "bg-[#1c1917] text-white shadow-sm"
-                      : "bg-white border border-[#e5e0d8] text-[#44403c] hover:bg-gray-100"
-                  }`}
-                >
-                  {cat}
-                </button>
-              ))}
             </div>
           </div>
 
-          {/* Browse Creators Section */}
-          <section id="creators" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-12 scroll-mt-24">
-            
-            {creators.map((creator) => (
-              <div key={creator.id} className="bg-white border border-[#e5e0d8] rounded-2xl overflow-hidden shadow-sm flex flex-col justify-between hover:shadow-md transition">
-                
-                <div className={`h-56 md:h-64 relative flex items-center justify-center ${creator.isLocked ? "bg-gradient-to-r from-[#f0dcd0] to-[#d8d8d8] backdrop-blur-md flex-col gap-3" : "bg-[#f0eae1]"}`}>
-                  {creator.isLocked ? (
-                    <>
-                      <div className="w-10 h-10 rounded-full bg-white/80 flex items-center justify-center shadow-sm">
-                        <svg className="w-5 h-5 text-[#1c1917]" fill="currentColor" viewBox="0 0 20 20">
-                          <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
-                        </svg>
-                      </div>
-                      <span className="text-xs font-bold text-[#1c1917]">Upgrade to view portfolio</span>
-                    </>
-                  ) : (
-                    <svg className="w-full h-full text-[#d8d0c5]" viewBox="0 0 100 100" preserveAspectRatio="none">
-                      <line x1="0" y1="0" x2="100" y2="100" stroke="currentColor" strokeWidth="0.5" />
-                      <line x1="100" y1="0" x2="0" y2="100" stroke="currentColor" strokeWidth="0.5" />
-                    </svg>
-                  )}
-                </div>
+          {error && <p role="alert" className="mb-6 text-sm font-medium text-red-600 dark:text-red-400">{error}</p>}
+          {!offers && !error && <p className="text-sm text-[var(--ex-muted)]">Loading...</p>}
+          {offers && offers.length === 0 && <p className="text-sm text-[var(--ex-muted)]">No offers yet. Check back soon.</p>}
 
-                <div className="p-5 flex items-center justify-between border-t border-[#f0eae1] bg-white">
-                  <div className="flex items-center gap-3">
-                    <div className={`w-10 h-10 rounded-full ${creator.avatarBg} text-white font-bold flex items-center justify-center text-xs flex-shrink-0`}>
-                      {creator.name[0]}
-                    </div>
-                    <div>
-                      <h3 className="font-bold text-sm text-[#1c1917]">{creator.name}</h3>
-                      <p className="text-xs text-gray-500">{creator.role} · {creator.rate}</p>
-                    </div>
+          <section id="offers" className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12 scroll-mt-24">
+            {offers?.map((o, i) => (
+              <div
+                key={o.id}
+                role="button"
+                tabIndex={0}
+                onClick={() => setOpenId(o.id)}
+                onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && (e.preventDefault(), setOpenId(o.id))}
+                className="bg-[var(--ex-surface)] border border-[var(--ex-border)] rounded-2xl overflow-hidden shadow-sm flex flex-col hover:shadow-md transition cursor-pointer focus:outline-none focus-visible:ring-2 focus-visible:ring-[#c86d38]"
+              >
+                <div
+                  className={`h-52 md:h-60 bg-gradient-to-br ${GRADIENTS[i % GRADIENTS.length]} bg-cover bg-center`}
+                  style={o.coverUrl ? { backgroundImage: `url(${o.coverUrl})` } : undefined}
+                  role="img"
+                  aria-label={o.title}
+                />
+                <div className="p-5 flex flex-1 flex-col gap-3 bg-[var(--ex-surface)]">
+                  <div>
+                    <p className="text-[11px] font-semibold uppercase tracking-wider text-[#c86d38]">{o.category}</p>
+                    <h3 className="mt-1 font-bold text-[var(--ex-text)] leading-snug">{o.title}</h3>
                   </div>
-                  
-                  <button className="px-3.5 py-1.5 bg-[#eae7e1] text-gray-400 rounded-lg text-xs font-medium cursor-not-allowed">
-                    Message · Pro
-                  </button>
+                  <p className="text-sm text-[var(--ex-muted)]">
+                    {formatPrice(o.price, o.currency)}
+                    {o.deliveryDays ? ` · ${o.deliveryDays} days` : ""}
+                  </p>
+                  <span className="text-xs font-semibold text-[#c86d38]">View details →</span>
+                  <div className="flex items-center gap-2 rounded-lg bg-[var(--ex-bg)] px-3 py-2 text-xs font-medium text-[var(--ex-text2)]">
+                    <svg className="w-4 h-4 shrink-0 text-[var(--ex-text)]" fill="currentColor" viewBox="0 0 20 20" aria-hidden="true">
+                      <path fillRule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clipRule="evenodd" />
+                    </svg>
+                    Creator hidden on the Free plan
+                  </div>
                 </div>
-
               </div>
             ))}
-
           </section>
+
+          {offers && offers.length > 0 && (
+            <div className="mb-12 rounded-2xl border border-[var(--ex-border)] bg-[var(--ex-surface)] p-8 text-center shadow-sm">
+              <h2 className="text-xl font-bold text-[var(--ex-text)]">Want to see more?</h2>
+              <p className="mx-auto mt-2 max-w-xl text-sm text-[var(--ex-muted)]">
+                Business Pro opens every offer and every creator profile, lets you order services and send messages. Enterprise adds your own job posts and unlimited Hire me requests.
+              </p>
+              <LinkNext href="/onboarding/plan?role=client" className="mt-5 inline-block rounded-xl bg-[#c86d38] px-6 py-3 text-sm font-bold text-white hover:opacity-90 transition">
+                See plans
+              </LinkNext>
+            </div>
+          )}
 
         </main>
       </div>
+
+      {openId && <ServiceDetailModal serviceId={openId} showProfileLink={false} onClose={() => setOpenId(null)} />}
 
       {/* Scroll to Top Button */}
       {showScrollTop && (

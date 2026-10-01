@@ -25,11 +25,11 @@ export default function PlanBanner() {
   const until = m.current.periodEnd ? new Date(m.current.periodEnd).toLocaleDateString([], { month: "short", day: "numeric", year: "numeric" }) : null;
 
   return (
-    <div className="mb-6 flex flex-col gap-2 rounded-xl border border-[#EFE8E1] bg-white px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
+    <div className="mb-6 flex flex-col gap-2 rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between">
       <span>
         Your plan: <strong>{name}</strong>
         {until ? ` (until ${until})` : ""}
-        {m.pending && <span className="text-blue-700"> · {m.pending.name} is waiting for payment confirmation</span>}
+        {m.pending && <span className="text-blue-700 dark:text-blue-200"> · {m.pending.name} is waiting for payment confirmation</span>}
       </span>
       <Link href="/dashboard/plan" className="font-semibold text-[#C86C29] hover:underline">
         {m.pending ? "View membership" : "Manage plan"}

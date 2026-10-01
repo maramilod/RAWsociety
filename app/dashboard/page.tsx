@@ -1,10 +1,12 @@
 import { redirect } from "next/navigation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { getSessionUser } from "@/lib/session";
+import { clientHasDashboard } from "@/lib/subscriptions";
 
-// /dashboard sends each user to the dashboard for their role
+// /dashboard sends each user to the right place for their role and plan
 export default async function DashboardIndex() {
-  const session = await getServerSession(authOptions);
-  if (!session?.user) redirect("/login?callbackUrl=/dashboard");
-  redirect(session.user.role === "creator" ? "/dashboard/creator" : "/dashboard/client");
+  const me = await getSessionUser();
+  if (!me) redirect("/login?callbackUrl=/dashboard");
+  if (me.role === "creator") redirect("/dashboard/creator");
+  if (me.role === "client") redirect((await clientHasDashboard(me.id)) ? "/dashboard/client" : "/explore/free");
+  redirect("/admin");
 }

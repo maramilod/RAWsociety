@@ -2,8 +2,9 @@
 
 import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { clientPlanFeatures, creatorPlanFeatures } from "@/lib/plan-rules";
 
-// خطط صناع المحتوى (Creators)
+// خطط صناع المحتوى (Creators): the lines come from lib/plan-rules.ts, the same numbers the server enforces
 const creatorPlans = [
   {
     id: "free",
@@ -11,7 +12,7 @@ const creatorPlans = [
     price: 0,
     period: "/mo",
     description: "Great for new creators starting their journey.",
-    features: ["Browse 6 creators", "Showcase up to 3 works", "No direct messaging"],
+    features: creatorPlanFeatures("creator_free"),
     buttonText: "Start Free",
   },
   {
@@ -20,7 +21,7 @@ const creatorPlans = [
     price: 50,
     period: "LYD/mo",
     description: "For active creators looking to land regular clients.",
-    features: ["Everything unlocked", "Showcase up to 15 works", "Direct messaging + Stats"],
+    features: creatorPlanFeatures("creator_pro"),
     buttonText: "Get Pro",
   },
   {
@@ -28,26 +29,21 @@ const creatorPlans = [
     name: "Max",
     price: 70,
     period: "LYD/mo",
-    description: "For top creators who want maximum visibility.",
-    features: ["Unlimited works", "Featured profile placement", "Priority support"],
+    description: "For top creators who want no limits.",
+    features: creatorPlanFeatures("creator_max"),
     buttonText: "Get Max",
   },
 ];
 
-// خطط العملاء (Clients)
+// خطط العملاء (Clients): the lines come from lib/plan-rules.ts, the same numbers the server enforces
 const clientPlans = [
   {
     id: "free",
     name: "Free",
     price: 0,
     period: "/mo",
-    description: "Ideal for exploring creators and small projects.",
-    features: [
-      "Browse creator portfolios",
-      "Send up to 3 project briefs",
-      "Standard support",
-      "No custom company branding / logo",
-    ],
+    description: "Ideal for looking around before you hire.",
+    features: clientPlanFeatures("client_free"),
     buttonText: "Start Free",
   },
   {
@@ -56,12 +52,7 @@ const clientPlans = [
     price: 150,
     period: "LYD/mo",
     description: "Best for growing businesses hiring regularly.",
-    features: [
-      "Unlimited project briefs",
-      "Direct chat & file sharing",
-      "Verified creator filter",
-      "Custom company branding & logo",
-    ],
+    features: clientPlanFeatures("client_pro"),
     buttonText: "Get Pro",
   },
   {
@@ -69,13 +60,8 @@ const clientPlans = [
     name: "Enterprise",
     price: 350,
     period: "LYD/mo",
-    description: "Dedicated support and management for agencies.",
-    features: [
-      "Dedicated account manager",
-      "Custom contracts & invoicing",
-      "VIP talent matchmaking",
-      "Custom company branding & logo",
-    ],
+    description: "For teams that hire a lot and want creators to come to them.",
+    features: clientPlanFeatures("client_enterprise"),
     buttonText: "Get Enterprise",
   },
 ];
@@ -101,7 +87,7 @@ function PlanContent() {
       }
     } else {
       if (selected === "free") {
-        router.push("/explore/free");
+        router.push("/dashboard/creator");
       } else {
         // انتقال الكريتور لصفحة الدفع
         router.push(`/onboarding/payment?plan=${selected}&role=creator`);
@@ -115,12 +101,12 @@ function PlanContent() {
         {/* Progress bar */}
         <div className="mb-6">
           <p className="text-xs uppercase font-semibold text-[var(--text-muted)] tracking-wider">
-            {role === "creator" ? "Step 3 of 5" : "Step 1 of 3"}
+            {role === "creator" ? "Step 4 of 5" : "Step 1 of 3"}
           </p>
-          <div className="h-2 bg-gray-200 rounded-full my-3 overflow-hidden">
+          <div className="h-2 bg-[var(--ui-soft)] rounded-full my-3 overflow-hidden">
             <div
               className={`h-2 bg-[var(--brand-orange)] rounded-full transition-all duration-300 ${
-                role === "creator" ? "w-3/5" : "w-1/3"
+                role === "creator" ? "w-4/5" : "w-1/3"
               }`}
             />
           </div>
@@ -128,7 +114,7 @@ function PlanContent() {
 
         {/* Static Role Indicator (بدون قابلية للتغيير) */}
         <div className="flex justify-center mb-8">
-          <div className="bg-gray-100 px-6 py-2.5 rounded-2xl font-bold text-sm text-gray-800 shadow-inner">
+          <div className="bg-[var(--ui-soft)] px-6 py-2.5 rounded-2xl font-bold text-sm text-[var(--ui-text)] shadow-inner">
             {role === "creator" ? "Creator Account Plan" : "Client Account Plan"}
           </div>
         </div>
@@ -156,7 +142,7 @@ function PlanContent() {
                 className={`relative border-2 rounded-2xl p-6 cursor-pointer transition flex flex-col justify-between ${
                   isSelected
                     ? "border-[var(--brand-orange)] bg-orange-50/20 shadow-xl"
-                    : "border-gray-200 hover:border-gray-300"
+                    : "border-[var(--ui-border2)] hover:border-gray-300"
                 }`}
               >
                 <div>
@@ -169,7 +155,7 @@ function PlanContent() {
 
                   <p className="text-4xl font-extrabold mt-6">
                     {plan.price}
-                    <span className="text-sm font-normal text-gray-500">
+                    <span className="text-sm font-normal text-[var(--ui-muted)]">
                       {" "}{plan.period}
                     </span>
                   </p>
@@ -189,7 +175,7 @@ function PlanContent() {
                   className={`w-full mt-8 py-3.5 rounded-xl font-semibold transition ${
                     isSelected
                       ? "bg-[var(--brand-orange)] text-white shadow-md"
-                      : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                      : "bg-[var(--ui-soft)] text-[var(--ui-text)] hover:bg-[var(--ui-soft)]"
                   }`}
                 >
                   {isSelected ? "Selected" : plan.buttonText}
@@ -201,11 +187,11 @@ function PlanContent() {
       </div>
 
       {/* Navigation Footer */}
-      <div className="flex justify-between items-center mt-12 pt-6 border-t border-gray-100">
+      <div className="flex justify-between items-center mt-12 pt-6 border-t border-[var(--ui-border2)]">
         <button
           type="button"
           onClick={() => router.back()}
-          className="px-6 py-3 rounded-xl border border-gray-300 font-medium hover:bg-gray-50 transition"
+          className="px-6 py-3 rounded-xl border border-[var(--ui-border2)] font-medium hover:bg-[var(--ui-soft)] transition"
         >
           Back
         </button>

@@ -86,7 +86,7 @@
 :root {
 
 --cta-bg: #E58B4A;
---cta-text: #FFFFFF;
+--cta-text: #2C0F0F; /* dark brown on the light orange of dark mode, white has too little contrast */
   /* =========================
      GLOBAL DARK
   ========================= */
@@ -162,6 +162,8 @@
 
 
 
+html { scroll-behavior: smooth; }
+
 body {
 
   background: var(--page-bg);
@@ -192,6 +194,81 @@ html[lang="ar"], html[lang="ar"] body, html[lang="ar"] * {
   font-family: var(--font-cairo), "Segoe UI", Tahoma, sans-serif !important;
   letter-spacing: normal !important;
 }
+/* the RAW society logo keeps its own font in Arabic too */
+html[lang="ar"] .font-logo, html[lang="ar"] .font-logo * {
+  font-family: var(--font-anta), sans-serif !important;
+  letter-spacing: 0.025em !important;
+}
 html[dir="rtl"] .text-left { text-align: right; }
 html[dir="rtl"] .text-right { text-align: left; }
 html[dir="rtl"] input[type="email"], html[dir="rtl"] input[type="url"], html[dir="rtl"] input[type="number"], html[dir="rtl"] input[type="password"] { direction: ltr; text-align: right; }
+
+/* Arabic letters read larger and need more room between lines */
+html[lang="ar"] body { line-height: 1.7; }
+html[lang="ar"] h1, html[lang="ar"] h2, html[lang="ar"] h3 { line-height: 1.4; font-weight: 800; }
+html[lang="ar"] h1 { font-size: 0.92em; }
+
+/* ---------- Explore pages: their own light/dark colours ---------- */
+:root {
+  --ex-bg: #f7f5f0;
+  --ex-surface: #ffffff;
+  --ex-soft: #f0eae1;
+  --ex-faint: #f9f6f0;
+  --ex-border: #e5e0d8;
+  --ex-text: #1c1917;
+  --ex-text2: #44403c;
+  --ex-muted: #68625d;
+  --ex-inv-bg: #1c1917;
+  --ex-inv-text: #ffffff;
+  --ex-note-bg: #f7e8e8;
+  --ex-note-border: #ebd3d3;
+  --ex-note-text: #4a3232;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ex-bg: #000000;
+    --ex-surface: #141210;
+    --ex-soft: #221d19;
+    --ex-faint: #1a1613;
+    --ex-border: #332d28;
+    --ex-text: #f4f1ec;
+    --ex-text2: #d6cfc6;
+    --ex-muted: #a79f95;
+    --ex-inv-bg: #f4f1ec;
+    --ex-inv-text: #1c1917;
+    --ex-note-bg: #2a1a17;
+    --ex-note-border: #4a2c26;
+    --ex-note-text: #f0d5cf;
+  }
+}
+
+/* ---------- App colours (dashboards, forms, modals): light and dark ---------- */
+:root {
+  --ui-bg: #FDFBF7;
+  --ui-surface: #ffffff;
+  --ui-soft: #F5F1EB;
+  --ui-border: #EFE8E1;
+  --ui-border2: #E5DCD2;
+  --ui-input: #D9CFC5;
+  --ui-text: #2C221E;
+  --ui-text2: #554f49;
+  --ui-muted: #7D6E65;
+  --ui-inv-bg: #1c1917;
+  --ui-inv-text: #ffffff;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --ui-bg: #000000;
+    --ui-surface: #141210;
+    --ui-soft: #1f1b18;
+    --ui-border: #2c2723;
+    --ui-border2: #38322d;
+    --ui-input: #4a423b;
+    --ui-text: #f4f1ec;
+    --ui-text2: #d6cfc6;
+    --ui-muted: #a79f95;
+    --ui-inv-bg: #f4f1ec;
+    --ui-inv-text: #1c1917;
+  }
+  select option { background: #141210; color: #f4f1ec; }
+}

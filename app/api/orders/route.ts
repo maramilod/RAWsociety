@@ -2,6 +2,9 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { execute, query, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
+import { currentPlanCode } from "@/lib/subscriptions";
+import { serviceLoad } from "@/lib/service-limits";
+import { clientRules } from "@/lib/plan-rules";
 import { runOrderSweeps } from "@/lib/order-sweeps";
 import { DEFAULT_REVISIONS } from "@/lib/deliveries";
 import { CLIENT_INFO_COLUMNS, CLIENT_INFO_JOINS, toClientInfo, type ClientInfoRow } from "@/lib/client-info";
@@ -185,6 +188,9 @@ export async function POST(request: Request) {
   if (me.role !== "client") {
     return NextResponse.json({ error: "Only client accounts can book services." }, { status: 403 });
   }
+  if (!clientRules(await currentPlanCode(me.id, "client")).canBook) {
+    return NextResponse.json({ error: "Ordering services is part of Business Pro and Enterprise. Upgrade your plan to book this service.", upgrade: true }, { status: 403 });
+  }
 
   let serviceId = "";
   let note = "";
@@ -239,6 +245,14 @@ export async function POST(request: Request) {
     }
 
     // The order keeps its own copy of the title and price, so later edits do not change it
+    const load = (await serviceLoad([service.id])).get(service.id);
+    if (load?.full) {
+      return NextResponse.json(
+        { error: `This service is full for this month: it takes ${load.cap} requests a month. It opens again on the 1st of next month.`, full: true },
+        { status: 409 }
+      );
+    }
+
     const id = randomUUID();
     await execute(
       `INSERT INTO orders (id, client_id, creator_id, service_id, title, brief, amount, currency, status, revisions_allowed)

@@ -15,13 +15,13 @@ const formatDate = (iso: string) => new Date(iso).toLocaleDateString([], { month
 function Applicant({ a, jobOpen, onAct }: { a: ApplicationForClient; jobOpen: boolean; onAct: (id: string, action: "accept" | "reject", who: string, price: number) => void }) {
   const st = applicationStatusLabel(a.status);
   return (
-    <div className="rounded-xl border border-[#E5DCD2] bg-[#FDFBF7] p-4">
+    <div className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-bg)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div>
-          <Link href={`/creators/${a.creator.id}`} target="_blank" className="font-semibold text-[#2C221E] hover:text-[#C86C29] hover:underline">
+          <Link href={`/creators/${a.creator.id}`} target="_blank" className="font-semibold text-[var(--ui-text)] hover:text-[#C86C29] hover:underline">
             {a.creator.name}
           </Link>
-          <div className="text-xs text-[#7D6E65]">
+          <div className="text-xs text-[var(--ui-muted)]">
             {a.creator.category} · {a.creator.reviews > 0 ? `${a.creator.rating.toFixed(1)} ★ (${a.creator.reviews})` : "No reviews yet"} · {a.creator.completed} completed
           </div>
         </div>
@@ -32,23 +32,23 @@ function Applicant({ a, jobOpen, onAct }: { a: ApplicationForClient; jobOpen: bo
           <span className={`whitespace-nowrap rounded-full px-2.5 py-1 text-xs font-semibold ${TONE_CLASSES[st.tone]}`}>{st.label}</span>
         </div>
       </div>
-      {a.message && <p className="mt-2 whitespace-pre-line text-sm text-[#554f49]">{a.message}</p>}
+      {a.message && <p className="mt-2 whitespace-pre-line text-sm text-[var(--ui-text2)]">{a.message}</p>}
       {a.links.length > 0 && (
         <div className="mt-2 flex flex-wrap gap-2">
           {a.links.map((l) => (
-            <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+            <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
               {l.label || l.url.replace(/^https?:\/\//, "").slice(0, 40)}
             </a>
           ))}
         </div>
       )}
-      {a.status === "accepted" && a.orderNumber && <p className="mt-2 text-sm text-green-800">Order {a.orderNumber} was created, pay it in Your Orders to start the work.</p>}
+      {a.status === "accepted" && a.orderNumber && <p className="mt-2 text-sm text-green-800 dark:text-green-200">Order {a.orderNumber} was created, pay it in Your Orders to start the work.</p>}
       {a.status === "pending" && jobOpen && (
         <div className="mt-3 flex gap-2">
           <button type="button" onClick={() => onAct(a.id, "accept", a.creator.name, a.price)} className={`${small} border-transparent bg-green-700 text-white hover:bg-green-800`}>
             Accept offer
           </button>
-          <button type="button" onClick={() => onAct(a.id, "reject", a.creator.name, a.price)} className={`${small} border-red-200 text-red-700 hover:bg-red-50`}>
+          <button type="button" onClick={() => onAct(a.id, "reject", a.creator.name, a.price)} className={`${small} border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-200 hover:bg-red-50`}>
             Not this one
           </button>
         </div>
@@ -79,11 +79,11 @@ function JobCard({ job, onChanged, onError }: { job: JobRow; onChanged: () => vo
   };
 
   return (
-    <div className="rounded-xl border border-[#EFE8E1] bg-white p-4">
+    <div className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
           <div className="font-semibold">{job.title}</div>
-          <div className="text-xs text-[#7D6E65]">
+          <div className="text-xs text-[var(--ui-muted)]">
             {job.category.name} · posted {formatDate(job.createdAt)}
             {job.status === "open" ? ` · open until ${formatDate(job.expiresAt)}` : ""}
           </div>
@@ -95,17 +95,17 @@ function JobCard({ job, onChanged, onError }: { job: JobRow; onChanged: () => vo
       </div>
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button type="button" onClick={() => setShowApps((v) => !v)} className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+        <button type="button" onClick={() => setShowApps((v) => !v)} className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
           {apps.length} {apps.length === 1 ? "application" : "applications"} {showApps ? "▲" : "▼"}
         </button>
-        <button type="button" onClick={() => setOpen((v) => !v)} className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+        <button type="button" onClick={() => setOpen((v) => !v)} className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
           {open ? "Hide job" : "View job"}
         </button>
         {job.status === "open" && (
           <button
             type="button"
             onClick={() => window.confirm("Close this job? Creators can no longer apply, and waiting applications are closed.") && patch(`/api/jobs/${job.id}`, { action: "close" })}
-            className={`${small} border-red-200 text-red-700 hover:bg-red-50`}
+            className={`${small} border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-200 hover:bg-red-50`}
           >
             Close job
           </button>
@@ -114,14 +114,14 @@ function JobCard({ job, onChanged, onError }: { job: JobRow; onChanged: () => vo
 
       {showApps && (
         <div className="mt-4 space-y-3">
-          {apps.length === 0 && <p className="text-sm text-[#7D6E65]">No one has applied yet.</p>}
+          {apps.length === 0 && <p className="text-sm text-[var(--ui-muted)]">No one has applied yet.</p>}
           {apps.map((a) => (
             <Applicant key={a.id} a={a} jobOpen={job.status === "open"} onAct={act} />
           ))}
         </div>
       )}
       {open && (
-        <div className="mt-4 border-t border-[#EFE8E1] pt-4">
+        <div className="mt-4 border-t border-[var(--ui-border)] pt-4">
           <JobDetails job={job} />
         </div>
       )}
@@ -159,7 +159,7 @@ export default function ClientJobsPage() {
   }, [load]);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] p-6 text-[#2C221E] md:p-10">
+    <div className="min-h-screen bg-[var(--ui-bg)] p-6 text-[var(--ui-text)] md:p-10">
       <div className="mx-auto max-w-5xl">
         <Link href="/dashboard/client" className="text-sm font-medium text-[#C86C29] hover:underline">
           ← Back to dashboard
@@ -167,7 +167,7 @@ export default function ClientJobsPage() {
         <div className="mt-4 flex flex-wrap items-end justify-between gap-3">
           <div>
             <h1 className="text-3xl font-bold tracking-tight">Your jobs</h1>
-            <p className="mt-1 text-sm text-[#7D6E65]">Post the work you need and choose from the offers creators send you.</p>
+            <p className="mt-1 text-sm text-[var(--ui-muted)]">Post the work you need and choose from the offers creators send you.</p>
           </div>
           {board?.canPost && (
             <button type="button" onClick={() => setPosting(true)} className="rounded-xl bg-[#C86C29] px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#B05B1E]">
@@ -177,21 +177,21 @@ export default function ClientJobsPage() {
         </div>
 
         {error && (
-          <p role="alert" className="mt-6 text-sm font-medium text-red-600">
+          <p role="alert" className="mt-6 text-sm font-medium text-red-600 dark:text-red-400">
             {error}
           </p>
         )}
         {notice && (
-          <p role="alert" className="mt-4 text-sm font-medium text-red-600">
+          <p role="alert" className="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
             {notice}
           </p>
         )}
-        {!board && !error && <p className="mt-6 text-sm text-[#7D6E65]">Loading...</p>}
+        {!board && !error && <p className="mt-6 text-sm text-[var(--ui-muted)]">Loading...</p>}
 
         {board && !board.canPost && (
-          <div className="mt-8 rounded-2xl border border-[#EFE8E1] bg-white p-8 text-center shadow-sm">
+          <div className="mt-8 rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-8 text-center shadow-sm">
             <p className="text-lg font-semibold">Posting jobs is part of the Enterprise plan</p>
-            <p className="mx-auto mt-2 max-w-md text-sm text-[#7D6E65]">
+            <p className="mx-auto mt-2 max-w-md text-sm text-[var(--ui-muted)]">
               Describe the work, set a budget and let creators apply with their price and time. You pick the one you like and pay through RAW society as usual.
             </p>
             <Link href="/dashboard/plan" className="mt-5 inline-block rounded-xl bg-[#C86C29] px-5 py-2.5 text-sm font-medium text-white transition hover:bg-[#B05B1E]">
@@ -207,7 +207,7 @@ export default function ClientJobsPage() {
             ))}
           </div>
         )}
-        {board?.canPost && board.jobs.length === 0 && <p className="mt-8 text-sm text-[#7D6E65]">You have not posted a job yet.</p>}
+        {board?.canPost && board.jobs.length === 0 && <p className="mt-8 text-sm text-[var(--ui-muted)]">You have not posted a job yet.</p>}
       </div>
 
       {posting && board && (

@@ -86,7 +86,7 @@ async function send(id: string, action: string, extra: Record<string, unknown> =
 
 const small = "px-3 py-1.5 text-xs font-semibold rounded-lg border transition disabled:opacity-50";
 const input =
-  "w-full h-10 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
+  "w-full h-10 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
 
 function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; onChanged: () => void }) {
   const isClient = viewer === "client";
@@ -130,11 +130,11 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
   };
 
   return (
-    <div className="rounded-xl border border-[#EFE8E1] bg-white p-4">
+    <div className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
       <div className="flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <div className="font-semibold text-[#2C221E]">{r.title}</div>
-          <div className="text-xs text-[#7D6E65]">
+          <div className="font-semibold text-[var(--ui-text)]">{r.title}</div>
+          <div className="text-xs text-[var(--ui-muted)]">
             {isClient ? "To" : "From"} {r.other.name}
             {r.other.subtitle ? `, ${r.other.subtitle}` : ""} · sent {formatDate(r.createdAt)}
           </div>
@@ -152,17 +152,17 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
       )}
 
       {r.offer && (r.status === "offered" || r.status === "accepted") && (
-        <div className="mt-3 rounded-lg border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+        <div className="mt-3 rounded-lg border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
           <div className="font-semibold">
             {isClient ? "Offer from the creator" : "Your offer"}: {r.offer.price.toLocaleString()} LYD in {r.offer.days} days
           </div>
           {r.offer.message && <p className="mt-1 whitespace-pre-line">{r.offer.message}</p>}
-          {r.status === "offered" && <p className="mt-1 text-xs text-blue-800">Valid until {formatDate(r.expiresAt)}.</p>}
+          {r.status === "offered" && <p className="mt-1 text-xs text-blue-800 dark:text-blue-200">Valid until {formatDate(r.expiresAt)}.</p>}
         </div>
       )}
 
       {r.status === "accepted" && (
-        <p className="mt-3 text-sm text-green-800">
+        <p className="mt-3 text-sm text-green-800 dark:text-green-200">
           Accepted.{" "}
           {r.orderNumber
             ? isClient
@@ -172,21 +172,21 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
         </p>
       )}
       {r.status === "declined" && (
-        <p className="mt-3 text-sm text-[#554f49]">
+        <p className="mt-3 text-sm text-[var(--ui-text2)]">
           {isClient ? "The creator declined this request." : "You declined this request."}
           {r.declineNote ? ` "${r.declineNote}"` : ""}
         </p>
       )}
-      {r.status === "expired" && <p className="mt-3 text-sm text-[#554f49]">Nobody answered in time, so this request ended.</p>}
+      {r.status === "expired" && <p className="mt-3 text-sm text-[var(--ui-text2)]">Nobody answered in time, so this request ended.</p>}
 
       {error && (
-        <p role="alert" className="mt-3 text-sm font-medium text-red-600">
+        <p role="alert" className="mt-3 text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
 
       <div className="mt-3 flex flex-wrap items-center gap-2">
-        <button type="button" onClick={() => setOpen((v) => !v)} className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+        <button type="button" onClick={() => setOpen((v) => !v)} className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
           {open ? "Hide details" : "View details"}
         </button>
         {!isClient && waiting && (
@@ -194,7 +194,7 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
             <button type="button" onClick={() => setOffering((v) => !v)} disabled={busy} className={`${small} border-transparent bg-[#C86C29] text-white hover:bg-[#B05B1E]`}>
               {r.status === "offered" ? "Change offer" : "Send offer"}
             </button>
-            <button type="button" onClick={decline} disabled={busy} className={`${small} border-red-200 text-red-700 hover:bg-red-50`}>
+            <button type="button" onClick={decline} disabled={busy} className={`${small} border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-200 hover:bg-red-50`}>
               Decline
             </button>
           </>
@@ -204,21 +204,21 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
             <button type="button" onClick={accept} disabled={busy} className={`${small} border-transparent bg-green-700 text-white hover:bg-green-800`}>
               {busy ? "Working..." : "Accept offer"}
             </button>
-            <button type="button" onClick={cancel} disabled={busy} className={`${small} border-red-200 text-red-700 hover:bg-red-50`}>
+            <button type="button" onClick={cancel} disabled={busy} className={`${small} border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-200 hover:bg-red-50`}>
               Turn down
             </button>
           </>
         )}
         {isClient && r.status === "open" && (
-          <button type="button" onClick={cancel} disabled={busy} className={`${small} border-red-200 text-red-700 hover:bg-red-50`}>
+          <button type="button" onClick={cancel} disabled={busy} className={`${small} border-red-200 dark:border-red-500/30 text-red-700 dark:text-red-200 hover:bg-red-50`}>
             Cancel request
           </button>
         )}
       </div>
 
       {offering && (
-        <div className="mt-4 space-y-3 rounded-xl border border-[#E5DCD2] bg-[#FDFBF7] p-4">
-          <p className="text-xs text-[#7D6E65]">
+        <div className="mt-4 space-y-3 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-bg)] p-4">
+          <p className="text-xs text-[var(--ui-muted)]">
             Client budget: <span className="font-semibold">{budgetText(r.budget)}</span>. Your offer can be the same or a different price.
           </p>
           <div className="grid grid-cols-2 gap-3 max-w-sm">
@@ -239,7 +239,7 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
               maxLength={1000}
               rows={3}
               placeholder="What is included, what you need from them, anything to clarify."
-              className="mt-1 w-full rounded-xl border border-[#D9CFC5] bg-white p-3 text-sm outline-none focus:border-[#C86C29] resize-none"
+              className="mt-1 w-full rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] p-3 text-sm outline-none focus:border-[#C86C29] resize-none"
             />
           </label>
           <button
@@ -254,14 +254,14 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
       )}
 
       {open && (
-        <div className="mt-4 space-y-4 border-t border-[#EFE8E1] pt-4">
+        <div className="mt-4 space-y-4 border-t border-[var(--ui-border)] pt-4">
           {sections(r).map((s) => (
             <section key={s.title}>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-[#7D6E65]">{s.title}</h4>
+              <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--ui-muted)]">{s.title}</h4>
               <dl className="space-y-2">
                 {s.rows.map((row) => (
                   <div key={row.label} className="grid grid-cols-1 gap-0.5 sm:grid-cols-3 sm:gap-3">
-                    <dt className="text-xs font-semibold text-[#7D6E65]">{row.label}</dt>
+                    <dt className="text-xs font-semibold text-[var(--ui-muted)]">{row.label}</dt>
                     <dd className="whitespace-pre-line break-words text-sm sm:col-span-2">{row.value}</dd>
                   </div>
                 ))}
@@ -271,7 +271,7 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
           {r.links.length > 0 && (
             <div className="flex flex-wrap gap-2">
               {r.links.map((l) => (
-                <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={`${small} border-[#D9CFC5] bg-white hover:border-[#C86C29]`}>
+                <a key={l.url} href={l.url} target="_blank" rel="noopener noreferrer nofollow" className={`${small} border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29]`}>
                   {l.label || l.url.replace(/^https?:\/\//, "").slice(0, 40)}
                 </a>
               ))}
@@ -279,14 +279,14 @@ function RequestCard({ r, viewer, onChanged }: { r: RequestRow; viewer: Viewer; 
           )}
           {r.files.length > 0 && (
             <div>
-              <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-[#7D6E65]">Attached files</h4>
+              <h4 className="mb-2 text-xs font-bold uppercase tracking-wide text-[var(--ui-muted)]">Attached files</h4>
               <ul className="space-y-1.5">
                 {r.files.map((f) => (
                   <li key={f.id}>
                     <a href={`/api/custom-requests/files/${f.id}?download=1`} className="text-sm font-medium text-[#C86C29] hover:underline">
                       {f.name}
                     </a>{" "}
-                    <span className="text-xs text-[#7D6E65]">({f.size < 1048576 ? `${Math.max(1, Math.round(f.size / 1024))} KB` : `${(f.size / 1048576).toFixed(1)} MB`})</span>
+                    <span className="text-xs text-[var(--ui-muted)]">({f.size < 1048576 ? `${Math.max(1, Math.round(f.size / 1024))} KB` : `${(f.size / 1048576).toFixed(1)} MB`})</span>
                   </li>
                 ))}
               </ul>
@@ -334,7 +334,7 @@ export default function RequestsSection({ viewer, onOrdersChanged }: Props) {
 
   if (error && !requests) {
     return (
-      <p role="alert" className="text-sm font-medium text-red-600">
+      <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
         {error}
       </p>
     );
@@ -344,11 +344,11 @@ export default function RequestsSection({ viewer, onOrdersChanged }: Props) {
   const waiting = requests.filter((r) => (viewer === "creator" ? r.status === "open" : r.status === "offered")).length;
 
   return (
-    <div className="bg-white border border-[#EFE8E1] rounded-2xl p-6 shadow-sm">
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[#EFE8E1] pb-5 mb-6">
+    <div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-2xl p-6 shadow-sm">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-[var(--ui-border)] pb-5 mb-6">
         <h2 className="text-xl font-bold">Custom Requests</h2>
         {waiting > 0 && (
-          <span className="rounded-full bg-purple-100 px-3 py-1 text-xs font-semibold text-purple-800">
+          <span className="rounded-full bg-purple-100 dark:bg-purple-500/20 px-3 py-1 text-xs font-semibold text-purple-800 dark:text-purple-200">
             {viewer === "creator"
               ? `${waiting} new ${waiting === 1 ? "request needs" : "requests need"} your answer`
               : `${waiting} ${waiting === 1 ? "offer is" : "offers are"} waiting for you`}

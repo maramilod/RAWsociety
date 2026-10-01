@@ -25,6 +25,7 @@ type Props = {
 export default function ServiceDetailModal({ serviceId, showProfileLink, onClose }: Props) {
   const [service, setService] = useState<Service | null>(null);
   const [creator, setCreator] = useState<Creator | null>(null);
+  const [limited, setLimited] = useState(false);
   const [reviews, setReviews] = useState<{ id: string; client: string; rating: number; comment: string }[]>([]);
   const [status, setStatus] = useState<"loading" | "ready" | "error">("loading");
   const [imageIndex, setImageIndex] = useState(0);
@@ -80,6 +81,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
       .then((data) => {
         setService(data.service);
         setCreator(data.creator);
+        setLimited(!!data.limited);
         setReviews(data.reviews ?? []);
         setStatus("ready");
       })
@@ -113,20 +115,20 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
         role="dialog"
         aria-modal="true"
         aria-label={service?.title ?? "Service details"}
-        className="relative z-10 w-full max-w-3xl max-h-[92dvh] overflow-y-auto rounded-2xl bg-[#FDFBF7] border border-[#e5e0d8] shadow-2xl text-[#1c1917]"
+        className="relative z-10 w-full max-w-3xl max-h-[92dvh] overflow-y-auto rounded-2xl bg-[var(--ui-bg)] border border-[var(--ui-border2)] shadow-2xl text-[var(--ui-text)]"
       >
         <button
           type="button"
           onClick={onClose}
           aria-label="Close"
-          className="sticky top-3 float-right mr-3 mt-3 z-20 h-8 w-8 rounded-full bg-white/90 border border-[#e5e0d8] text-[#44403c] hover:text-black shadow-sm leading-none"
+          className="sticky top-3 float-right mr-3 mt-3 z-20 h-8 w-8 rounded-full bg-[var(--ui-surface)]/90 border border-[var(--ui-border2)] text-[var(--ui-text2)] hover:text-[var(--ui-text)] shadow-sm leading-none"
         >
           ✕
         </button>
 
-        {status === "loading" && <p className="p-10 text-center text-sm text-[#68625d]">Loading...</p>}
+        {status === "loading" && <p className="p-10 text-center text-sm text-[var(--ui-muted)]">Loading...</p>}
         {status === "error" && (
-          <p role="alert" className="p-10 text-center text-sm font-medium text-red-600">
+          <p role="alert" className="p-10 text-center text-sm font-medium text-red-600 dark:text-red-400">
             This service is no longer available.
           </p>
         )}
@@ -135,7 +137,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
           <div>
             {/* Gallery */}
             {service.images.length > 0 && (
-              <div className="bg-[#f0eae1]">
+              <div className="bg-[var(--ui-soft)]">
                 <div className="relative aspect-[16/9] w-full overflow-hidden">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
@@ -149,7 +151,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                         type="button"
                         onClick={() => setImageIndex((i) => (i - 1 + imageCount) % imageCount)}
                         aria-label="Previous image"
-                        className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 border border-[#e5e0d8] shadow hover:bg-white"
+                        className="absolute left-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-[var(--ui-surface)]/90 border border-[var(--ui-border2)] shadow hover:bg-[var(--ui-surface)]"
                       >
                         ←
                       </button>
@@ -157,7 +159,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                         type="button"
                         onClick={() => setImageIndex((i) => (i + 1) % imageCount)}
                         aria-label="Next image"
-                        className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-white/90 border border-[#e5e0d8] shadow hover:bg-white"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 h-9 w-9 rounded-full bg-[var(--ui-surface)]/90 border border-[var(--ui-border2)] shadow hover:bg-[var(--ui-surface)]"
                       >
                         →
                       </button>
@@ -191,7 +193,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
 
             <div className="p-6 md:p-8 space-y-6">
               <div>
-                <span className="inline-block rounded-full bg-[#f0eae1] px-2.5 py-0.5 text-[10px] font-semibold text-[#44403c] mb-2">
+                <span className="inline-block rounded-full bg-[var(--ui-soft)] px-2.5 py-0.5 text-[10px] font-semibold text-[var(--ui-text2)] mb-2">
                   {service.category}
                 </span>
                 <h2 className="text-xl md:text-2xl font-serif font-bold">{service.title}</h2>
@@ -200,13 +202,37 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                     {formatPrice(service.price, service.currency)}
                   </span>
                   <RatingLine rating={service.rating} count={service.reviewsCount} className="text-sm" />
-                  {delivery && <span className="text-[#68625d]">Delivery in {delivery}</span>}
-                  {revisions && <span className="text-[#68625d]">{revisions}</span>}
+                  {delivery && <span className="text-[var(--ui-muted)]">Delivery in {delivery}</span>}
+                  {revisions && <span className="text-[var(--ui-muted)]">{revisions}</span>}
                 </div>
 
                 {/* Booking */}
                 <div className="mt-4">
-                  {booking === "idle" && (
+                  {limited && (
+                    <div className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4 text-sm text-[var(--ui-text2)]">
+                      <p className="font-semibold text-[var(--ui-text)]">Ordering is part of Business Pro</p>
+                      <p className="mt-1 text-xs">
+                        The Free plan shows you the offer, not the creator behind it. Upgrade to order services, open creator profiles and message them.
+                      </p>
+                      <Link
+                        href="/onboarding/plan?role=client"
+                        className="mt-3 inline-block rounded-lg bg-[#c86d38] px-4 py-1.5 text-xs font-semibold text-white hover:opacity-90 transition"
+                      >
+                        See plans
+                      </Link>
+                    </div>
+                  )}
+
+                  {!limited && service.monthly?.full && (
+                    <div className="rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 p-4 text-sm text-amber-900 dark:text-amber-200">
+                      <p className="font-semibold">Full this month</p>
+                      <p className="mt-1 text-xs">
+                        This service already took {service.monthly.cap} requests this month. It opens again on {new Date(service.monthly.reopensAt).toLocaleDateString([], { month: "long", day: "numeric" })}.
+                      </p>
+                    </div>
+                  )}
+
+                  {!limited && !service.monthly?.full && booking === "idle" && (
                     <button
                       type="button"
                       onClick={startBooking}
@@ -217,12 +243,12 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                   )}
 
                   {(booking === "form" || booking === "sending") && (
-                    <div className="rounded-xl border border-[#e5e0d8] bg-white p-4">
+                    <div className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4">
                       <label htmlFor="booking-note" className="block text-sm font-semibold mb-1">
                         Message to {creator?.name ?? "the creator"}{" "}
-                        <span className="font-normal text-[#68625d]">(optional)</span>
+                        <span className="font-normal text-[var(--ui-muted)]">(optional)</span>
                       </label>
-                      <p className="text-xs text-[#68625d] mb-2">
+                      <p className="text-xs text-[var(--ui-muted)] mb-2">
                         Describe your project and anything the creator should know. They will review your
                         request and accept or decline it.
                       </p>
@@ -233,14 +259,14 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                         maxLength={1000}
                         rows={4}
                         placeholder="e.g. I need a logo for my new cafe in Tripoli..."
-                        className="w-full resize-none rounded-xl border border-[#d9cfc5] bg-white p-3 text-sm text-[#1c1917] outline-none focus:border-[#c86d38] focus:ring-2 focus:ring-[#c86d38]/20"
+                        className="w-full resize-none rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] p-3 text-sm text-[var(--ui-text)] outline-none focus:border-[#c86d38] focus:ring-2 focus:ring-[#c86d38]/20"
                       />
                       <div className="mt-3 flex items-center justify-end gap-2">
                         <button
                           type="button"
                           onClick={() => setBooking("idle")}
                           disabled={booking === "sending"}
-                          className="rounded-xl border border-[#d9cfc5] bg-white px-4 py-2 text-xs font-semibold text-[#1c1917] hover:border-[#c86d38] transition"
+                          className="rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-4 py-2 text-xs font-semibold text-[var(--ui-text)] hover:border-[#c86d38] transition"
                         >
                           Cancel
                         </button>
@@ -257,7 +283,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                   )}
 
                   {booking === "done" && (
-                    <div role="status" className="rounded-xl border border-green-200 bg-green-50 p-4 text-sm text-green-900">
+                    <div role="status" className="rounded-xl border border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 p-4 text-sm text-green-900 dark:text-green-200">
                       <p className="font-semibold">Request sent!</p>
                       <p className="mt-1 text-xs">
                         {creator?.name ?? "The creator"} will review it. It shows as{" "}
@@ -273,7 +299,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                   )}
 
                   {bookingError && (
-                    <p role="alert" className="mt-2 text-xs font-medium text-red-600">
+                    <p role="alert" className="mt-2 text-xs font-medium text-red-600 dark:text-red-400">
                       {bookingError}{" "}
                       {bookingError.includes("dashboard") && (
                         <Link href="/dashboard/client" className="underline">
@@ -286,7 +312,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
               </div>
 
               {service.description && (
-                <p className="text-sm text-[#554f49] leading-relaxed whitespace-pre-line">{service.description}</p>
+                <p className="text-sm text-[var(--ui-text2)] leading-relaxed whitespace-pre-line">{service.description}</p>
               )}
 
               {service.deliverables.length > 0 && (
@@ -294,7 +320,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                   <h3 className="font-serif font-bold text-base mb-2">What&apos;s included</h3>
                   <ul className="space-y-1.5">
                     {service.deliverables.map((d, i) => (
-                      <li key={i} className="flex gap-2 text-sm text-[#554f49]">
+                      <li key={i} className="flex gap-2 text-sm text-[var(--ui-text2)]">
                         <span className="text-[#c86d38] font-bold" aria-hidden="true">
                           ✓
                         </span>
@@ -312,7 +338,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                     {service.tags.map((t) => (
                       <span
                         key={t}
-                        className="rounded-lg border border-[#e5e0d8] bg-[#f9f6f0] px-3 py-1 text-xs font-medium text-[#44403c]"
+                        className="rounded-lg border border-[var(--ui-border2)] bg-[var(--ui-soft)] px-3 py-1 text-xs font-medium text-[var(--ui-text2)]"
                       >
                         {t}
                       </span>
@@ -331,7 +357,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                         href={l.url}
                         target="_blank"
                         rel="noopener noreferrer nofollow"
-                        className="inline-flex items-center gap-1.5 rounded-xl border border-[#e5e0d8] bg-white px-4 py-2 text-xs font-semibold text-[#1c1917] shadow-sm hover:border-[#c86d38] hover:text-[#c86d38] transition"
+                        className="inline-flex items-center gap-1.5 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] px-4 py-2 text-xs font-semibold text-[var(--ui-text)] shadow-sm hover:border-[#c86d38] hover:text-[#c86d38] transition"
                       >
                         {linkText(l)}
                         <span aria-hidden="true">↗</span>
@@ -342,9 +368,9 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
               )}
 
               {service.requirements && (
-                <div className="rounded-xl border border-[#e5e0d8] bg-white p-4">
+                <div className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4">
                   <h3 className="font-serif font-bold text-base mb-1">What I need from you</h3>
-                  <p className="text-sm text-[#554f49] leading-relaxed whitespace-pre-line">{service.requirements}</p>
+                  <p className="text-sm text-[var(--ui-text2)] leading-relaxed whitespace-pre-line">{service.requirements}</p>
                 </div>
               )}
 
@@ -353,7 +379,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                   <h3 className="font-serif font-bold text-base mb-2">What clients say about this service</h3>
                   <ul className="space-y-3">
                     {reviews.map((r) => (
-                      <li key={r.id} className="rounded-xl border border-[#e5e0d8] bg-white p-3">
+                      <li key={r.id} className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-3">
                         <div className="flex items-center justify-between">
                           <span className="text-xs font-bold">{r.client}</span>
                           <span className="text-xs text-amber-500" aria-label={`${r.rating} out of 5 stars`}>
@@ -362,7 +388,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                           </span>
                         </div>
                         {r.comment && (
-                          <p className="mt-1 text-xs text-[#554f49] leading-relaxed whitespace-pre-line">{r.comment}</p>
+                          <p className="mt-1 text-xs text-[var(--ui-text2)] leading-relaxed whitespace-pre-line">{r.comment}</p>
                         )}
                       </li>
                     ))}
@@ -371,7 +397,7 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
               )}
 
               {creator && (
-                <div className="flex items-center justify-between gap-4 border-t border-[#e5e0d8] pt-5">
+                <div className="flex items-center justify-between gap-4 border-t border-[var(--ui-border2)] pt-5">
                   <div className="flex items-center gap-3 min-w-0">
                     {creator.image ? (
                       // eslint-disable-next-line @next/next/no-img-element
@@ -383,13 +409,13 @@ export default function ServiceDetailModal({ serviceId, showProfileLink, onClose
                     )}
                     <div className="min-w-0">
                       <p className="text-sm font-bold truncate">{creator.name}</p>
-                      <p className="text-xs text-[#68625d] truncate">{creator.role}</p>
+                      <p className="text-xs text-[var(--ui-muted)] truncate">{creator.role}</p>
                     </div>
                   </div>
                   {showProfileLink && (
                     <Link
                       href={`/creators/${creator.id}`}
-                      className="shrink-0 rounded-xl bg-[#1c1917] px-4 py-2 text-xs font-semibold text-white hover:opacity-90 transition"
+                      className="shrink-0 rounded-xl bg-[var(--ui-inv-bg)] px-4 py-2 text-xs font-semibold text-white hover:opacity-90 transition"
                     >
                       View profile
                     </Link>

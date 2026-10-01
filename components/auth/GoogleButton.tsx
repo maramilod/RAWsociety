@@ -32,7 +32,7 @@ gap-3
 rounded-xl
 border
 border-[var(--border-default)]
-hover:bg-gray-50
+hover:bg-[var(--ui-soft)]
 transition
 "
     >

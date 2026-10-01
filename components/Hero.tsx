@@ -5,6 +5,7 @@ export default function Hero() {
     <section
       className="
       relative
+      overflow-x-clip
       px-6
       pt-20
       pb-16
@@ -60,7 +61,7 @@ export default function Hero() {
       </p>
 
       {/* Film strip */}
-      <div className="mt-12">
+      <div className="mt-4 md:mt-8">
         <FilmStrip />
       </div>
     </section>

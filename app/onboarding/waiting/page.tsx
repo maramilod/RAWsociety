@@ -50,17 +50,17 @@ export default function WaitingPage() {
   return (
     <main className="mx-auto flex min-h-screen max-w-lg flex-col justify-center px-4 py-10 text-center">
       {error && (
-        <p role="alert" className="mb-6 text-sm font-medium text-red-600">
+        <p role="alert" className="mb-6 text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
-      {!s && !error && <p className="text-sm text-gray-500">Loading...</p>}
+      {!s && !error && <p className="text-sm text-[var(--ui-muted)]">Loading...</p>}
 
       {pending && !rejection && (
         <>
-          <span className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-4 border-orange-200 border-t-orange-600" aria-hidden="true" />
+          <span className="mx-auto mb-6 h-10 w-10 animate-spin rounded-full border-4 border-orange-200 dark:border-orange-500/30 border-t-orange-600" aria-hidden="true" />
           <h1 className="text-2xl font-bold sm:text-3xl">We are checking your payment</h1>
-          <p className="mt-3 text-sm text-gray-600">
+          <p className="mt-3 text-sm text-[var(--ui-muted)]">
             Your payment for the <strong>{pending.name}</strong> plan was received. Your dashboard opens as soon as RAW society confirms it, usually within 24 hours.
             This page updates by itself.
           </p>
@@ -71,10 +71,10 @@ export default function WaitingPage() {
       )}
 
       {rejection && (
-        <div className="rounded-2xl border border-red-200 bg-red-50 p-6 text-left">
-          <h1 className="text-xl font-bold text-red-900">Your payment was not confirmed</h1>
-          {rejection.reason && <p className="mt-3 text-sm text-red-900">Reason: {rejection.reason}</p>}
-          <p className="mt-3 text-sm text-red-900">
+        <div className="rounded-2xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 p-6 text-left">
+          <h1 className="text-xl font-bold text-red-900 dark:text-red-200">Your payment was not confirmed</h1>
+          {rejection.reason && <p className="mt-3 text-sm text-red-900 dark:text-red-200">Reason: {rejection.reason}</p>}
+          <p className="mt-3 text-sm text-red-900 dark:text-red-200">
             Your account is back on the <strong>Free plan</strong>.
             {rejection.logoRemoved && " The company logo you uploaded was removed, because the Free plan does not include company branding."}
           </p>
@@ -88,8 +88,8 @@ export default function WaitingPage() {
             </button>
             <button
               type="button"
-              onClick={() => acknowledge(s?.role === "creator" ? "/dashboard/creator" : "/dashboard/client")}
-              className="min-h-11 flex-1 rounded-xl border bg-white px-4 py-2.5 text-sm font-medium text-gray-900 hover:bg-gray-50"
+              onClick={() => acknowledge("/dashboard")}
+              className="min-h-11 flex-1 rounded-xl border bg-[var(--ui-surface)] px-4 py-2.5 text-sm font-medium text-[var(--ui-text)] hover:bg-[var(--ui-soft)]"
             >
               Continue on the Free plan
             </button>

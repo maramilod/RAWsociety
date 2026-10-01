@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, type RowDataPacket } from "@/lib/db";
+import { getSessionUser } from "@/lib/session";
+import { serviceLoad } from "@/lib/service-limits";
+import { currentPlanCode } from "@/lib/subscriptions";
+import { clientRules } from "@/lib/plan-rules";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
@@ -91,6 +95,13 @@ export async function GET(
     return NextResponse.json({ error: "Creator not found." }, { status: 404 });
   }
 
+  // creator profiles are for clients on a paid plan
+  const me = await getSessionUser();
+  if (!me) return NextResponse.json({ error: "Please log in to see creator profiles." }, { status: 401 });
+  if (me.role === "client" && !clientRules(await currentPlanCode(me.id, "client")).seeCreators) {
+    return NextResponse.json({ error: "Creator profiles are part of Business Pro and Enterprise. Upgrade to see who is behind an offer.", upgrade: true }, { status: 403 });
+  }
+
   try {
     const c = await queryOne<CreatorRow>(
       `SELECT p.user_id AS id, u.name, cat.name AS role, p.bio, p.about, p.location,
@@ -148,6 +159,8 @@ export async function GET(
       ),
     ]);
 
+    const loads = await serviceLoad(services.map((s) => s.id));
+
     return NextResponse.json({
       creator: {
         id: c.id,
@@ -178,6 +191,7 @@ export async function GET(
           coverUrl: s.cover_url,
           rating: s.rating_avg !== null ? Number(s.rating_avg) : null,
           reviewsCount: Number(s.reviews_count),
+          full: loads.get(s.id)?.full ?? false,
         })),
         works: works.map((w) => ({
           id: w.id,

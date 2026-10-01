@@ -38,7 +38,7 @@ export default function BackToTop() {
         w-12 h-12
         rounded-full
         bg-[var(--cta-bg)]
-        text-[#FBF8F6]
+        text-[var(--cta-text)]
         flex items-center justify-center
         transition-all duration-300
         ${show ? "opacity-100" : "opacity-0 pointer-events-none"}

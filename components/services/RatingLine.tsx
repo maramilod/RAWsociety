@@ -15,7 +15,7 @@ export default function RatingLine({
         ★
       </span>
       <span>{rating.toFixed(1)}</span>
-      <span className="font-normal text-gray-400">({count})</span>
+      <span className="font-normal text-[var(--ui-muted)]">({count})</span>
     </span>
   );
 }

@@ -20,7 +20,9 @@ const cards = [
 export default function Features() {
   return (
     <section
+      id="how-it-works"
       className="
+      scroll-mt-20
       py-24
       bg-[var(--white)]
       "

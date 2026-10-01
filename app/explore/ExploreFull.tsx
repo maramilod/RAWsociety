@@ -29,6 +29,7 @@ type Creator = {
 };
 
 type ServiceCard = {
+  full?: boolean;
   id: string;
   title: string;
   description: string;
@@ -53,11 +54,11 @@ type Work = {
 
 // ألوان ثابتة لكل منشئ حسب الـ id (لأن قاعدة البيانات لا تخزن الألوان)
 const PALETTE = [
-  { avatarBg: "bg-purple-600", tagBg: "bg-purple-100 text-purple-700" },
-  { avatarBg: "bg-amber-700", tagBg: "bg-amber-100 text-amber-800" },
-  { avatarBg: "bg-rose-500", tagBg: "bg-rose-100 text-rose-700" },
-  { avatarBg: "bg-blue-600", tagBg: "bg-blue-100 text-blue-700" },
-  { avatarBg: "bg-emerald-600", tagBg: "bg-emerald-100 text-emerald-700" },
+  { avatarBg: "bg-purple-600", tagBg: "bg-purple-100 dark:bg-purple-500/20 text-purple-700 dark:text-purple-200" },
+  { avatarBg: "bg-amber-700", tagBg: "bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-200" },
+  { avatarBg: "bg-rose-500", tagBg: "bg-rose-100 dark:bg-rose-500/20 text-rose-700 dark:text-rose-200" },
+  { avatarBg: "bg-blue-600", tagBg: "bg-blue-100 dark:bg-blue-500/20 text-blue-700 dark:text-blue-200" },
+  { avatarBg: "bg-emerald-600", tagBg: "bg-emerald-100 dark:bg-emerald-500/20 text-emerald-700 dark:text-emerald-200" },
 ];
 
 function paletteFor(id: string) {
@@ -170,10 +171,10 @@ export default function ExploreFull() {
 
             <button 
               onClick={() => setIsMobileMenuOpen(true)}
-              className="md:hidden p-2 text-[#1c1917] bg-white border border-[#e5e0d8] hover:bg-gray-100 rounded-full transition shadow-sm"
+              className="md:hidden p-2 text-[var(--ex-text)] bg-[var(--ex-surface)] border border-[var(--ex-border)] hover:bg-[var(--ex-soft)] rounded-full transition shadow-sm"
               title="Open Menu"
             >
-              <svg className="w-4 h-4 text-[#1c1917]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <svg className="w-4 h-4 text-[var(--ex-text)]" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
               </svg>
             </button>
@@ -190,26 +191,26 @@ export default function ExploreFull() {
             onClick={() => setIsMobileMenuOpen(false)}
           />
 
-          <div className="relative w-72 bg-[#f9f6f0] border-r border-[#e5e0d8] h-full shadow-2xl p-6 flex flex-col z-10 animate-in slide-in-from-left duration-200">
+          <div className="relative w-72 bg-[var(--ex-faint)] border-r border-[var(--ex-border)] h-full shadow-2xl p-6 flex flex-col z-10 animate-in slide-in-from-left duration-200">
             
-            <div className="flex justify-between items-center mb-8 pb-4 border-b border-[#e8e2d5]">
+            <div className="flex justify-between items-center mb-8 pb-4 border-b border-[var(--ex-border)]">
               <div className={`${anta.className} text-2xl leading-5 tracking-wide text-[#c86d38]`} style={{ opacity: 0.9 }}>
                 <div>RAW</div>
                 <div>society</div>
               </div>
               <button 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-2 text-gray-500 hover:text-[#c86d38] rounded-full transition"
+                className="p-2 text-[var(--ex-muted)] hover:text-[#c86d38] rounded-full transition"
               >
                 ✕
               </button>
             </div>
 
-            <nav className="flex flex-col space-y-3 text-base font-medium text-[#44403c]">
+            <nav className="flex flex-col space-y-3 text-base font-medium text-[var(--ex-text2)]">
               <Link 
                 href="#featured-work" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
+                className="p-3 hover:bg-[var(--ex-soft)] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
               >
                 <span>Featured Work</span>
                 <span className="text-xs text-[#c86d38]">→</span>
@@ -217,7 +218,7 @@ export default function ExploreFull() {
               <Link 
                 href="#creators" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
+                className="p-3 hover:bg-[var(--ex-soft)] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
               >
                 <span>Top Talents</span>
                 <span className="text-xs text-[#c86d38]">→</span>
@@ -225,7 +226,7 @@ export default function ExploreFull() {
               <Link 
                 href="#categories" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
+                className="p-3 hover:bg-[var(--ex-soft)] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
               >
                 <span>Categories</span>
                 <span className="text-xs text-[#c86d38]">→</span>
@@ -233,7 +234,7 @@ export default function ExploreFull() {
               <Link 
                 href="#pricing" 
                 onClick={() => setIsMobileMenuOpen(false)}
-                className="p-3 hover:bg-[#f0eae1] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
+                className="p-3 hover:bg-[var(--ex-soft)] hover:text-[#c86d38] rounded-xl transition flex items-center justify-between"
               >
                 <span>Membership</span>
                 <span className="text-xs text-[#c86d38]">→</span>
@@ -249,13 +250,13 @@ export default function ExploreFull() {
         
         {/* Hero Section */}
         <div className="text-center max-w-3xl mx-auto mb-12">
-          <span className="inline-block px-4 py-1.5 rounded-full bg-[#e6ddfa] text-[#6b46c1] text-xs font-medium mb-6">
+          <span className="inline-block px-4 py-1.5 rounded-full bg-[var(--hero-badge-bg)] text-[var(--text-main)] text-xs font-medium mb-6">
             For brands, businesses & creators
           </span>
-          <h1 className="text-3xl md:text-5xl font-serif font-bold tracking-wide uppercase text-[#1c1917] mb-4">
+          <h1 className="text-3xl md:text-5xl font-serif font-bold tracking-wide uppercase text-[var(--ex-text)] mb-4">
             FIND YOUNG CREATIVE TALENT — FAST
           </h1>
-          <p className="text-sm md:text-base text-[#68625d] uppercase tracking-wider font-medium max-w-xl mx-auto leading-relaxed">
+          <p className="text-sm md:text-base text-[var(--ex-muted)] uppercase tracking-wider font-medium max-w-xl mx-auto leading-relaxed">
             CONNECT WITH SKILLED WRITERS, PHOTOGRAPHERS, DESIGNERS, AND MORE.<br />
             SUBSCRIBE TO UNLOCK UNLIMITED HIRES
           </p>
@@ -276,7 +277,7 @@ export default function ExploreFull() {
                     setSearch(searchInput.trim());
                   }
                 }}
-                className="w-full px-4 py-3 rounded-2xl md:rounded-full bg-white border border-[#e5e0d8] text-sm focus:outline-none shadow-sm placeholder:text-gray-400"
+                className="w-full px-4 py-3 rounded-2xl md:rounded-full bg-[var(--ex-surface)] border border-[var(--ex-border)] text-sm focus:outline-none shadow-sm placeholder:text-[var(--ex-muted)]"
               />
             </div>
             <button
@@ -300,8 +301,8 @@ export default function ExploreFull() {
                 }}
                 className={`px-4 py-1.5 rounded-full text-xs font-semibold transition whitespace-nowrap ${
                   activeCategory === cat
-                    ? "bg-[#1c1917] text-white"
-                    : "bg-white border border-[#e5e0d8] text-[#44403c] hover:bg-gray-50"
+                    ? "bg-[var(--ex-inv-bg)] text-[var(--ex-inv-text)]"
+                    : "bg-[var(--ex-surface)] border border-[var(--ex-border)] text-[var(--ex-text2)] hover:bg-[var(--ex-soft)]"
                 }`}
               >
                 {cat}
@@ -313,32 +314,32 @@ export default function ExploreFull() {
         {/* Featured Work Section */}
         {featuredWorks.length > 0 && (
         <section id="featured-work" className="mb-16 scroll-mt-20">
-          <h2 className="text-lg font-serif font-bold uppercase tracking-wider mb-6 text-[#1c1917]">
+          <h2 className="text-lg font-serif font-bold uppercase tracking-wider mb-6 text-[var(--ex-text)]">
             FEATURED WORK
           </h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {featuredWorks.map((work) => (
-              <div key={work.id} className="bg-white rounded-2xl border border-[#e5e0d8] overflow-hidden shadow-sm">
+              <div key={work.id} className="bg-[var(--ex-surface)] rounded-2xl border border-[var(--ex-border)] overflow-hidden shadow-sm">
                 {work.coverUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={work.coverUrl} alt={work.title} className="h-64 w-full object-cover" />
                 ) : (
-                  <div className="h-64 bg-[#f5efe6] p-6 relative flex items-center justify-between">
+                  <div className="h-64 bg-[var(--ex-soft)] p-6 relative flex items-center justify-between">
                     <div className="w-28 h-28 bg-[#c86d38] rounded-2xl transform -rotate-6 shadow-md" />
                     <div className="w-24 h-24 bg-[#3e2723] rounded-full transform translate-y-4 shadow-md" />
                   </div>
                 )}
                 
-                <div className="p-4 flex items-center justify-between border-t border-[#f0eae1]">
+                <div className="p-4 flex items-center justify-between border-t border-[var(--ex-soft)]">
                   <div>
-                    <h3 className="font-bold text-sm text-[#1c1917]">{work.title}</h3>
+                    <h3 className="font-bold text-sm text-[var(--ex-text)]">{work.title}</h3>
                     <div className="flex items-center gap-2 mt-1">
-                      <div className="w-5 h-5 rounded-full bg-gray-200" />
-                      <span className="text-xs text-[#68625d] font-medium">{work.author}</span>
+                      <div className="w-5 h-5 rounded-full bg-[var(--ex-soft)]" />
+                      <span className="text-xs text-[var(--ex-muted)] font-medium">{work.author}</span>
                     </div>
                   </div>
-                  <span className="text-xs text-gray-400 font-medium">{work.likes} likes</span>
+                  <span className="text-xs text-[var(--ex-muted)] font-medium">{work.likes} likes</span>
                 </div>
               </div>
             ))}
@@ -349,7 +350,7 @@ export default function ExploreFull() {
         {/* Services Section */}
         {services.length > 0 && (
           <section id="services" className="mb-16 scroll-mt-20">
-            <h2 className="text-lg font-serif font-bold uppercase tracking-wider mb-6 text-[#1c1917]">
+            <h2 className="text-lg font-serif font-bold uppercase tracking-wider mb-6 text-[var(--ex-text)]">
               SERVICES YOU CAN HIRE
             </h2>
 
@@ -362,10 +363,10 @@ export default function ExploreFull() {
                     type="button"
                     key={service.id}
                     onClick={() => setSelectedServiceId(service.id)}
-                    className="group text-left bg-white border border-[#e5e0d8] rounded-2xl p-5 flex flex-col shadow-sm hover:shadow-md hover:border-[#c86d38] transition overflow-hidden"
+                    className="group text-left bg-[var(--ex-surface)] border border-[var(--ex-border)] rounded-2xl p-5 flex flex-col shadow-sm hover:shadow-md hover:border-[#c86d38] transition overflow-hidden"
                   >
                     {service.coverUrl && (
-                      <div className="-mx-5 -mt-5 mb-4 h-40 overflow-hidden bg-[#f0eae1]">
+                      <div className="-mx-5 -mt-5 mb-4 h-40 overflow-hidden bg-[var(--ex-soft)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={service.coverUrl}
@@ -374,25 +375,25 @@ export default function ExploreFull() {
                         />
                       </div>
                     )}
-                    <span className="self-start px-2.5 py-0.5 rounded-full bg-[#f0eae1] text-[10px] font-semibold text-[#44403c] mb-3">
+                    <span className="self-start px-2.5 py-0.5 rounded-full bg-[var(--ex-soft)] text-[10px] font-semibold text-[var(--ex-text2)] mb-3">
                       {service.category}
                     </span>
-                    <h3 className="font-bold text-sm text-[#1c1917] mb-1 group-hover:text-[#c86d38] transition">
+                    <h3 className="font-bold text-sm text-[var(--ex-text)] mb-1 group-hover:text-[#c86d38] transition">
                       {service.title}
                     </h3>
                     <RatingLine rating={service.rating} count={service.reviewsCount} className="text-xs mb-2" />
-                    <p className="text-xs text-gray-500 line-clamp-3 mb-3 min-h-[48px]">
+                    <p className="text-xs text-[var(--ex-muted)] line-clamp-3 mb-3 min-h-[48px]">
                       {service.description || "No description provided."}
                     </p>
                     {service.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {service.tags.slice(0, 3).map((t) => (
-                          <span key={t} className="rounded-md bg-[#f9f6f0] border border-[#e5e0d8] px-2 py-0.5 text-[10px] font-medium text-[#44403c]">
+                          <span key={t} className="rounded-md bg-[var(--ex-faint)] border border-[var(--ex-border)] px-2 py-0.5 text-[10px] font-medium text-[var(--ex-text2)]">
                             {t}
                           </span>
                         ))}
                         {service.tags.length > 3 && (
-                          <span className="text-[10px] text-gray-400 self-center">+{service.tags.length - 3}</span>
+                          <span className="text-[10px] text-[var(--ex-muted)] self-center">+{service.tags.length - 3}</span>
                         )}
                       </div>
                     )}
@@ -406,15 +407,15 @@ export default function ExploreFull() {
                           {service.creator.name.charAt(0).toUpperCase()}
                         </div>
                       )}
-                      <span className="text-xs font-medium text-[#68625d] truncate">{service.creator.name}</span>
+                      <span className="text-xs font-medium text-[var(--ex-muted)] truncate">{service.creator.name}</span>
                     </div>
 
-                    <div className="mt-auto pt-3 border-t border-[#f0eae1] flex items-center justify-between">
+                    <div className="mt-auto pt-3 border-t border-[var(--ex-soft)] flex items-center justify-between">
                       <span className="text-sm font-bold text-[#c86d38]">
                         {formatPrice(service.price, service.currency)}
                       </span>
-                      <span className="text-[11px] text-gray-400">
-                        {delivery ? `${delivery} · ` : ""}View &amp; book
+                      <span className="text-[11px] text-[var(--ex-muted)]">
+                        {delivery ? `${delivery} · ` : ""}{service.full ? "Full this month" : "View & book"}
                       </span>
                     </div>
                   </button>
@@ -427,19 +428,19 @@ export default function ExploreFull() {
         {/* Creators Grid Section */}
         <section id="creators" className="mb-12 scroll-mt-20">
           <div className="text-center mb-8">
-            <h2 className="text-lg md:text-xl font-serif font-bold uppercase tracking-widest text-[#1c1917]">
+            <h2 className="text-lg md:text-xl font-serif font-bold uppercase tracking-widest text-[var(--ex-text)]">
               A FEW CREATORS WORTH MEETING
             </h2>
           </div>
 
           {loading && (
-            <p className="text-center text-sm text-[#68625d]">Loading creators...</p>
+            <p className="text-center text-sm text-[var(--ex-muted)]">Loading creators...</p>
           )}
           {!loading && loadError && (
-            <p role="alert" className="text-center text-sm font-medium text-red-600">{loadError}</p>
+            <p role="alert" className="text-center text-sm font-medium text-red-600 dark:text-red-400">{loadError}</p>
           )}
           {!loading && !loadError && creators.length === 0 && (
-            <p className="text-center text-sm text-[#68625d]">
+            <p className="text-center text-sm text-[var(--ex-muted)]">
               {search || activeCategory !== "All"
                 ? "No creators match your search."
                 : "No creators have joined yet. Check back soon."}
@@ -450,7 +451,7 @@ export default function ExploreFull() {
             {creators.map((creator) => {
               const colors = paletteFor(creator.id);
               return (
-              <div key={creator.id} className="bg-white border border-[#e5e0d8] rounded-2xl p-5 text-center flex flex-col items-center shadow-sm">
+              <div key={creator.id} className="bg-[var(--ex-surface)] border border-[var(--ex-border)] rounded-2xl p-5 text-center flex flex-col items-center shadow-sm">
                 {creator.avatarUrl ? (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={creator.avatarUrl} alt={creator.name} className="w-12 h-12 rounded-full object-cover mb-3" />
@@ -459,29 +460,29 @@ export default function ExploreFull() {
                     {creator.name.split(" ").filter(Boolean).slice(0, 2).map((n) => n[0]).join("").toUpperCase()}
                   </div>
                 )}
-                <h3 className="font-bold text-sm text-[#1c1917]">{creator.name}</h3>
+                <h3 className="font-bold text-sm text-[var(--ex-text)]">{creator.name}</h3>
                 <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold my-2 ${colors.tagBg}`}>
                   {creator.role}
                 </span>
-                <p className="text-xs text-gray-500 line-clamp-2 mb-3 min-h-[32px]">
+                <p className="text-xs text-[var(--ex-muted)] line-clamp-2 mb-3 min-h-[32px]">
                   {creator.bio}
                 </p>
-                <div className="text-xs font-semibold text-amber-600 flex items-center gap-1 mb-4">
-                  ★ {creator.rating} <span className="text-gray-400 font-normal">({creator.reviews})</span>
+                <div className="text-xs font-semibold text-amber-600 dark:text-amber-400 flex items-center gap-1 mb-4">
+                  ★ {creator.rating} <span className="text-[var(--ex-muted)] font-normal">({creator.reviews})</span>
                 </div>
 
                 {/* أزرار View Profile وزر فتح الـ CV Modal */}
-                <div className="w-full flex items-center gap-2 mt-auto pt-3 border-t border-[#f0eae1]">
+                <div className="w-full flex items-center gap-2 mt-auto pt-3 border-t border-[var(--ex-soft)]">
                   <Link 
                     href={`/creators/${creator.id}`} 
-                    className="flex-1 py-1.5 px-2 bg-[#1c1917] text-white text-[11px] font-semibold rounded-lg hover:opacity-90 transition text-center"
+                    className="flex-1 py-1.5 px-2 bg-[var(--ex-inv-bg)] text-[var(--ex-inv-text)] text-[11px] font-semibold rounded-lg hover:opacity-90 transition text-center"
                   >
                     View Profile
                   </Link>
                   {creator.cvUrl && (
                     <button
                       onClick={() => setSelectedCvCreator(creator)}
-                      className="py-1.5 px-3 bg-[#f0eae1] text-[#44403c] text-[11px] font-semibold rounded-lg hover:bg-[#e4dbcd] transition text-center"
+                      className="py-1.5 px-3 bg-[var(--ex-soft)] text-[var(--ex-text2)] text-[11px] font-semibold rounded-lg hover:bg-[var(--ex-border)] transition text-center"
                     >
                       CV
                     </button>
@@ -493,7 +494,7 @@ export default function ExploreFull() {
           </div>
 
           <div className="text-center mt-8">
-            <button className="text-xs font-semibold underline text-[#68625d] hover:text-black">
+            <button className="text-xs font-semibold underline text-[var(--ex-muted)] hover:text-[var(--ex-text)]">
               Browse all creators →
             </button>
           </div>
@@ -511,45 +512,45 @@ export default function ExploreFull() {
           />
 
           {/* محتوى الـ Modal */}
-          <div className="relative bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[var(--ex-surface)] w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
             
             {/* رأس الـ Modal */}
-            <div className="px-6 py-4 border-b border-[#e5e0d8] flex items-center justify-between bg-[#f9f6f0]">
+            <div className="px-6 py-4 border-b border-[var(--ex-border)] flex items-center justify-between bg-[var(--ex-faint)]">
               <div>
-                <h3 className="font-serif font-bold text-base text-[#1c1917]">
+                <h3 className="font-serif font-bold text-base text-[var(--ex-text)]">
                   {selectedCvCreator.name} — Curriculum Vitae
                 </h3>
-                <p className="text-xs text-gray-500">
+                <p className="text-xs text-[var(--ex-muted)]">
                   {selectedCvCreator.role} · Attached file format: PDF
                 </p>
               </div>
               <button 
                 onClick={() => setSelectedCvCreator(null)}
-                className="p-2 text-gray-400 hover:text-[#1c1917] rounded-full transition"
+                className="p-2 text-[var(--ex-muted)] hover:text-[var(--ex-text)] rounded-full transition"
               >
                 ✕
               </button>
             </div>
 
             {/* جسم الـ Modal (عنصر العرض: iframe للـ PDF أو مشغل معاينة للـ Word) */}
-            <div className="flex-1 bg-[#f0eae1] p-4 flex items-center justify-center min-h-[400px] overflow-y-auto">
+            <div className="flex-1 bg-[var(--ex-soft)] p-4 flex items-center justify-center min-h-[400px] overflow-y-auto">
               <iframe
                 src={`${selectedCvCreator.cvUrl}#view=FitH`}
-                className="w-full h-[500px] rounded-lg border border-[#d8d0c5] bg-white shadow-inner"
+                className="w-full h-[500px] rounded-lg border border-[var(--ex-border)] bg-[var(--ex-surface)] shadow-inner"
                 title="CV Document Preview"
               />
             </div>
 
             {/* تذييل الـ Modal */}
-            <div className="px-6 py-3 border-t border-[#e5e0d8] bg-white flex items-center justify-between">
-              <span className="text-[11px] text-gray-400">
+            <div className="px-6 py-3 border-t border-[var(--ex-border)] bg-[var(--ex-surface)] flex items-center justify-between">
+              <span className="text-[11px] text-[var(--ex-muted)]">
                 Direct client preview mode
               </span>
               <div className="flex items-center gap-2">
                 <a 
                   href={selectedCvCreator.cvUrl ?? undefined}
                   download
-                  className="px-4 py-2 bg-[#f0eae1] text-[#1c1917] text-xs font-semibold rounded-xl hover:e4dbcd transition"
+                  className="px-4 py-2 bg-[var(--ex-soft)] text-[var(--ex-text)] text-xs font-semibold rounded-xl hover:bg-[var(--ex-border)] transition"
                 >
                   Download CV
                 </a>

@@ -159,6 +159,19 @@ CREATE TABLE creator_profiles (
     CONSTRAINT creator_profiles_rating_chk  CHECK (rating_avg BETWEEN 0 AND 5)
 ) ENGINE=InnoDB;
 
+-- Where a creator wants to be paid (one preferred way each). The admin reads it when sending a payout.
+CREATE TABLE creator_payout_details (
+    user_id        CHAR(36) NOT NULL,
+    method         VARCHAR(40) NOT NULL,          -- bank_transfer, sadad, mobicash, local_bank_card
+    account_name   VARCHAR(120) NOT NULL,         -- name on the account / wallet / card
+    account_number VARCHAR(80) NOT NULL,          -- IBAN or account number, wallet phone number, or card number
+    bank_name      VARCHAR(120) NULL,             -- bank transfer and cards only
+    created_at     DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3),
+    updated_at     DATETIME(3) NOT NULL DEFAULT CURRENT_TIMESTAMP(3) ON UPDATE CURRENT_TIMESTAMP(3),
+    PRIMARY KEY (user_id),
+    CONSTRAINT creator_payout_details_user_fk FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+) ENGINE=InnoDB;
+
 -- Behance / Dribbble / GitHub / Drive links from the onboarding form
 CREATE TABLE creator_links (
     id         CHAR(36) NOT NULL DEFAULT (UUID()),

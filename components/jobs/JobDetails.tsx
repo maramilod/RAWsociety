@@ -3,7 +3,7 @@
 import { fieldsFor } from "@/components/hire/fields";
 import { budgetLabel, type JobRow } from "@/lib/job-types";
 
-const small = "px-3 py-1.5 text-xs font-semibold rounded-lg border border-[#D9CFC5] bg-white hover:border-[#C86C29] transition";
+const small = "px-3 py-1.5 text-xs font-semibold rounded-lg border border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29] transition";
 
 /** Everything the client wrote in a job, as labelled rows, links and downloads. */
 export default function JobDetails({ job }: { job: JobRow }) {
@@ -26,7 +26,7 @@ export default function JobDetails({ job }: { job: JobRow }) {
       <dl className="space-y-2">
         {rows.map((row) => (
           <div key={row.label} className="grid grid-cols-1 gap-0.5 sm:grid-cols-3 sm:gap-3">
-            <dt className="text-xs font-semibold text-[#7D6E65]">{row.label}</dt>
+            <dt className="text-xs font-semibold text-[var(--ui-muted)]">{row.label}</dt>
             <dd className="whitespace-pre-line break-words text-sm sm:col-span-2">{row.value}</dd>
           </div>
         ))}
@@ -47,7 +47,7 @@ export default function JobDetails({ job }: { job: JobRow }) {
               <a href={`/api/jobs/files/${f.id}?download=1`} className="text-sm font-medium text-[#C86C29] hover:underline">
                 {f.name}
               </a>{" "}
-              <span className="text-xs text-[#7D6E65]">
+              <span className="text-xs text-[var(--ui-muted)]">
                 ({f.size < 1048576 ? `${Math.max(1, Math.round(f.size / 1024))} KB` : `${(f.size / 1048576).toFixed(1)} MB`})
               </span>
             </li>

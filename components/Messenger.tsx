@@ -44,7 +44,7 @@ function Avatar({ name, image, size }: { name: string; image: string | null; siz
   }
   return (
     <div
-      className={`${size} shrink-0 rounded-full bg-[#F7F4F0] text-[#C86C29] font-bold flex items-center justify-center`}
+      className={`${size} shrink-0 rounded-full bg-[var(--ui-soft)] text-[#C86C29] font-bold flex items-center justify-center`}
     >
       {name.charAt(0).toUpperCase()}
     </div>
@@ -209,7 +209,7 @@ export default function Messenger() {
   return (
     <div className="fixed bottom-4 right-4 sm:bottom-5 sm:right-5 z-50 flex flex-col items-end gap-3">
       {open && (
-        <div className="w-[calc(100vw-2rem)] sm:w-96 h-[32rem] max-h-[calc(100dvh-7rem)] bg-white border border-[#EFE8E1] rounded-2xl shadow-xl flex flex-col overflow-hidden text-[#2C221E]">
+        <div className="w-[calc(100vw-2rem)] sm:w-96 h-[32rem] max-h-[calc(100dvh-7rem)] bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-2xl shadow-xl flex flex-col overflow-hidden text-[var(--ui-text)]">
           {/* Header */}
           <div className="flex items-center gap-3 px-4 py-3 bg-[#C86C29] text-white">
             {activeId && (
@@ -238,12 +238,12 @@ export default function Messenger() {
 
           {/* Body */}
           {!activeId ? (
-            <ul className="flex-1 overflow-y-auto divide-y divide-[#EFE8E1]">
+            <ul className="flex-1 overflow-y-auto divide-y divide-[var(--ui-border)]">
               {!listLoaded && (
-                <li className="p-6 text-center text-sm text-[#7D6E65]">Loading...</li>
+                <li className="p-6 text-center text-sm text-[var(--ui-muted)]">Loading...</li>
               )}
               {listLoaded && conversations.length === 0 && (
-                <li className="p-6 text-center text-sm text-[#7D6E65]">
+                <li className="p-6 text-center text-sm text-[var(--ui-muted)]">
                   No conversations yet. Open a creator&apos;s profile and press Message to start one.
                 </li>
               )}
@@ -251,19 +251,19 @@ export default function Messenger() {
                 <li key={c.id}>
                   <button
                     onClick={() => selectConversation(c.id)}
-                    className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-[#FDFBF7] transition"
+                    className="w-full text-left px-4 py-3 flex items-center gap-3 hover:bg-[var(--ui-bg)] transition"
                   >
                     <Avatar name={c.name} image={c.image} size="h-10 w-10" />
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between gap-2">
                         <p className="font-medium text-sm truncate">{c.name}</p>
                         {c.lastMessage && (
-                          <span className="text-[11px] text-[#7D6E65] shrink-0">
+                          <span className="text-[11px] text-[var(--ui-muted)] shrink-0">
                             {formatTime(c.lastMessage.at)}
                           </span>
                         )}
                       </div>
-                      <p className="text-xs text-[#7D6E65] truncate">
+                      <p className="text-xs text-[var(--ui-muted)] truncate">
                         {c.lastMessage
                           ? `${c.lastMessage.fromMe ? "You: " : ""}${c.lastMessage.body}`
                           : "Say hello"}
@@ -280,12 +280,12 @@ export default function Messenger() {
             </ul>
           ) : (
             <>
-              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[#FDFBF7]">
+              <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-[var(--ui-bg)]">
                 {threadLoading && (
-                  <p className="text-center text-sm text-[#7D6E65]">Loading...</p>
+                  <p className="text-center text-sm text-[var(--ui-muted)]">Loading...</p>
                 )}
                 {!threadLoading && messages.length === 0 && !error && (
-                  <p className="text-center text-sm text-[#7D6E65]">
+                  <p className="text-center text-sm text-[var(--ui-muted)]">
                     No messages yet. Write the first one below.
                   </p>
                 )}
@@ -295,11 +295,11 @@ export default function Messenger() {
                       className={`max-w-[80%] px-3 py-2 rounded-2xl text-sm ${
                         m.fromMe
                           ? "bg-[#C86C29] text-white rounded-br-sm"
-                          : "bg-white border border-[#EFE8E1] rounded-bl-sm"
+                          : "bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-bl-sm"
                       }`}
                     >
                       <p className="whitespace-pre-wrap break-words">{m.body}</p>
-                      <p className={`mt-1 text-[10px] ${m.fromMe ? "text-white/70" : "text-[#7D6E65]"}`}>
+                      <p className={`mt-1 text-[10px] ${m.fromMe ? "text-white/70" : "text-[var(--ui-muted)]"}`}>
                         {formatTime(m.at)}
                       </p>
                     </div>
@@ -309,7 +309,7 @@ export default function Messenger() {
               </div>
 
               {error && (
-                <p role="alert" className="px-4 py-2 text-xs font-medium text-red-600 bg-red-50 border-t border-red-100">
+                <p role="alert" className="px-4 py-2 text-xs font-medium text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-500/10 border-t border-red-100 dark:border-red-500/30">
                   {error}
                 </p>
               )}
@@ -319,14 +319,14 @@ export default function Messenger() {
                   e.preventDefault();
                   send();
                 }}
-                className="flex items-center gap-2 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-[#EFE8E1] bg-white"
+                className="flex items-center gap-2 p-3 pb-[max(0.75rem,env(safe-area-inset-bottom))] border-t border-[var(--ui-border)] bg-[var(--ui-surface)]"
               >
                 <input
                   value={draft}
                   onChange={(e) => setDraft(e.target.value)}
                   placeholder="Type a message..."
                   maxLength={2000}
-                  className="flex-1 min-w-0 h-11 px-3 text-base sm:text-sm rounded-xl border border-[#D9CFC5] focus:outline-none focus:border-[#C86C29]"
+                  className="flex-1 min-w-0 h-11 px-3 text-base sm:text-sm rounded-xl border border-[var(--ui-input)] focus:outline-none focus:border-[#C86C29]"
                 />
                 <button
                   type="submit"

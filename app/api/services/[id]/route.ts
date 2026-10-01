@@ -1,6 +1,9 @@
 import { NextResponse } from "next/server";
 import { execute, query, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
+import { currentPlanCode } from "@/lib/subscriptions";
+import { serviceLoad } from "@/lib/service-limits";
+import { clientRules, creatorRules } from "@/lib/plan-rules";
 import {
   SERVICE_COLUMNS,
   hydrateServices,
@@ -41,6 +44,23 @@ export async function GET(
   if (!UUID_RE.test(id)) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
   try {
+    // a client on the free plan may open only the offers Explore shows them, and never sees the creator
+    const me = await getSessionUser();
+    const visible = !me ? 6 : me.role === "client" ? clientRules(await currentPlanCode(me.id, "client")).visibleOffers : null;
+    if (visible !== null) {
+      const ids = await query<RowDataPacket & { id: string }>(
+        `SELECT s.id FROM services s
+           JOIN creator_profiles p ON p.user_id = s.creator_id AND p.is_public = 1
+           JOIN users u ON u.id = s.creator_id AND u.deleted_at IS NULL AND u.status = 'active'
+          WHERE s.is_active = 1
+          ORDER BY s.created_at DESC
+          LIMIT ${Number(visible)}`
+      );
+      if (!ids.some((r) => r.id === id)) {
+        return NextResponse.json({ error: "This offer is only open on Business Pro and Enterprise.", upgrade: true }, { status: 403 });
+      }
+    }
+
     const row = await queryOne<DetailRow>(
       `SELECT ${SERVICE_COLUMNS},
               u.name AS creator_name, u.image AS creator_image, cat.name AS creator_role
@@ -55,6 +75,7 @@ export async function GET(
     if (!row) return NextResponse.json({ error: "Service not found." }, { status: 404 });
 
     const [service] = await hydrateServices([row]);
+    const monthly = (await serviceLoad([id])).get(id) ?? null;
 
     // What clients said about this service (newest first)
     const reviewRows = await query<RowDataPacket & { id: string; client_name: string; rating: number; comment: string | null; created_at: Date }>(
@@ -74,7 +95,7 @@ export async function GET(
     };
 
     return NextResponse.json({
-      service,
+      service: { ...service, monthly },
       reviews: reviewRows.map((r) => ({
         id: r.id,
         client: shortName(r.client_name),
@@ -82,12 +103,16 @@ export async function GET(
         comment: r.comment ?? "",
         date: r.created_at,
       })),
-      creator: {
-        id: row.creator_id,
-        name: row.creator_name,
-        image: row.creator_image,
-        role: row.creator_role,
-      },
+      limited: visible !== null,
+      creator:
+        visible !== null
+          ? null
+          : {
+              id: row.creator_id,
+              name: row.creator_name,
+              image: row.creator_image,
+              role: row.creator_role,
+            },
     });
   } catch (err) {
     console.error("service detail failed:", err);
@@ -111,6 +136,13 @@ export async function PATCH(
     // Quick toggle: only { isActive }
     const keys = Object.keys(req.fields);
     if (keys.length === 1 && keys[0] === "isActive") {
+      if (req.fields.isActive) {
+        const limit = creatorRules(await currentPlanCode(owned.me.id, "creator")).liveServices;
+        const live = await queryOne<RowDataPacket & { n: number }>("SELECT COUNT(*) AS n FROM services WHERE creator_id = ? AND is_active = 1 AND id <> ?", [owned.me.id, id]);
+        if (limit !== null && Number(live?.n ?? 0) >= limit) {
+          return NextResponse.json({ error: `Your plan lets you offer ${limit} services at a time. Pause another one first, or upgrade your plan.`, upgrade: true }, { status: 403 });
+        }
+      }
       await execute("UPDATE services SET is_active = ? WHERE id = ?", [req.fields.isActive ? 1 : 0, id]);
       return NextResponse.json({ ok: true });
     }

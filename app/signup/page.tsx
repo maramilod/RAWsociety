@@ -7,7 +7,7 @@ import Divider from "@/components/auth/Divider";
 import GoogleButton from "@/components/auth/GoogleButton";
 import RoleCard from "@/components/auth/RoleCard"; // استدعاء RoleCard مباشرة
 import { useRouter, useSearchParams } from "next/navigation";
-import RawAnimation from "@/components/auth/RawAnimation";
+import BrandAura from "@/components/auth/BrandAura";
 
 // مكون النموذج الداخلي
 function SignUpForm() {
@@ -141,7 +141,7 @@ const handleNextStep = async () => {
       />
 
       {error && (
-        <p role="alert" className="mt-2 text-sm font-medium text-red-600">
+        <p role="alert" className="mt-2 text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
@@ -190,15 +190,9 @@ export default function SignUpPage() {
     <main className="min-h-screen bg-[var(--page-bg)] flex items-center justify-center px-6 lg:px-12 py-6">
       <AuthCard>
         <div className="lg:grid lg:grid-cols-5 lg:gap-12">
-          {/* Brand Side */}
-          <div className="hidden lg:flex lg:col-span-2 relative overflow-hidden rounded-3xl bg-[var(--page-bg)] items-center justify-center flex-col p-10">
-            <h1 className="text-6xl leading-none tracking-wide text-[var(--brand-dark)]">
-              RAW <br /> society
-            </h1>
-            <p className="mt-6 text-center text-[var(--text-muted)] max-w-xs">
-              A creative space connecting creators with opportunities.
-            </p>
-            <RawAnimation />
+          {/* Brand Side: an aura of colour that follows the mouse */}
+          <div className="hidden lg:flex lg:col-span-2 rounded-3xl bg-[var(--page-bg)]">
+            <BrandAura />
           </div>
 
           {/* Form Side */}

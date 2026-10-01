@@ -12,25 +12,21 @@ export default function ClientCard({ name, info }: Props) {
       : `${info.paidOrders} paid ${info.paidOrders === 1 ? "order" : "orders"}, ${info.completedOrders} completed`;
 
   return (
-    <div className="flex items-start gap-3 rounded-xl border border-[#E5DCD2] bg-[#FDFBF7] p-3">
+    <div className="flex items-start gap-3 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-bg)] p-3">
       {info.logoUrl ? (
         // eslint-disable-next-line @next/next/no-img-element
-        <img src={info.logoUrl} alt="" className="h-11 w-11 shrink-0 rounded-full border border-[#E5DCD2] object-cover" />
+        <img src={info.logoUrl} alt="" className="h-11 w-11 shrink-0 rounded-full border border-[var(--ui-border2)] object-cover" />
       ) : (
-        <div
-          aria-hidden="true"
-          className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-[#F0EAE1] text-sm font-bold text-[#7D6E65]"
-        >
-          {name.trim().charAt(0).toUpperCase() || "?"}
-        </div>
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src="/images/default-avatar.svg" alt="" className="h-11 w-11 shrink-0 rounded-full border border-[var(--ui-border2)] object-cover" />
       )}
       <div className="min-w-0 text-sm">
-        <div className="font-semibold text-[#2C221E]">
+        <div className="font-semibold text-[var(--ui-text)]">
           {name}
-          {info.company && <span className="font-normal text-[#7D6E65]"> · {info.company}</span>}
+          {info.company && <span className="font-normal text-[var(--ui-muted)]"> · {info.company}</span>}
         </div>
-        {facts && <div className="text-xs text-[#7D6E65]">{facts}</div>}
-        <div className="mt-1 text-xs text-[#554f49]">
+        {facts && <div className="text-xs text-[var(--ui-muted)]">{facts}</div>}
+        <div className="mt-1 text-xs text-[var(--ui-text2)]">
           {history} · member since {since}
         </div>
       </div>

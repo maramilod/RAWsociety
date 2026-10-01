@@ -27,9 +27,9 @@ let keyCounter = 0;
 const nextKey = () => `d${++keyCounter}`;
 
 const inputClass =
-  "w-full h-11 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
+  "w-full h-11 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
 const textareaClass =
-  "w-full rounded-xl border border-[#D9CFC5] bg-white p-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 resize-none";
+  "w-full rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] p-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 resize-none";
 
 export default function DeliverModal({ orderId, orderNumber, title, revisionNote, onClose, onDelivered }: Props) {
   const [message, setMessage] = useState("");
@@ -132,14 +132,14 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
         role="dialog"
         aria-modal="true"
         aria-labelledby="deliver-title"
-        className="relative z-10 w-full max-w-xl max-h-[92dvh] flex flex-col rounded-2xl bg-[#FDFBF7] border border-[#EFE8E1] shadow-2xl text-[#2C221E]"
+        className="relative z-10 w-full max-w-xl max-h-[92dvh] flex flex-col rounded-2xl bg-[var(--ui-bg)] border border-[var(--ui-border)] shadow-2xl text-[var(--ui-text)]"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#EFE8E1] bg-white rounded-t-2xl shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ui-border)] bg-[var(--ui-surface)] rounded-t-2xl shrink-0">
           <div>
             <h2 id="deliver-title" className="text-lg font-bold">
               Deliver the work
             </h2>
-            <p className="text-xs text-[#7D6E65]">
+            <p className="text-xs text-[var(--ui-muted)]">
               {orderNumber} · {title}
             </p>
           </div>
@@ -148,7 +148,7 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
             onClick={onClose}
             disabled={sending}
             aria-label="Close"
-            className="text-[#7D6E65] hover:text-[#2C221E] text-lg leading-none"
+            className="text-[var(--ui-muted)] hover:text-[var(--ui-text)] text-lg leading-none"
           >
             ✕
           </button>
@@ -156,13 +156,13 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
 
         <div className="p-6 space-y-6 overflow-y-auto">
           {revisionNote && (
-            <div className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+            <div className="rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
               <p className="font-semibold">The client asked for a change:</p>
               <p className="mt-1 whitespace-pre-line">{revisionNote}</p>
             </div>
           )}
 
-          <p className="text-sm text-[#554f49]">
+          <p className="text-sm text-[var(--ui-text2)]">
             The client will see everything you add here, and can approve it, ask for a change, or report a problem. Their
             payment is released to you when they approve.
           </p>
@@ -184,7 +184,7 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
 
           <div>
             <p className="text-sm font-semibold">Files</p>
-            <p className="text-xs text-[#7D6E65] mb-2">
+            <p className="text-xs text-[var(--ui-muted)] mb-2">
               Up to {MAX_DELIVERY_FILES} files, 25 MB each: zip, rar, 7z, PDF, images, design files (psd, ai, fig, xd),
               documents, video, audio. Bigger work goes in a link below.
             </p>
@@ -193,15 +193,15 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
                 {files.map((f, i) => (
                   <li
                     key={`${f.name}-${i}`}
-                    className="flex items-center justify-between gap-3 rounded-xl border border-[#E5DCD2] bg-white px-3 py-2 text-sm"
+                    className="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] px-3 py-2 text-sm"
                   >
                     <span className="truncate">
-                      {f.name} <span className="text-xs text-[#7D6E65]">({formatBytes(f.size)})</span>
+                      {f.name} <span className="text-xs text-[var(--ui-muted)]">({formatBytes(f.size)})</span>
                     </span>
                     <button
                       type="button"
                       onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))}
-                      className="shrink-0 text-xs font-semibold text-red-600 hover:underline"
+                      className="shrink-0 text-xs font-semibold text-red-600 dark:text-red-400 hover:underline"
                     >
                       Remove
                     </button>
@@ -229,20 +229,20 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
 
           <div>
             <p className="text-sm font-semibold">Links</p>
-            <p className="text-xs text-[#7D6E65] mb-2">
+            <p className="text-xs text-[var(--ui-muted)] mb-2">
               A GitHub repository, a Figma file, a Drive folder, a live website... Up to {MAX_DELIVERY_LINKS}.
             </p>
             <div className="space-y-3">
               {links.map((l) => {
                 const option = LINK_KIND_OPTIONS.find((o) => o.kind === l.kind);
                 return (
-                  <div key={l.key} className="rounded-xl border border-[#E5DCD2] bg-white p-3 space-y-2">
+                  <div key={l.key} className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-3 space-y-2">
                     <div className="flex gap-2">
                       <select
                         value={l.kind}
                         onChange={(e) => updateLink(l.key, { kind: e.target.value as LinkKind })}
                         aria-label="Link type"
-                        className="h-10 w-36 shrink-0 rounded-xl border border-[#D9CFC5] bg-white px-2 text-sm outline-none focus:border-[#C86C29]"
+                        className="h-10 w-36 shrink-0 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-2 text-sm outline-none focus:border-[#C86C29]"
                       >
                         {LINK_KIND_OPTIONS.map((o) => (
                           <option key={o.kind} value={o.kind}>
@@ -257,13 +257,13 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
                         inputMode="url"
                         aria-label="Link address"
                         placeholder={option?.placeholder ?? "https://"}
-                        className="h-10 min-w-0 flex-1 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29]"
+                        className="h-10 min-w-0 flex-1 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29]"
                       />
                       <button
                         type="button"
                         onClick={() => setLinks((prev) => prev.filter((x) => x.key !== l.key))}
                         aria-label="Remove link"
-                        className="h-10 shrink-0 rounded-lg border border-[#D9CFC5] bg-white px-2.5 text-xs font-semibold hover:border-[#C86C29]"
+                        className="h-10 shrink-0 rounded-lg border border-[var(--ui-input)] bg-[var(--ui-surface)] px-2.5 text-xs font-semibold hover:border-[#C86C29]"
                       >
                         ✕
                       </button>
@@ -274,7 +274,7 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
                       maxLength={60}
                       aria-label="Link label (optional)"
                       placeholder="Button text (optional), e.g. Source code"
-                      className="h-9 w-full rounded-lg border border-[#E5DCD2] bg-[#FDFBF7] px-3 text-xs outline-none focus:border-[#C86C29]"
+                      className="h-9 w-full rounded-lg border border-[var(--ui-border2)] bg-[var(--ui-bg)] px-3 text-xs outline-none focus:border-[#C86C29]"
                     />
                   </div>
                 );
@@ -283,7 +283,7 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
                 type="button"
                 onClick={() => setLinks((prev) => [...prev, { key: nextKey(), kind: "other", label: "", url: "" }])}
                 disabled={links.length >= MAX_DELIVERY_LINKS}
-                className="h-9 rounded-lg border border-[#D9CFC5] bg-white px-3 text-xs font-semibold hover:border-[#C86C29] transition disabled:opacity-40"
+                className="h-9 rounded-lg border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-xs font-semibold hover:border-[#C86C29] transition disabled:opacity-40"
               >
                 + Add link
               </button>
@@ -292,7 +292,7 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
 
           <div>
             <label htmlFor="dv-access" className="block mb-1.5 text-sm font-semibold">
-              How to get access <span className="font-normal text-[#7D6E65]">(optional)</span>
+              How to get access <span className="font-normal text-[var(--ui-muted)]">(optional)</span>
             </label>
             <input
               id="dv-access"
@@ -305,18 +305,18 @@ export default function DeliverModal({ orderId, orderNumber, title, revisionNote
           </div>
 
           {error && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#EFE8E1] bg-white rounded-b-2xl shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--ui-border)] bg-[var(--ui-surface)] rounded-b-2xl shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={sending}
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-[#C86C29] transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
           >
             Cancel
           </button>

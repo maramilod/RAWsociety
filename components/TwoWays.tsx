@@ -2,7 +2,7 @@ import Link from "next/link";
 
 export default function TwoWays() {
   return (
-    <section className="bg-[var(--page-bg)] py-24">
+    <section id="join" className="scroll-mt-20 bg-[var(--page-bg)] py-24">
 
       <div className="max-w-7xl mx-auto px-8">
 
@@ -50,6 +50,8 @@ export default function TwoWays() {
             border-[var(--border-soft)]
             bg-[var(--page-bg)]
             p-8
+            flex
+            flex-col
             "
           >
 
@@ -167,24 +169,27 @@ export default function TwoWays() {
 
 
 
-            <Link href="/signup?role=creator" className="w-full">
-  <button
-    className="
-      mt-10
-      w-full
-      rounded-xl
-      bg-[var(--brand-orange)]
-      py-4
-      text-white
-      font-semibold
-      hover:bg-[var(--brand-orange-hover)]
-      transition
-    "
-  >
-    Create a creator profile
-  </button>
-</Link>
-
+            <div className="mt-auto pt-10">
+              <Link
+                href="/signup?role=creator"
+                className="
+                block
+                w-full
+                rounded-xl
+                border-2
+                border-[var(--brand-orange)]
+                bg-[var(--brand-orange)]
+                py-4
+                text-center
+                text-white
+                font-semibold
+                hover:bg-[var(--brand-orange-hover)]
+                transition
+                "
+              >
+                Create a creator profile
+              </Link>
+            </div>
 
           </div>
 
@@ -203,6 +208,8 @@ export default function TwoWays() {
             border-[var(--border-soft)]
             bg-[var(--page-bg)]
             p-8
+            flex
+            flex-col
             "
           >
 
@@ -307,16 +314,17 @@ export default function TwoWays() {
 
 
 
-            <Link href="/signup">
-
-              <button
+            <div className="mt-auto pt-10">
+              <Link
+                href="/signup?role=client"
                 className="
-                mt-10
+                block
                 w-full
                 rounded-xl
                 border-2
                 border-[var(--brand-dark)]
                 py-4
+                text-center
                 font-semibold
                 text-[var(--brand-dark)]
                 hover:bg-[var(--brand-dark)]
@@ -325,10 +333,8 @@ export default function TwoWays() {
                 "
               >
                 Create a client profile
-              </button>
-
-            </Link>
-
+              </Link>
+            </div>
 
           </div>
 

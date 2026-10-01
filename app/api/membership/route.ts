@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { query, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
-import { applicationsThisMonth, currentPlanCode, onboardingState } from "@/lib/subscriptions";
-import { APPLICATIONS_PER_MONTH, CAN_POST_JOBS } from "@/lib/plan-rules";
+import { applicationsThisMonth, clientAccess, clientHasDashboard, currentPlanCode, onboardingState } from "@/lib/subscriptions";
+import { APPLICATIONS_PER_MONTH, clientPlanFeatures, creatorPlanFeatures } from "@/lib/plan-rules";
 
 interface PlanRow extends RowDataPacket {
   id: number;
@@ -66,23 +66,23 @@ export async function GET() {
         me.role === "creator"
           ? { limit: APPLICATIONS_PER_MONTH[code] ?? 0, used: await applicationsThisMonth(me.id) }
           : null,
+      hasDashboard: me.role === "client" ? await clientHasDashboard(me.id) : true,
+      clientUsage:
+        me.role === "client"
+          ? await clientAccess(me.id).then((a) => ({
+              hireMe: { used: a.hireMeUsed, limit: a.rules.hireMePerMonth },
+              messages: { used: a.messagesUsed, limit: a.rules.messagesPerMonth },
+            }))
+          : null,
       plans: plans.map((p) => ({
         code: p.code,
         name: p.name,
         price: Number(p.price),
         currency: p.currency,
-        features: parseList(p.features),
+        features: me.role === "client" ? clientPlanFeatures(p.code) : creatorPlanFeatures(p.code),
         // what this plan gets on the jobs board
-        jobs:
-          me.role === "creator"
-            ? APPLICATIONS_PER_MONTH[p.code] === null
-              ? "Unlimited job applications"
-              : (APPLICATIONS_PER_MONTH[p.code] ?? 0) > 0
-                ? `Apply to ${APPLICATIONS_PER_MONTH[p.code]} jobs per month`
-                : "Jobs board locked"
-            : CAN_POST_JOBS.includes(p.code)
-              ? "Post jobs and receive offers from creators"
-              : "Jobs board locked",
+        // the jobs line is part of the features now
+        jobs: "",
         isCurrent: p.code === code,
         canBuy: Number(p.price) > 0 && (p.code === code || p.sort_order > currentOrder),
       })),

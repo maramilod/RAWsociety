@@ -1,5 +1,9 @@
 import { NextResponse } from "next/server";
 import { query, type RowDataPacket } from "@/lib/db";
+import { getSessionUser } from "@/lib/session";
+import { serviceLoad } from "@/lib/service-limits";
+import { currentPlanCode } from "@/lib/subscriptions";
+import { clientRules } from "@/lib/plan-rules";
 
 // The filter chips on /explore -> category slugs
 const GROUPS: Record<string, string[]> = {
@@ -59,6 +63,11 @@ interface WorkRow extends RowDataPacket {
 }
 
 export async function GET(request: Request) {
+  // a client on the free plan sees a few offers only, and not who made them
+  const me = await getSessionUser();
+  // visitors without an account only get the small teaser the home page gallery shows
+  const limit = !me ? 6 : me.role === "client" ? clientRules(await currentPlanCode(me.id, "client")).visibleOffers : null;
+
   const { searchParams } = new URL(request.url);
   const group = searchParams.get("category") ?? "All";
   const q = (searchParams.get("q") ?? "").trim().slice(0, 80);
@@ -66,12 +75,13 @@ export async function GET(request: Request) {
   const where = ["u.deleted_at IS NULL", "u.status = 'active'", "p.is_public = 1"];
   const params: unknown[] = [];
 
-  const slugs = GROUPS[group];
+  // a limited client always sees the same newest offers: search and categories cannot reveal others
+  const slugs = limit === null ? GROUPS[group] : undefined;
   if (slugs) {
     where.push(`c.slug IN (${slugs.map(() => "?").join(",")})`);
     params.push(...slugs);
   }
-  if (q) {
+  if (q && limit === null) {
     const like = `%${q.replace(/[\\%_]/g, (m) => "\\" + m)}%`;
     where.push("(u.name LIKE ? OR p.bio LIKE ? OR c.name LIKE ?)");
     params.push(like, like, like);
@@ -99,7 +109,7 @@ export async function GET(request: Request) {
       sWhere.push(`c.slug IN (${slugs.map(() => "?").join(",")})`);
       sParams.push(...slugs);
     }
-    if (q) {
+    if (q && limit === null) {
       const like = `%${q.replace(/[\\%_]/g, (m) => "\\" + m)}%`;
       sWhere.push(
         "(s.title LIKE ? OR s.description LIKE ? OR u.name LIKE ? OR c.name LIKE ? OR CAST(s.tags AS CHAR) LIKE ?)"
@@ -120,7 +130,7 @@ export async function GET(request: Request) {
          JOIN categories c ON c.id = s.category_id
         WHERE ${sWhere.join(" AND ")}
         ORDER BY s.created_at DESC
-        LIMIT 12`,
+        LIMIT ${limit ?? 12}`,
       sParams
     );
 
@@ -133,6 +143,31 @@ export async function GET(request: Request) {
         ORDER BY w.is_featured DESC, w.likes_count DESC, w.created_at DESC
         LIMIT 2`
     );
+
+    const loads = await serviceLoad(services.map((s) => s.id));
+
+    if (limit !== null) {
+      return NextResponse.json({
+        limited: { offers: limit },
+        creators: [],
+        works: [],
+        services: services.map((s) => ({
+          id: s.id,
+          title: s.title,
+          description: s.description ?? "",
+          price: Number(s.price),
+          currency: s.currency,
+          deliveryDays: s.delivery_days,
+          category: s.category,
+          tags: tagList(s.tags),
+          coverUrl: s.cover_url,
+          rating: s.rating_avg !== null ? Number(s.rating_avg) : null,
+          reviewsCount: Number(s.reviews_count),
+          full: loads.get(s.id)?.full ?? false,
+          creator: null,
+        })),
+      });
+    }
 
     return NextResponse.json({
       creators: creators.map((c) => ({
@@ -157,6 +192,7 @@ export async function GET(request: Request) {
         coverUrl: s.cover_url,
         rating: s.rating_avg !== null ? Number(s.rating_avg) : null,
         reviewsCount: Number(s.reviews_count),
+        full: loads.get(s.id)?.full ?? false,
         creator: { id: s.creator_id, name: s.creator_name, image: s.creator_image },
       })),
       works: works.map((w) => ({

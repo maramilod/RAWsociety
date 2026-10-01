@@ -122,7 +122,7 @@ function Header() {
         <div className="flex items-center gap-2 sm:gap-3">
           <Link
             href="/explore"
-            className="text-xs font-semibold px-4 py-2 bg-[#1c1917] text-white rounded-full hover:opacity-90 transition"
+            className="text-xs font-semibold px-4 py-2 bg-[var(--ui-inv-bg)] text-[var(--ui-inv-text)] rounded-full hover:opacity-90 transition"
           >
             Back to Explore
           </Link>
@@ -137,7 +137,7 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
   const { id: creatorId } = use(params);
 
   const [creator, setCreator] = useState<Creator | null>(null);
-  const [status, setStatus] = useState<"loading" | "ready" | "notfound" | "error">("loading");
+  const [status, setStatus] = useState<"loading" | "ready" | "notfound" | "upgrade" | "error">("loading");
   const [activeTab, setActiveTab] = useState("work"); // work | about | reviews
   const [isCvModalOpen, setIsCvModalOpen] = useState(false);
   const [selectedServiceId, setSelectedServiceId] = useState<string | null>(null);
@@ -201,6 +201,15 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
           setStatus("notfound");
           return;
         }
+        if (res.status === 401) {
+          router.replace(`/login?callbackUrl=${encodeURIComponent(`/creators/${creatorId}`)}`);
+          return;
+        }
+        if (res.status === 403) {
+          // a client on the free plan cannot open creator profiles
+          setStatus("upgrade");
+          return;
+        }
         if (!res.ok) throw new Error("failed");
         const data = await res.json();
         setCreator(data.creator);
@@ -219,11 +228,11 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
       <div className="min-h-screen bg-[var(--background)] text-[var(--foreground)] font-sans antialiased">
         <Header />
         <div className="max-w-5xl mx-auto px-4 py-24 text-center">
-          {status === "loading" && <p className="text-sm text-[#68625d]">Loading profile...</p>}
+          {status === "loading" && <p className="text-sm text-[var(--ui-muted)]">Loading profile...</p>}
           {status === "notfound" && (
             <>
-              <h1 className="text-xl font-serif font-bold text-[#1c1917] mb-2">Creator not found</h1>
-              <p className="text-sm text-[#68625d] mb-6">
+              <h1 className="text-xl font-serif font-bold text-[var(--ui-text)] mb-2">Creator not found</h1>
+              <p className="text-sm text-[var(--ui-muted)] mb-6">
                 This profile doesn&apos;t exist or is no longer public.
               </p>
               <Link
@@ -234,8 +243,22 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
               </Link>
             </>
           )}
+          {status === "upgrade" && (
+            <>
+              <h1 className="text-xl font-serif font-bold text-[var(--ui-text)] mb-2">Creator profiles are part of Business Pro</h1>
+              <p className="text-sm text-[var(--ui-muted)] mb-6 max-w-md mx-auto">
+                On the Free plan you can see a few offers, but not who is behind them. Upgrade to open every profile, order services and message creators.
+              </p>
+              <Link
+                href="/onboarding/plan?role=client"
+                className="text-xs font-semibold px-4 py-2 bg-[#c86d38] text-white rounded-full hover:opacity-90 transition"
+              >
+                See plans
+              </Link>
+            </>
+          )}
           {status === "error" && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
               Could not load this profile. Please try again.
             </p>
           )}
@@ -258,12 +281,12 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
 
       {/* 2. Cover Banner */}
       {creator.coverUrl ? (
-        <div className="w-full h-40 sm:h-52 border-b border-[#e5e0d8] overflow-hidden">
+        <div className="w-full h-40 sm:h-52 border-b border-[var(--ui-border2)] overflow-hidden">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={creator.coverUrl} alt="" className="w-full h-full object-cover" />
         </div>
       ) : (
-        <div className="w-full h-40 sm:h-52 bg-[#f3ede2] border-b border-[#e5e0d8] relative overflow-hidden flex items-center justify-between px-6">
+        <div className="w-full h-40 sm:h-52 bg-[#f3ede2] border-b border-[var(--ui-border2)] relative overflow-hidden flex items-center justify-between px-6">
           <div className="absolute -left-10 -bottom-10 w-40 h-40 bg-[#c86d38]/20 rounded-2xl transform rotate-12 blur-sm" />
           <div className="absolute right-10 top-5 w-32 h-32 bg-[#3e2723]/10 rounded-full blur-sm" />
         </div>
@@ -280,7 +303,7 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
               <img
                 src={creator.avatarUrl}
                 alt={creator.name}
-                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-white shadow-md object-cover shrink-0 bg-white"
+                className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-white shadow-md object-cover shrink-0 bg-[var(--ui-surface)]"
               />
             ) : (
               <div
@@ -291,14 +314,14 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
             )}
             <div className="pb-1">
               <div className="flex items-center gap-2 flex-wrap">
-                <h1 className="text-xl sm:text-2xl font-serif font-bold text-[#1c1917]">{creator.name}</h1>
+                <h1 className="text-xl sm:text-2xl font-serif font-bold text-[var(--ui-text)]">{creator.name}</h1>
                 {creator.badge && (
-                  <span className="px-2 py-0.5 bg-[#fce7f3] text-rose-700 text-[10px] font-semibold rounded-full border border-rose-200">
+                  <span className="px-2 py-0.5 bg-[#fce7f3] text-rose-700 dark:text-rose-200 text-[10px] font-semibold rounded-full border border-rose-200 dark:border-rose-500/30">
                     {creator.badge}
                   </span>
                 )}
               </div>
-              <p className="text-xs sm:text-sm text-[#68625d] mt-0.5 font-medium">
+              <p className="text-xs sm:text-sm text-[var(--ui-muted)] mt-0.5 font-medium">
                 {creator.role}
                 {creator.location ? ` · ${creator.location}` : ""}
               </p>
@@ -309,13 +332,13 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
           </div>
 
           {/* الإحصائيات الأفقية على اللابتوب */}
-          <div className="hidden lg:flex items-center gap-6 text-xs font-semibold text-[#44403c] bg-white border border-[#e5e0d8] px-5 py-3 rounded-2xl shadow-sm">
+          <div className="hidden lg:flex items-center gap-6 text-xs font-semibold text-[var(--ui-text2)] bg-[var(--ui-surface)] border border-[var(--ui-border2)] px-5 py-3 rounded-2xl shadow-sm">
             {stats.map((s, i) => (
               <React.Fragment key={s.label}>
-                {i > 0 && <div className="w-px h-6 bg-gray-200" />}
+                {i > 0 && <div className="w-px h-6 bg-[var(--ui-soft)]" />}
                 <div>
-                  <span className="text-black font-bold block text-sm">{s.value}</span>
-                  <span className="text-[10px] text-gray-400 font-normal">{s.label}</span>
+                  <span className="text-[var(--ui-text)] font-bold block text-sm">{s.value}</span>
+                  <span className="text-[10px] text-[var(--ui-muted)] font-normal">{s.label}</span>
                 </div>
               </React.Fragment>
             ))}
@@ -339,7 +362,7 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
             <button
               onClick={handleMessage}
               disabled={messageBusy}
-              className="px-4 py-2.5 bg-white border border-[#e5e0d8] text-[#1c1917] text-xs font-semibold rounded-xl hover:bg-gray-50 transition shadow-sm disabled:opacity-60"
+              className="px-4 py-2.5 bg-[var(--ui-surface)] border border-[var(--ui-border2)] text-[var(--ui-text)] text-xs font-semibold rounded-xl hover:bg-[var(--ui-soft)] transition shadow-sm disabled:opacity-60"
             >
               {messageBusy ? "Opening..." : "Message"}
             </button>
@@ -348,19 +371,19 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
         </div>
 
         {messageNotice && (
-          <p role="alert" className="-mt-4 mb-6 text-xs font-medium text-red-600">
+          <p role="alert" className="-mt-4 mb-6 text-xs font-medium text-red-600 dark:text-red-400">
             {messageNotice}
           </p>
         )}
 
         {/* إحصائيات الموبايل المصغرة */}
-        <div className="flex lg:hidden items-center justify-around bg-white border border-[#e5e0d8] p-3 rounded-2xl mb-6 text-center text-xs shadow-sm">
+        <div className="flex lg:hidden items-center justify-around bg-[var(--ui-surface)] border border-[var(--ui-border2)] p-3 rounded-2xl mb-6 text-center text-xs shadow-sm">
           {stats.map((s, i) => (
             <React.Fragment key={s.label}>
-              {i > 0 && <div className="w-px h-5 bg-gray-200" />}
+              {i > 0 && <div className="w-px h-5 bg-[var(--ui-soft)]" />}
               <div>
-                <span className="font-bold text-black">{s.value}</span>
-                <p className="text-[10px] text-gray-400">{s.label}</p>
+                <span className="font-bold text-[var(--ui-text)]">{s.value}</span>
+                <p className="text-[10px] text-[var(--ui-muted)]">{s.label}</p>
               </div>
             </React.Fragment>
           ))}
@@ -368,13 +391,13 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
 
         {/* نبذة تعريفية قصيرة تحت الهيدر */}
         {creator.bio && (
-          <p className="text-xs sm:text-sm text-[#554f49] max-w-2xl mb-8 leading-relaxed whitespace-pre-line">
+          <p className="text-xs sm:text-sm text-[var(--ui-text2)] max-w-2xl mb-8 leading-relaxed whitespace-pre-line">
             {creator.bio}
           </p>
         )}
 
         {/* 4. Tabs Navigation (Shop / Work, About, Reviews) */}
-        <div className="border-b border-[#e5e0d8] flex gap-8 mb-8 text-sm font-medium">
+        <div className="border-b border-[var(--ui-border2)] flex gap-8 mb-8 text-sm font-medium">
           {[
             { key: "services", label: `Services (${creator.services.length})` },
             { key: "work", label: `Shop (${creator.works.length})` },
@@ -386,8 +409,8 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
               onClick={() => setActiveTab(tab.key)}
               className={`pb-3 border-b-2 transition ${
                 activeTab === tab.key
-                  ? "border-[#1c1917] text-[#1c1917] font-bold"
-                  : "border-transparent text-gray-400 hover:text-gray-700"
+                  ? "border-[var(--ui-text)] text-[var(--ui-text)] font-bold"
+                  : "border-transparent text-[var(--ui-muted)] hover:text-gray-700"
               }`}
             >
               {tab.label}
@@ -398,7 +421,7 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
         {/* 5. Tab Content */}
         {activeTab === "services" && (
           creator.services.length === 0 ? (
-            <p className="text-sm text-[#68625d]">{creator.name} hasn&apos;t published any services yet.</p>
+            <p className="text-sm text-[var(--ui-muted)]">{creator.name} hasn&apos;t published any services yet.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 max-w-3xl">
               {creator.services.map((service) => {
@@ -408,10 +431,10 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
                     type="button"
                     key={service.id}
                     onClick={() => setSelectedServiceId(service.id)}
-                    className="group text-left bg-white border border-[#e5e0d8] rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#c86d38] transition flex flex-col overflow-hidden"
+                    className="group text-left bg-[var(--ui-surface)] border border-[var(--ui-border2)] rounded-2xl p-5 shadow-sm hover:shadow-md hover:border-[#c86d38] transition flex flex-col overflow-hidden"
                   >
                     {service.coverUrl && (
-                      <div className="-mx-5 -mt-5 mb-4 h-40 overflow-hidden bg-[#f0eae1]">
+                      <div className="-mx-5 -mt-5 mb-4 h-40 overflow-hidden bg-[var(--ui-soft)]">
                         {/* eslint-disable-next-line @next/next/no-img-element */}
                         <img
                           src={service.coverUrl}
@@ -420,32 +443,32 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
                         />
                       </div>
                     )}
-                    <span className="self-start px-2.5 py-0.5 rounded-full bg-[#f0eae1] text-[10px] font-semibold text-[#44403c] mb-3">
+                    <span className="self-start px-2.5 py-0.5 rounded-full bg-[var(--ui-soft)] text-[10px] font-semibold text-[var(--ui-text2)] mb-3">
                       {service.category}
                     </span>
-                    <h3 className="font-bold text-sm text-[#1c1917] mb-1 group-hover:text-[#c86d38] transition">
+                    <h3 className="font-bold text-sm text-[var(--ui-text)] mb-1 group-hover:text-[#c86d38] transition">
                       {service.title}
                     </h3>
                     <RatingLine rating={service.rating} count={service.reviewsCount} className="text-xs mb-2" />
                     {service.description && (
-                      <p className="text-xs text-[#68625d] leading-relaxed line-clamp-3 mb-3">
+                      <p className="text-xs text-[var(--ui-muted)] leading-relaxed line-clamp-3 mb-3">
                         {service.description}
                       </p>
                     )}
                     {service.tags.length > 0 && (
                       <div className="flex flex-wrap gap-1.5 mb-4">
                         {service.tags.slice(0, 4).map((t) => (
-                          <span key={t} className="rounded-md bg-[#f9f6f0] border border-[#e5e0d8] px-2 py-0.5 text-[10px] font-medium text-[#44403c]">
+                          <span key={t} className="rounded-md bg-[var(--ui-soft)] border border-[var(--ui-border2)] px-2 py-0.5 text-[10px] font-medium text-[var(--ui-text2)]">
                             {t}
                           </span>
                         ))}
                       </div>
                     )}
-                    <div className="mt-auto pt-3 border-t border-[#f0eae1] flex items-center justify-between">
+                    <div className="mt-auto pt-3 border-t border-[var(--ui-soft)] flex items-center justify-between">
                       <span className="text-sm font-bold text-[#c86d38]">
                         {formatPrice(service.price, service.currency)}
                       </span>
-                      <span className="text-[11px] text-gray-400">
+                      <span className="text-[11px] text-[var(--ui-muted)]">
                         {delivery ? `Delivery in ${delivery} · ` : ""}View &amp; book
                       </span>
                     </div>
@@ -458,11 +481,11 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
 
         {activeTab === "work" && (
           creator.works.length === 0 ? (
-            <p className="text-sm text-[#68625d]">{creator.name} hasn&apos;t added any work yet.</p>
+            <p className="text-sm text-[var(--ui-muted)]">{creator.name} hasn&apos;t added any work yet.</p>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
               {creator.works.map((work) => (
-                <div key={work.id} className="bg-white rounded-2xl border border-[#e5e0d8] overflow-hidden shadow-sm hover:shadow-md transition">
+                <div key={work.id} className="bg-[var(--ui-surface)] rounded-2xl border border-[var(--ui-border2)] overflow-hidden shadow-sm hover:shadow-md transition">
                   {work.coverUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={work.coverUrl} alt={work.title} className="h-48 w-full object-cover" />
@@ -472,17 +495,17 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
                       <div className="w-16 h-16 bg-[#3e2723] rounded-full shadow-sm" />
                     </div>
                   )}
-                  <div className="p-4 border-t border-[#f0eae1] flex items-center justify-between">
+                  <div className="p-4 border-t border-[var(--ui-soft)] flex items-center justify-between">
                     <div>
                       {work.category && (
-                        <span className="inline-block px-2 py-0.5 rounded-full bg-gray-100 text-[10px] font-semibold text-gray-600 mb-1">
+                        <span className="inline-block px-2 py-0.5 rounded-full bg-[var(--ui-soft)] text-[10px] font-semibold text-[var(--ui-muted)] mb-1">
                           {work.category}
                         </span>
                       )}
-                      <h3 className="font-bold text-xs sm:text-sm text-[#1c1917]">{work.title}</h3>
+                      <h3 className="font-bold text-xs sm:text-sm text-[var(--ui-text)]">{work.title}</h3>
                       <p className="text-xs font-semibold text-[#c86d38] mt-1">{work.price || "Free"}</p>
                     </div>
-                    <span className="text-[11px] text-gray-400 font-medium">♥ {work.likes}</span>
+                    <span className="text-[11px] text-[var(--ui-muted)] font-medium">♥ {work.likes}</span>
                   </div>
                 </div>
               ))}
@@ -491,20 +514,20 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
         )}
 
         {activeTab === "about" && (
-          <div className="bg-white border border-[#e5e0d8] rounded-2xl p-6 shadow-sm max-w-2xl">
-            <h3 className="font-serif font-bold text-base mb-3 text-[#1c1917]">Biography</h3>
-            <p className="text-sm text-[#68625d] leading-relaxed mb-6 whitespace-pre-line">
+          <div className="bg-[var(--ui-surface)] border border-[var(--ui-border2)] rounded-2xl p-6 shadow-sm max-w-2xl">
+            <h3 className="font-serif font-bold text-base mb-3 text-[var(--ui-text)]">Biography</h3>
+            <p className="text-sm text-[var(--ui-muted)] leading-relaxed mb-6 whitespace-pre-line">
               {creator.about || "This creator hasn't written a biography yet."}
             </p>
-            <h3 className="font-serif font-bold text-base mb-2 text-[#1c1917]">Specialty</h3>
+            <h3 className="font-serif font-bold text-base mb-2 text-[var(--ui-text)]">Specialty</h3>
             <div className="flex flex-wrap gap-2 mb-6">
-              <span className="px-3 py-1 bg-[#f9f6f0] border border-[#e5e0d8] rounded-lg text-xs font-medium text-[#44403c]">
+              <span className="px-3 py-1 bg-[var(--ui-soft)] border border-[var(--ui-border2)] rounded-lg text-xs font-medium text-[var(--ui-text2)]">
                 {creator.role}
               </span>
             </div>
             {creator.links.length > 0 && (
               <>
-                <h3 className="font-serif font-bold text-base mb-2 text-[#1c1917]">Portfolio links</h3>
+                <h3 className="font-serif font-bold text-base mb-2 text-[var(--ui-text)]">Portfolio links</h3>
                 <ul className="space-y-1">
                   {creator.links.map((url) => (
                     <li key={url}>
@@ -526,16 +549,16 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
 
         {activeTab === "reviews" && (
           creator.reviews.length === 0 ? (
-            <p className="text-sm text-[#68625d]">No reviews yet.</p>
+            <p className="text-sm text-[var(--ui-muted)]">No reviews yet.</p>
           ) : (
             <div className="space-y-4 max-w-2xl">
               {creator.reviews.map((r) => (
-                <div key={r.id} className="bg-white border border-[#e5e0d8] p-4 rounded-2xl shadow-sm">
+                <div key={r.id} className="bg-[var(--ui-surface)] border border-[var(--ui-border2)] p-4 rounded-2xl shadow-sm">
                   <div className="flex items-center justify-between mb-2">
                     <div className="min-w-0">
-                      <span className="font-bold text-xs text-[#1c1917]">{r.client}</span>
+                      <span className="font-bold text-xs text-[var(--ui-text)]">{r.client}</span>
                       {r.service && (
-                        <span className="ml-2 inline-block rounded-full bg-[#f0eae1] px-2 py-0.5 text-[10px] font-semibold text-[#44403c]">
+                        <span className="ml-2 inline-block rounded-full bg-[var(--ui-soft)] px-2 py-0.5 text-[10px] font-semibold text-[var(--ui-text2)]">
                           {r.service}
                         </span>
                       )}
@@ -546,7 +569,7 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
                     </span>
                   </div>
                   {r.comment && (
-                    <p className="text-xs text-[#68625d] leading-relaxed whitespace-pre-line">{r.comment}</p>
+                    <p className="text-xs text-[var(--ui-muted)] leading-relaxed whitespace-pre-line">{r.comment}</p>
                   )}
                 </div>
               ))}
@@ -587,38 +610,38 @@ export default function CreatorProfilePage({ params }: { params: Promise<{ id: s
             onClick={() => setIsCvModalOpen(false)}
           />
 
-          <div className="relative bg-white w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
+          <div className="relative bg-[var(--ui-surface)] w-full max-w-3xl rounded-2xl shadow-2xl overflow-hidden z-10 flex flex-col max-h-[85vh] animate-in fade-in zoom-in-95 duration-200">
 
-            <div className="px-6 py-4 border-b border-[#e5e0d8] flex items-center justify-between bg-[#f9f6f0]">
+            <div className="px-6 py-4 border-b border-[var(--ui-border2)] flex items-center justify-between bg-[var(--ui-soft)]">
               <div>
-                <h3 className="font-serif font-bold text-base text-[#1c1917]">
+                <h3 className="font-serif font-bold text-base text-[var(--ui-text)]">
                   {creator.name} — Curriculum Vitae
                 </h3>
-                <p className="text-xs text-gray-500">{creator.role} · Format: PDF</p>
+                <p className="text-xs text-[var(--ui-muted)]">{creator.role} · Format: PDF</p>
               </div>
               <button
                 onClick={() => setIsCvModalOpen(false)}
-                className="p-2 text-gray-400 hover:text-[#1c1917] rounded-full transition"
+                className="p-2 text-[var(--ui-muted)] hover:text-[var(--ui-text)] rounded-full transition"
               >
                 ✕
               </button>
             </div>
 
-            <div className="flex-1 bg-[#f0eae1] p-4 flex items-center justify-center min-h-[400px] overflow-y-auto">
+            <div className="flex-1 bg-[var(--ui-soft)] p-4 flex items-center justify-center min-h-[400px] overflow-y-auto">
               <iframe
                 src={`${creator.cvUrl}#view=FitH`}
-                className="w-full h-[500px] rounded-lg border border-[#d8d0c5] bg-white shadow-inner"
+                className="w-full h-[500px] rounded-lg border border-[#d8d0c5] bg-[var(--ui-surface)] shadow-inner"
                 title="CV Preview"
               />
             </div>
 
-            <div className="px-6 py-3 border-t border-[#e5e0d8] bg-white flex items-center justify-between">
-              <span className="text-[11px] text-gray-400">Direct client preview mode</span>
+            <div className="px-6 py-3 border-t border-[var(--ui-border2)] bg-[var(--ui-surface)] flex items-center justify-between">
+              <span className="text-[11px] text-[var(--ui-muted)]">Direct client preview mode</span>
               <div className="flex items-center gap-2">
                 <a
                   href={creator.cvUrl}
                   download
-                  className="px-4 py-2 bg-[#f0eae1] text-[#1c1917] text-xs font-semibold rounded-xl hover:bg-[#e4dbcd] transition"
+                  className="px-4 py-2 bg-[var(--ui-soft)] text-[var(--ui-text)] text-xs font-semibold rounded-xl hover:bg-[#e4dbcd] transition"
                 >
                   Download CV
                 </a>

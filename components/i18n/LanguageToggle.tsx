@@ -17,7 +17,7 @@ export default function LanguageToggle({ floating = false, className = "" }: { f
       aria-label={next === "ar" ? "Switch to Arabic" : "Switch to English"}
       className={
         (floating
-          ? "fixed bottom-4 left-4 z-40 h-11 rounded-full border border-[#D9CFC5] bg-white/95 px-4 text-sm font-semibold text-[#2C221E] shadow-lg backdrop-blur transition hover:border-[#C86C29] hover:text-[#C86C29] "
+          ? "fixed bottom-4 left-4 z-40 h-11 rounded-full border border-[var(--ui-input)] bg-[var(--ui-surface)]/95 px-4 text-sm font-semibold text-[var(--ui-text)] shadow-lg backdrop-blur transition hover:border-[#C86C29] hover:text-[#C86C29] "
           : "") + className
       }
     >

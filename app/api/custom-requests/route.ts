@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { execute, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
+import { clientAccess } from "@/lib/subscriptions";
 import { saveDeliveryFile } from "@/lib/deliveries";
 import { UploadError, removeFiles } from "@/lib/uploads";
 import {
@@ -39,6 +40,21 @@ export async function POST(request: Request) {
   if (!me) return NextResponse.json({ error: "Please log in." }, { status: 401 });
   if (me.role !== "client") {
     return NextResponse.json({ error: "Only client accounts can send custom requests." }, { status: 403 });
+  }
+
+  // "Hire me" requests are limited by plan
+  const { rules, hireMeUsed } = await clientAccess(me.id);
+  if (rules.hireMePerMonth !== null && hireMeUsed >= rules.hireMePerMonth) {
+    return NextResponse.json(
+      {
+        error:
+          rules.hireMePerMonth === 0
+            ? "Hire me is part of Business Pro and Enterprise. Upgrade your plan to send a request to a creator."
+            : `You used all ${rules.hireMePerMonth} Hire me requests of this month. Upgrade to Enterprise for unlimited requests.`,
+        upgrade: true,
+      },
+      { status: 403 }
+    );
   }
 
   let rawPayload: unknown;

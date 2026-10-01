@@ -106,16 +106,16 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="job-title"
-        className="relative z-10 flex max-h-[94dvh] w-full max-w-2xl flex-col rounded-2xl border border-[#EFE8E1] bg-[#FDFBF7] text-[#2C221E] shadow-2xl"
+        className="relative z-10 flex max-h-[94dvh] w-full max-w-2xl flex-col rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-bg)] text-[var(--ui-text)] shadow-2xl"
       >
-        <div className="flex shrink-0 items-start justify-between rounded-t-2xl border-b border-[#EFE8E1] bg-white px-6 py-4">
+        <div className="flex shrink-0 items-start justify-between rounded-t-2xl border-b border-[var(--ui-border)] bg-[var(--ui-surface)] px-6 py-4">
           <div>
             <h2 id="job-title" className="text-lg font-bold">
               Post a job
             </h2>
-            <p className="text-xs text-[#7D6E65]">Creators of this specialty can read it and send you offers.</p>
+            <p className="text-xs text-[var(--ui-muted)]">Creators of this specialty can read it and send you offers.</p>
           </div>
-          <button type="button" onClick={onClose} disabled={busy} aria-label="Close" className="text-lg leading-none text-[#7D6E65] hover:text-[#2C221E]">
+          <button type="button" onClick={onClose} disabled={busy} aria-label="Close" className="text-lg leading-none text-[var(--ui-muted)] hover:text-[var(--ui-text)]">
             ✕
           </button>
         </div>
@@ -156,7 +156,7 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
           </div>
 
           {specs.length > 0 && (
-            <section className="space-y-5 rounded-xl border border-[#E5DCD2] bg-white p-4">
+            <section className="space-y-5 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4">
               <h3 className="text-sm font-bold">About the work</h3>
               {specs.map((spec) => (
                 <SpecField key={spec.key} spec={spec} value={details[spec.key]} onChange={(v) => setDetails((d) => ({ ...d, [spec.key]: v }))} />
@@ -174,7 +174,7 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
                   ["quote", "Open to offers"],
                 ] as const
               ).map(([id, label]) => (
-                <label key={id} className={`cursor-pointer rounded-xl border px-4 py-2 text-sm transition ${budget === id ? "border-[#C86C29] bg-[#C86C29]/5 font-medium" : "border-[#D9CFC5] bg-white"}`}>
+                <label key={id} className={`cursor-pointer rounded-xl border px-4 py-2 text-sm transition ${budget === id ? "border-[#C86C29] bg-[#C86C29]/5 font-medium" : "border-[var(--ui-input)] bg-[var(--ui-surface)]"}`}>
                   <input type="radio" name="budget" checked={budget === id} onChange={() => setBudget(id)} className="mr-2 accent-[#C86C29]" />
                   {label}
                 </label>
@@ -210,7 +210,7 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
                   value={l.kind}
                   onChange={(e) => setLinks(links.map((x, idx) => (idx === i ? { ...x, kind: e.target.value as LinkKind } : x)))}
                   aria-label="Link type"
-                  className="h-10 w-32 shrink-0 rounded-xl border border-[#D9CFC5] bg-white px-2 text-sm"
+                  className="h-10 w-32 shrink-0 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-2 text-sm"
                 >
                   {LINK_KIND_OPTIONS.map((o) => (
                     <option key={o.kind} value={o.kind}>
@@ -226,7 +226,7 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
                   inputMode="url"
                   aria-label="Link address"
                   placeholder="https://"
-                  className="h-10 min-w-0 flex-1 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29]"
+                  className="h-10 min-w-0 flex-1 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29]"
                 />
                 <button type="button" aria-label="Remove link" onClick={() => setLinks(links.filter((_, idx) => idx !== i))} className={`${smallButton} h-10`}>
                   ✕
@@ -245,9 +245,9 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
             {files.length > 0 && (
               <ul className="space-y-1 text-sm">
                 {files.map((f, i) => (
-                  <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 rounded-lg border border-[#E5DCD2] bg-white px-3 py-1.5">
+                  <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 rounded-lg border border-[var(--ui-border2)] bg-[var(--ui-surface)] px-3 py-1.5">
                     <span className="truncate">{f.name}</span>
-                    <button type="button" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} className="shrink-0 text-xs font-semibold text-red-600 hover:underline">
+                    <button type="button" onClick={() => setFiles(files.filter((_, idx) => idx !== i))} className="shrink-0 text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">
                       Remove
                     </button>
                   </li>
@@ -257,14 +257,14 @@ export default function PostJobModal({ categories, onClose, onPosted }: Props) {
           </section>
 
           {error && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
         </div>
 
-        <div className="flex shrink-0 items-center justify-end gap-2 rounded-b-2xl border-t border-[#EFE8E1] bg-white px-6 py-4">
-          <button type="button" onClick={onClose} disabled={busy} className="rounded-xl border border-[#D9CFC5] bg-white px-4 py-2 text-sm font-medium transition hover:border-[#C86C29]">
+        <div className="flex shrink-0 items-center justify-end gap-2 rounded-b-2xl border-t border-[var(--ui-border)] bg-[var(--ui-surface)] px-6 py-4">
+          <button type="button" onClick={onClose} disabled={busy} className="rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-4 py-2 text-sm font-medium transition hover:border-[#C86C29]">
             Cancel
           </button>
           <button type="submit" disabled={busy} className="rounded-xl bg-[#C86C29] px-5 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-[#B05B1E] disabled:opacity-60">

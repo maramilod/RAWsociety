@@ -69,7 +69,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   return (
     <section>
       <h3 className="text-sm font-bold">{title}</h3>
-      {hint && <p className="mt-0.5 mb-2 text-xs text-[#7D6E65]">{hint}</p>}
+      {hint && <p className="mt-0.5 mb-2 text-xs text-[var(--ui-muted)]">{hint}</p>}
       <div className={hint ? "" : "mt-2"}>{children}</div>
     </section>
   );
@@ -233,18 +233,18 @@ export default function HireModal({ creator, onClose }: Props) {
         role="dialog"
         aria-modal="true"
         aria-labelledby="hire-title"
-        className="relative z-10 flex max-h-[94dvh] w-full max-w-2xl flex-col rounded-2xl border border-[#EFE8E1] bg-[#FDFBF7] text-[#2C221E] shadow-2xl"
+        className="relative z-10 flex max-h-[94dvh] w-full max-w-2xl flex-col rounded-2xl border border-[var(--ui-border)] bg-[var(--ui-bg)] text-[var(--ui-text)] shadow-2xl"
       >
         {/* Header and progress */}
-        <div className="shrink-0 rounded-t-2xl border-b border-[#EFE8E1] bg-white px-6 pb-4 pt-5">
+        <div className="shrink-0 rounded-t-2xl border-b border-[var(--ui-border)] bg-[var(--ui-surface)] px-6 pb-4 pt-5">
           <div className="flex items-start justify-between">
             <div>
               <h2 id="hire-title" className="text-lg font-bold">
                 Request a custom offer from {creator.name}
               </h2>
-              <p className="text-xs text-[#7D6E65]">{creator.category}</p>
+              <p className="text-xs text-[var(--ui-muted)]">{creator.category}</p>
             </div>
-            <button type="button" onClick={onClose} disabled={sending} aria-label="Close" className="text-lg leading-none text-[#7D6E65] hover:text-[#2C221E]">
+            <button type="button" onClick={onClose} disabled={sending} aria-label="Close" className="text-lg leading-none text-[var(--ui-muted)] hover:text-[var(--ui-text)]">
               ✕
             </button>
           </div>
@@ -262,13 +262,13 @@ export default function HireModal({ creator, onClose }: Props) {
                     }}
                     aria-current={i === step ? "step" : undefined}
                     className={`flex items-center gap-2 whitespace-nowrap rounded-full px-3 py-1.5 text-xs font-semibold transition ${
-                      i === step ? "bg-[#C86C29] text-white" : i < step ? "bg-[#F0EAE1] text-[#2C221E] hover:bg-[#E5DCD2]" : "bg-[#F7F4F0] text-[#A49A92]"
+                      i === step ? "bg-[#C86C29] text-white" : i < step ? "bg-[var(--ui-soft)] text-[var(--ui-text)] hover:bg-[var(--ui-border2)]" : "bg-[var(--ui-soft)] text-[var(--ui-muted)]"
                     }`}
                   >
-                    <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${i === step ? "bg-white/25" : "bg-black/5"}`}>{i < step ? "✓" : i + 1}</span>
+                    <span className={`flex h-4 w-4 items-center justify-center rounded-full text-[10px] ${i === step ? "bg-[var(--ui-surface)]/25" : "bg-black/5"}`}>{i < step ? "✓" : i + 1}</span>
                     {label}
                   </button>
-                  {i < STEPS.length - 1 && <span className="h-px w-3 bg-[#E5DCD2]" aria-hidden="true" />}
+                  {i < STEPS.length - 1 && <span className="h-px w-3 bg-[var(--ui-border2)]" aria-hidden="true" />}
                 </li>
               ))}
             </ol>
@@ -278,7 +278,7 @@ export default function HireModal({ creator, onClose }: Props) {
         {/* Body */}
         <div ref={scroller} className="space-y-7 overflow-y-auto p-6">
           {sent && (
-            <div role="status" className="rounded-xl border border-green-200 bg-green-50 p-5 text-sm text-green-900">
+            <div role="status" className="rounded-xl border border-green-200 dark:border-green-500/30 bg-green-50 dark:bg-green-500/10 p-5 text-sm text-green-900 dark:text-green-200">
               <p className="font-semibold">Request sent!</p>
               <p className="mt-1">
                 {creator.name} will review it and answer with an offer or a decline. You can follow it in your dashboard,
@@ -312,7 +312,7 @@ export default function HireModal({ creator, onClose }: Props) {
                   <div>
                     <Label htmlFor="h-summary">What do you need? (short description)</Label>
                     <textarea id="h-summary" value={draft.summary} onChange={(e) => set("summary", e.target.value)} maxLength={1500} rows={4} placeholder="Explain the work in a few sentences: what it is, who it is for, and what a great result looks like." className={textareaClass} />
-                    <p className="mt-1 text-right text-[11px] text-[#7D6E65]">{draft.summary.length}/1500</p>
+                    <p className="mt-1 text-right text-[11px] text-[var(--ui-muted)]">{draft.summary.length}/1500</p>
                   </div>
                   <div>
                     <Label htmlFor="h-brief" optional>
@@ -342,21 +342,21 @@ export default function HireModal({ creator, onClose }: Props) {
                   {draft.links.map((l) => {
                     const option = LINK_KIND_OPTIONS.find((o) => o.kind === l.kind);
                     return (
-                      <div key={l.key} className="space-y-2 rounded-xl border border-[#E5DCD2] bg-white p-3">
+                      <div key={l.key} className="space-y-2 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-3">
                         <div className="flex gap-2">
-                          <select value={l.kind} onChange={(e) => updateLink(l.key, { kind: e.target.value as LinkKind })} aria-label="Link type" className="h-10 w-36 shrink-0 rounded-xl border border-[#D9CFC5] bg-white px-2 text-sm outline-none focus:border-[#C86C29]">
+                          <select value={l.kind} onChange={(e) => updateLink(l.key, { kind: e.target.value as LinkKind })} aria-label="Link type" className="h-10 w-36 shrink-0 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-2 text-sm outline-none focus:border-[#C86C29]">
                             {LINK_KIND_OPTIONS.map((o) => (
                               <option key={o.kind} value={o.kind}>
                                 {o.label}
                               </option>
                             ))}
                           </select>
-                          <input value={l.url} onChange={(e) => updateLink(l.key, { url: e.target.value })} maxLength={500} inputMode="url" aria-label="Link address" placeholder={option?.placeholder ?? "https://"} className="h-10 min-w-0 flex-1 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29]" />
+                          <input value={l.url} onChange={(e) => updateLink(l.key, { url: e.target.value })} maxLength={500} inputMode="url" aria-label="Link address" placeholder={option?.placeholder ?? "https://"} className="h-10 min-w-0 flex-1 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29]" />
                           <button type="button" aria-label="Remove link" onClick={() => set("links", draft.links.filter((x) => x.key !== l.key))} className={`${smallButton} h-10 shrink-0`}>
                             ✕
                           </button>
                         </div>
-                        <input value={l.label} onChange={(e) => updateLink(l.key, { label: e.target.value })} maxLength={60} aria-label="What is this link? (optional)" placeholder="What is this? (optional), e.g. A logo I like" className="h-9 w-full rounded-lg border border-[#E5DCD2] bg-[#FDFBF7] px-3 text-xs outline-none focus:border-[#C86C29]" />
+                        <input value={l.label} onChange={(e) => updateLink(l.key, { label: e.target.value })} maxLength={60} aria-label="What is this link? (optional)" placeholder="What is this? (optional), e.g. A logo I like" className="h-9 w-full rounded-lg border border-[var(--ui-border2)] bg-[var(--ui-bg)] px-3 text-xs outline-none focus:border-[#C86C29]" />
                       </div>
                     );
                   })}
@@ -367,9 +367,9 @@ export default function HireModal({ creator, onClose }: Props) {
                   {files.length > 0 && (
                     <ul className="space-y-2">
                       {files.map((f, i) => (
-                        <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 rounded-xl border border-[#E5DCD2] bg-white px-3 py-2 text-sm">
+                        <li key={`${f.name}-${i}`} className="flex items-center justify-between gap-3 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] px-3 py-2 text-sm">
                           <span className="truncate">{f.name}</span>
-                          <button type="button" onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))} className="shrink-0 text-xs font-semibold text-red-600 hover:underline">
+                          <button type="button" onClick={() => setFiles((prev) => prev.filter((_, idx) => idx !== i))} className="shrink-0 text-xs font-semibold text-red-600 dark:text-red-400 hover:underline">
                             Remove
                           </button>
                         </li>
@@ -402,11 +402,11 @@ export default function HireModal({ creator, onClose }: Props) {
               <Section title="Your budget" hint="This is your offer. The creator can accept it, decline it, or answer with a different price.">
                 <div role="radiogroup" aria-label="How do you want to price it?" className="grid grid-cols-1 gap-2 sm:grid-cols-2">
                   {PRICING.map((p) => (
-                    <label key={p.id} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${draft.pricingType === p.id ? "border-[#C86C29] bg-[#C86C29]/5" : "border-[#D9CFC5] bg-white"}`}>
+                    <label key={p.id} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${draft.pricingType === p.id ? "border-[#C86C29] bg-[#C86C29]/5" : "border-[var(--ui-input)] bg-[var(--ui-surface)]"}`}>
                       <input type="radio" name="pricing" checked={draft.pricingType === p.id} onChange={() => set("pricingType", p.id)} className="mt-1 accent-[#C86C29]" />
                       <span>
                         <span className="block text-sm font-medium">{p.title}</span>
-                        <span className="block text-xs text-[#7D6E65]">{p.text}</span>
+                        <span className="block text-xs text-[var(--ui-muted)]">{p.text}</span>
                       </span>
                     </label>
                   ))}
@@ -417,7 +417,7 @@ export default function HireModal({ creator, onClose }: Props) {
                     <div className="max-w-xs">
                       <Label htmlFor="h-amount">Your offer (LYD)</Label>
                       <input id="h-amount" type="number" inputMode="decimal" min={1} step="0.01" value={draft.amount} onChange={(e) => set("amount", e.target.value)} placeholder="500" className={inputClass} />
-                      {baseService && <p className="mt-1 text-xs text-[#7D6E65]">The service costs {baseService.price.toLocaleString()} {baseService.currency}. A custom job can cost more or less.</p>}
+                      {baseService && <p className="mt-1 text-xs text-[var(--ui-muted)]">The service costs {baseService.price.toLocaleString()} {baseService.currency}. A custom job can cost more or less.</p>}
                     </div>
                   )}
                   {draft.pricingType === "range" && (
@@ -442,11 +442,11 @@ export default function HireModal({ creator, onClose }: Props) {
                         <Label htmlFor="h-hours">Expected hours</Label>
                         <input id="h-hours" type="number" inputMode="numeric" min={1} step={1} value={draft.hours} onChange={(e) => set("hours", e.target.value)} placeholder="10" className={inputClass} />
                       </div>
-                      {total !== null && <p className="col-span-2 text-xs text-[#7D6E65]">About {total.toLocaleString()} LYD in total.</p>}
+                      {total !== null && <p className="col-span-2 text-xs text-[var(--ui-muted)]">About {total.toLocaleString()} LYD in total.</p>}
                     </div>
                   )}
                   {draft.pricingType === "quote" && (
-                    <p className="rounded-xl bg-[#F7F4F0] px-4 py-3 text-sm text-[#554f49]">No problem. The creator will read your request and answer with their price.</p>
+                    <p className="rounded-xl bg-[var(--ui-soft)] px-4 py-3 text-sm text-[var(--ui-text2)]">No problem. The creator will read your request and answer with their price.</p>
                   )}
                 </div>
               </Section>
@@ -459,11 +459,11 @@ export default function HireModal({ creator, onClose }: Props) {
                       ["date", "By a date", "You need it by a specific day."],
                     ] as const
                   ).map(([id, title, text]) => (
-                    <label key={id} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${draft.deadlineType === id ? "border-[#C86C29] bg-[#C86C29]/5" : "border-[#D9CFC5] bg-white"}`}>
+                    <label key={id} className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${draft.deadlineType === id ? "border-[#C86C29] bg-[#C86C29]/5" : "border-[var(--ui-input)] bg-[var(--ui-surface)]"}`}>
                       <input type="radio" name="deadline" checked={draft.deadlineType === id} onChange={() => set("deadlineType", id)} className="mt-1 accent-[#C86C29]" />
                       <span>
                         <span className="block text-sm font-medium">{title}</span>
-                        <span className="block text-xs text-[#7D6E65]">{text}</span>
+                        <span className="block text-xs text-[var(--ui-muted)]">{text}</span>
                       </span>
                     </label>
                   ))}
@@ -489,7 +489,7 @@ export default function HireModal({ creator, onClose }: Props) {
                 </select>
               </Section>
 
-              <p className="rounded-xl border border-[#E5DCD2] bg-white p-4 text-xs leading-relaxed text-[#554f49]">
+              <p className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4 text-xs leading-relaxed text-[var(--ui-text2)]">
                 <span className="font-semibold">How payment works: </span>
                 you pay only after the creator accepts. Your money is held safely by RAW society and released to the creator only when you approve the delivered work.
               </p>
@@ -539,9 +539,9 @@ export default function HireModal({ creator, onClose }: Props) {
           {/* ---------------- Step 5: review ---------------- */}
           {!sent && step === 4 && (
             <>
-              <p className="text-sm text-[#554f49]">Check your request. This is what {creator.name} will read.</p>
+              <p className="text-sm text-[var(--ui-text2)]">Check your request. This is what {creator.name} will read.</p>
               {summary.map((section) => (
-                <section key={section.title} className="rounded-xl border border-[#E5DCD2] bg-white p-4">
+                <section key={section.title} className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4">
                   <div className="mb-3 flex items-center justify-between">
                     <h3 className="text-sm font-bold">{section.title}</h3>
                     <button type="button" onClick={() => { setError(""); setStep(section.step); }} className="text-xs font-semibold text-[#C86C29] hover:underline">
@@ -551,7 +551,7 @@ export default function HireModal({ creator, onClose }: Props) {
                   <dl className="space-y-2.5">
                     {section.rows.map((row) => (
                       <div key={row.label} className="grid grid-cols-1 gap-0.5 sm:grid-cols-3 sm:gap-3">
-                        <dt className="text-xs font-semibold text-[#7D6E65]">{row.label}</dt>
+                        <dt className="text-xs font-semibold text-[var(--ui-muted)]">{row.label}</dt>
                         <dd className="whitespace-pre-line break-words text-sm sm:col-span-2">{row.value}</dd>
                       </div>
                     ))}
@@ -559,7 +559,7 @@ export default function HireModal({ creator, onClose }: Props) {
                 </section>
               ))}
 
-              <label htmlFor="h-terms" className="flex cursor-pointer items-start gap-3 rounded-xl border border-[#E5DCD2] bg-white p-4">
+              <label htmlFor="h-terms" className="flex cursor-pointer items-start gap-3 rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-4">
                 <input id="h-terms" type="checkbox" checked={draft.terms} onChange={(e) => set("terms", e.target.checked)} className="mt-0.5 h-4 w-4 accent-[#C86C29]" />
                 <span className="text-sm">
                   I understand this is a request. The creator can accept it, decline it, or suggest a different price. I pay only after they accept, and my payment is held until I approve the work.
@@ -569,20 +569,20 @@ export default function HireModal({ creator, onClose }: Props) {
           )}
 
           {error && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
           {notice && (
-            <p role="status" className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+            <p role="status" className="rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
               {notice}
             </p>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex shrink-0 items-center justify-between gap-3 rounded-b-2xl border-t border-[#EFE8E1] bg-white px-6 py-4">
-          <div className="text-xs text-[#7D6E65]">
+        <div className="flex shrink-0 items-center justify-between gap-3 rounded-b-2xl border-t border-[var(--ui-border)] bg-[var(--ui-surface)] px-6 py-4">
+          <div className="text-xs text-[var(--ui-muted)]">
             {!sent && (
               <>
                 <span>Saved on this device as you type. </span>
@@ -600,7 +600,7 @@ export default function HireModal({ creator, onClose }: Props) {
             ) : (
               <>
                 {step > 0 && (
-                  <button type="button" onClick={() => { setError(""); setNotice(""); setStep((s) => s - 1); }} disabled={sending} className="rounded-xl border border-[#D9CFC5] bg-white px-4 py-2 text-sm font-medium hover:border-[#C86C29] transition">
+                  <button type="button" onClick={() => { setError(""); setNotice(""); setStep((s) => s - 1); }} disabled={sending} className="rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-4 py-2 text-sm font-medium hover:border-[#C86C29] transition">
                     Back
                   </button>
                 )}

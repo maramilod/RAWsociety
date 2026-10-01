@@ -13,7 +13,7 @@ function ProfilePageContent() {
 
   const [nickname, setNickname] = useState("");
   const [company, setCompany] = useState("");
-  const [industry, setIndustry] = useState("");
+  const [industry, setIndustry] = useState("All fields");
   const [companySize, setCompanySize] = useState("");
   const [services, setServices] = useState<string[]>([]);
   const [budget, setBudget] = useState("");
@@ -33,7 +33,7 @@ function ProfilePageContent() {
         if (cancelled || !p) return;
         setNickname(p.nickname);
         setCompany(p.company);
-        setIndustry(p.industry);
+        setIndustry(p.industry || "All fields");
         setCompanySize(p.companySize);
         setServices(p.services);
         setBudget(p.budget);
@@ -60,20 +60,23 @@ function ProfilePageContent() {
     );
   };
 
-  const handleNext = async () => {
+  const handleNext = async (skip = false) => {
     setError("");
     setSaving(true);
     try {
       // حفظ الملف الشخصي في قاعدة البيانات
       const form = new FormData();
-      form.set("nickname", nickname);
-      form.set("company", company);
-      form.set("industry", industry);
-      form.set("companySize", companySize);
-      form.set("budget", budget);
-      form.set("description", description);
-      services.forEach((s) => form.append("services", s));
-      if (logoFile) form.set("logo", logoFile);
+      if (skip) form.set("skip", "1");
+      if (!skip) {
+        form.set("nickname", nickname);
+        form.set("company", company);
+        form.set("industry", industry);
+        form.set("companySize", companySize);
+        form.set("budget", budget);
+        form.set("description", description);
+        services.forEach((s) => form.append("services", s));
+        if (logoFile) form.set("logo", logoFile);
+      }
 
       const res = await fetch("/api/profile/client", { method: "POST", body: form });
       const data = await res.json().catch(() => ({}));
@@ -108,13 +111,16 @@ function ProfilePageContent() {
     <main className="max-w-5xl mx-auto p-10">
       <p>Step 2 of 5</p>
 
-      <div className="h-2 bg-orange-100 rounded-full mt-2 mb-8">
+      <div className="h-2 bg-orange-100 dark:bg-orange-500/20 rounded-full mt-2 mb-8">
         <div className="h-2 w-2/5 bg-orange-500 rounded-full" />
       </div>
 
       <h1 className="text-4xl font-bold mb-2">
         Set up your client profile
       </h1>
+      <p className="mb-6 text-sm text-[var(--text-muted)]">
+        Nothing here is required. If you skip, your profile uses your account name, a default picture, all fields and no budget. You can change it later.
+      </p>
 
       {/* Logo Upload */}
       <div className="mb-8">
@@ -175,7 +181,7 @@ function ProfilePageContent() {
           </label>
 
           <input
-            className="w-full h-12 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition"
+            className="w-full h-12 rounded-xl border border-[var(--ui-input)] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition"
             placeholder="Nickname"
             value={nickname}
             maxLength={60}
@@ -189,7 +195,7 @@ function ProfilePageContent() {
           </label>
 
           <input
-            className="w-full h-12 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition"
+            className="w-full h-12 rounded-xl border border-[var(--ui-input)] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition"
             placeholder="Company name"
             value={company}
             maxLength={160}
@@ -206,11 +212,11 @@ function ProfilePageContent() {
             onChange={(e) => setIndustry(e.target.value)}
             className={`w-full h-12 rounded-xl border border-[var(--border-default)] bg-[var(--profile-input-bg)] px-4 outline-none transition ${
               industry
-                ? "text-black dark:text-white"
+                ? "text-[var(--ui-text)] dark:text-white"
                 : "text-[var(--text-placeholder)]"
             } focus:border-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/20`}
           >
-            <option value="">Select industry</option>
+            <option value="All fields">All fields</option>
             <option>Technology</option>
             <option>Marketing & Advertising</option>
             <option>Design & Creative</option>
@@ -227,9 +233,9 @@ function ProfilePageContent() {
           <select
             value={companySize}
             onChange={(e) => setCompanySize(e.target.value)}
-            className={`w-full h-12 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] px-4 outline-none focus:border-[#C86L29] focus:ring-2 focus:ring-[#C86C29]/20 transition ${
+            className={`w-full h-12 rounded-xl border border-[var(--ui-input)] bg-[var(--profile-input-bg)] px-4 outline-none focus:border-[#C86L29] focus:ring-2 focus:ring-[#C86C29]/20 transition ${
               companySize
-                ? "text-black dark:text-white"
+                ? "text-[var(--ui-text)] dark:text-white"
                 : "text-[var(--text-placeholder)]"
             } focus:border-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/20`}
           >
@@ -253,7 +259,7 @@ function ProfilePageContent() {
             (item) => (
               <label
                 key={item}
-                className="flex items-center gap-3 h-12 px-4 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] cursor-pointer hover:border-[#C86C29] transition"
+                className="flex items-center gap-3 h-12 px-4 rounded-xl border border-[var(--ui-input)] bg-[var(--profile-input-bg)] cursor-pointer hover:border-[#C86C29] transition"
               >
                 <input
                   type="checkbox"
@@ -280,13 +286,13 @@ function ProfilePageContent() {
         <select
           value={budget}
           onChange={(e) => setBudget(e.target.value)}
-          className={`w-full h-12 rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition ${
+          className={`w-full h-12 rounded-xl border border-[var(--ui-input)] bg-[var(--profile-input-bg)] px-4 text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition ${
             budget
               ? "text-[var(--profile-input-bg)]"
               : "text-[var(--text-placeholder)]"
           } focus:border-[var(--brand-orange)] focus:ring-2 focus:ring-[var(--brand-orange)]/20`}
         >
-          <option value="">Budget</option>
+          <option value="">Not specified</option>
           <option>Less than 1000 LYD</option>
           <option>1000 - 5000 LYD</option>
           <option>5000+ LYD</option>
@@ -301,7 +307,7 @@ function ProfilePageContent() {
 
         <textarea
           rows={5}
-          className="w-full rounded-xl border border-[#D9CFC5] bg-[var(--profile-input-bg)] p-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition resize-none"
+          className="w-full rounded-xl border border-[var(--ui-input)] bg-[var(--profile-input-bg)] p-4 text-[var(--profile-input-txt)] placeholder:text-[var(--profile-placeholder-txt)] outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition resize-none"
           placeholder="Tell creators what kind of work you usually need…"
           value={description}
           maxLength={2000}
@@ -310,7 +316,7 @@ function ProfilePageContent() {
       </div>
 
       {error && (
-        <p role="alert" className="mt-6 text-sm font-medium text-red-600">
+        <p role="alert" className="mt-6 text-sm font-medium text-red-600 dark:text-red-400">
           {error}{" "}
           {error.startsWith("Please log in") && (
             <a href="/login" className="underline">
@@ -328,13 +334,23 @@ function ProfilePageContent() {
           Back
         </button>
 
-        <button
-          onClick={handleNext}
-          disabled={saving}
-          className="bg-[var(--cta-bg)] text-[var(--cta-text)] hover:opacity-90 px-8 py-3 rounded disabled:opacity-60"
-        >
-          {saving ? "Saving..." : "Next"}
-        </button>
+        <div className="flex items-center gap-3">
+          <button
+            type="button"
+            onClick={() => handleNext(true)}
+            disabled={saving}
+            className="px-6 py-3 rounded border border-[var(--border-default)] font-medium hover:border-[var(--brand-orange)] transition disabled:opacity-60"
+          >
+            Skip
+          </button>
+          <button
+            onClick={() => handleNext()}
+            disabled={saving}
+            className="bg-[var(--cta-bg)] text-[var(--cta-text)] hover:opacity-90 px-8 py-3 rounded disabled:opacity-60"
+          >
+            {saving ? "Saving..." : "Next"}
+          </button>
+        </div>
       </div>
     </main>
   );

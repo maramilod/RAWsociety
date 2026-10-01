@@ -125,17 +125,17 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
   const small = "px-3 py-1.5 text-xs font-semibold rounded-lg border transition disabled:opacity-50";
 
   return (
-    <div className="bg-white border border-[#EFE8E1] rounded-2xl p-4 sm:p-6 shadow-sm">
-      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[#EFE8E1] pb-5 mb-6">
+    <div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-2xl p-4 sm:p-6 shadow-sm">
+      <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-5 mb-6">
         <h2 className="text-xl font-bold">{isClient ? "Your Orders" : "Orders & Requests"}</h2>
 
-        <div className="flex flex-wrap items-center gap-1 bg-[#F7F4F0] p-1 rounded-xl">
+        <div className="flex flex-wrap items-center gap-1 bg-[var(--ui-soft)] p-1 rounded-xl">
           {tabsFor(viewer).map((t) => (
             <button
               key={t.key}
               onClick={() => setTab(t.key)}
               className={`px-3 py-1.5 text-xs font-medium rounded-lg transition ${
-                tab === t.key ? "bg-white text-[#2C221E] shadow-sm" : "text-[#7D6E65] hover:text-[#2C221E]"
+                tab === t.key ? "bg-[var(--ui-surface)] text-[var(--ui-text)] shadow-sm" : "text-[var(--ui-muted)] hover:text-[var(--ui-text)]"
               }`}
             >
               {t.label}
@@ -147,7 +147,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
       {!isClient && pendingCount > 0 && (
         <div
           role="status"
-          className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-purple-200 bg-purple-50 px-4 py-3 text-sm text-purple-900"
+          className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-purple-200 dark:border-purple-500/30 bg-purple-50 dark:bg-purple-500/10 px-4 py-3 text-sm text-purple-900 dark:text-purple-200"
         >
           <span>
             You have <strong>{pendingCount}</strong> new booking {pendingCount === 1 ? "request" : "requests"} waiting for
@@ -168,7 +168,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
       {isClient && toPayCount > 0 && (
         <div
           role="status"
-          className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-900"
+          className="mb-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3 rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-900 dark:text-amber-200"
         >
           <span>
             <strong>{toPayCount}</strong> {toPayCount === 1 ? "order was" : "orders were"} accepted by the creator. Pay to
@@ -187,13 +187,13 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
       )}
 
       {actionError && (
-        <p role="alert" className="mb-4 text-sm font-medium text-red-600">
+        <p role="alert" className="mb-4 text-sm font-medium text-red-600 dark:text-red-400">
           {actionError}
         </p>
       )}
-      {loading && <p className="text-sm text-[#7D6E65]">Loading your orders...</p>}
+      {loading && <p className="text-sm text-[var(--ui-muted)]">Loading your orders...</p>}
       {!loading && error && (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
@@ -202,7 +202,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
         <div className="text-center py-8">
           {isClient ? (
             <>
-              <p className="text-sm text-[#7D6E65] mb-4">
+              <p className="text-sm text-[var(--ui-muted)] mb-4">
                 You haven&apos;t booked anything yet. Find a creator and book one of their services.
               </p>
               <Link
@@ -213,7 +213,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
               </Link>
             </>
           ) : (
-            <p className="text-sm text-[#7D6E65]">
+            <p className="text-sm text-[var(--ui-muted)]">
               No orders yet. When a client books one of your services, the request appears here.
             </p>
           )}
@@ -221,13 +221,13 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
       )}
 
       {!loading && orders.length > 0 && visible.length === 0 && (
-        <p className="text-sm text-[#7D6E65]">No orders in this list.</p>
+        <p className="text-sm text-[var(--ui-muted)]">No orders in this list.</p>
       )}
 
       {visible.length > 0 && (
         <div className="overflow-x-auto">
           <table className="w-full text-left text-sm block md:table">
-            <thead className="hidden md:table-header-group bg-[#FDFBF7] text-[#7D6E65] border-b border-[#EFE8E1]">
+            <thead className="hidden md:table-header-group bg-[var(--ui-bg)] text-[var(--ui-muted)] border-b border-[var(--ui-border)]">
               <tr>
                 <th className="pb-3 pt-3 px-4 font-semibold">Order ID</th>
                 <th className="pb-3 pt-3 px-4 font-semibold">{isClient ? "Creator" : "Client"}</th>
@@ -238,20 +238,20 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                 <th className="pb-3 pt-3 px-4 font-semibold text-right">Action</th>
               </tr>
             </thead>
-            <tbody className="block md:table-row-group space-y-4 md:space-y-0 md:divide-y md:divide-[#EFE8E1]">
+            <tbody className="block md:table-row-group space-y-4 md:space-y-0 md:divide-y md:divide-[var(--ui-border)]">
               {visible.map((o) => {
                 const status = statusLabel(o.status, o.cancelledBy, viewer, o.paymentState);
                 const busy = busyId === o.id;
                 const paid = o.payoutStatus !== "none";
                 return (
-                  <tr key={o.id} className="block md:table-row rounded-xl border border-[#EFE8E1] md:border-0 p-3 md:p-0 hover:bg-[#FDFBF7]/50 transition align-top">
-                    <td data-label="Order" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 font-medium text-[#2C221E] whitespace-nowrap max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[#7D6E65] max-md:before:mb-0.5">{o.number}</td>
-                    <td data-label={isClient ? "Creator" : "Client"} className="block md:table-cell py-2 md:py-4 px-1 md:px-4 max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[#7D6E65] max-md:before:mb-0.5">
-                      <div className="font-medium text-[#2C221E]">{o.other.name}</div>
-                      {o.other.subtitle && <div className="text-xs text-[#7D6E65]">{o.other.subtitle}</div>}
+                  <tr key={o.id} className="block md:table-row rounded-xl border border-[var(--ui-border)] md:border-0 p-3 md:p-0 hover:bg-[var(--ui-bg)]/50 transition align-top">
+                    <td data-label="Order" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 font-medium text-[var(--ui-text)] whitespace-nowrap max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[var(--ui-muted)] max-md:before:mb-0.5">{o.number}</td>
+                    <td data-label={isClient ? "Creator" : "Client"} className="block md:table-cell py-2 md:py-4 px-1 md:px-4 max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[var(--ui-muted)] max-md:before:mb-0.5">
+                      <div className="font-medium text-[var(--ui-text)]">{o.other.name}</div>
+                      {o.other.subtitle && <div className="text-xs text-[var(--ui-muted)]">{o.other.subtitle}</div>}
                     </td>
-                    <td data-label="Service" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 text-[#7D6E65] max-w-xs max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[#7D6E65] max-md:before:mb-0.5">
-                      <div className="text-[#2C221E] font-medium">{o.title}</div>
+                    <td data-label="Service" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 text-[var(--ui-muted)] max-w-xs max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[var(--ui-muted)] max-md:before:mb-0.5">
+                      <div className="text-[var(--ui-text)] font-medium">{o.title}</div>
                       {o.brief && (
                         <p
                           className={`mt-1 text-xs whitespace-pre-line ${
@@ -274,10 +274,10 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                           <p
                             className={`mt-1 text-xs whitespace-pre-line rounded-lg px-2 py-1 ${
                               o.latestNote.kind === "revision_request"
-                                ? "bg-blue-50 text-blue-900"
+                                ? "bg-blue-50 dark:bg-blue-500/10 text-blue-900 dark:text-blue-200"
                                 : o.latestNote.kind === "dispute"
-                                  ? "bg-red-50 text-red-900"
-                                  : "bg-amber-50 text-amber-900"
+                                  ? "bg-red-50 dark:bg-red-500/10 text-red-900 dark:text-red-200"
+                                  : "bg-amber-50 dark:bg-amber-500/10 text-amber-900 dark:text-amber-200"
                             }`}
                           >
                             <span className="font-semibold">
@@ -291,7 +291,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                           </p>
                         )}
                       {o.review && (
-                        <p className="mt-1 text-xs rounded-lg bg-amber-50 px-2 py-1 text-amber-900 whitespace-pre-line">
+                        <p className="mt-1 text-xs rounded-lg bg-amber-50 dark:bg-amber-500/10 px-2 py-1 text-amber-900 dark:text-amber-200 whitespace-pre-line">
                           <span className="text-amber-500" aria-label={`${o.review.rating} out of 5 stars`}>
                             {"★".repeat(o.review.rating)}
                             <span className="text-amber-200">{"★".repeat(5 - o.review.rating)}</span>
@@ -302,30 +302,30 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                       )}
                       <p className="mt-1 text-[11px]">Requested {new Date(o.createdAt).toLocaleDateString()}</p>
                     </td>
-                    <td data-label={isClient ? "Amount" : "Price"} className="block md:table-cell py-2 md:py-4 px-1 md:px-4 whitespace-nowrap max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[#7D6E65] max-md:before:mb-0.5">
+                    <td data-label={isClient ? "Amount" : "Price"} className="block md:table-cell py-2 md:py-4 px-1 md:px-4 whitespace-nowrap max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[var(--ui-muted)] max-md:before:mb-0.5">
                       <div className="font-semibold">{formatPrice(o.amount, o.currency)}</div>
-                      {isClient && paid && <div className="mt-1 text-[11px] text-green-700">Paid</div>}
+                      {isClient && paid && <div className="mt-1 text-[11px] text-green-700 dark:text-green-200">Paid</div>}
                       {!isClient && o.creatorPayout !== null && o.payoutStatus !== "none" && (
-                        <div className="mt-1 text-[11px] text-[#7D6E65]">
+                        <div className="mt-1 text-[11px] text-[var(--ui-muted)]">
                           You receive {formatPrice(o.creatorPayout, o.currency)}
                           <br />
                           <span className="text-[#C86C29]">{PAYOUT_TEXT[o.payoutStatus]}</span>
                         </div>
                       )}
                     </td>
-                    <td data-label="Status" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[#7D6E65] max-md:before:mb-0.5">
+                    <td data-label="Status" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[var(--ui-muted)] max-md:before:mb-0.5">
                       <span
                         className={`inline-flex items-center whitespace-nowrap px-2.5 py-0.5 rounded-full text-xs font-medium ${TONE_CLASSES[status.tone]}`}
                       >
                         {status.label}
                       </span>
                       {o.status === "awaiting_payment" && o.paymentState === "rejected" && (
-                        <p className="mt-1 max-w-[12rem] text-[11px] text-red-600">
+                        <p className="mt-1 max-w-[12rem] text-[11px] text-red-600 dark:text-red-400">
                           Last payment not confirmed{o.paymentNote ? `: ${o.paymentNote}` : ""}
                         </p>
                       )}
                     </td>
-                    <td data-label="Deadline" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 text-[#7D6E65] text-xs max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[#7D6E65] max-md:before:mb-0.5">{timeText(o)}</td>
+                    <td data-label="Deadline" className="block md:table-cell py-2 md:py-4 px-1 md:px-4 text-[var(--ui-muted)] text-xs max-md:before:content-[attr(data-label)] max-md:before:block max-md:before:text-[11px] max-md:before:font-semibold max-md:before:uppercase max-md:before:text-[var(--ui-muted)] max-md:before:mb-0.5">{timeText(o)}</td>
                     <td className="block md:table-cell py-2 md:py-4 px-1 md:px-4">
                       <div className="flex flex-wrap md:justify-end gap-2">
                         {/* creator */}
@@ -343,7 +343,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                               type="button"
                               disabled={busy}
                               onClick={() => act(o, "decline")}
-                              className={`${small} border-[#D9CFC5] text-red-600 hover:border-red-400`}
+                              className={`${small} border-[var(--ui-input)] text-red-600 dark:text-red-400 hover:border-red-400`}
                             >
                               Decline
                             </button>
@@ -362,7 +362,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                           <button
                             type="button"
                             onClick={() => setViewingId(o.id)}
-                            className={`${small} border-[#D9CFC5] text-[#C86C29] hover:border-[#C86C29]`}
+                            className={`${small} border-[var(--ui-input)] text-[#C86C29] hover:border-[#C86C29]`}
                           >
                             View delivery
                           </button>
@@ -374,7 +374,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                             type="button"
                             disabled={busy}
                             onClick={() => act(o, "cancel")}
-                            className={`${small} border-[#D9CFC5] text-red-600 hover:border-red-400`}
+                            className={`${small} border-[var(--ui-input)] text-red-600 dark:text-red-400 hover:border-red-400`}
                           >
                             Cancel request
                           </button>
@@ -393,7 +393,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                                 type="button"
                                 disabled={busy}
                                 onClick={() => act(o, "cancel")}
-                                className={`${small} border-[#D9CFC5] text-red-600 hover:border-red-400`}
+                                className={`${small} border-[var(--ui-input)] text-red-600 dark:text-red-400 hover:border-red-400`}
                               >
                                 Cancel
                               </button>
@@ -422,7 +422,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                           <button
                             type="button"
                             onClick={() => setViewingId(o.id)}
-                            className={`${small} border-[#D9CFC5] text-[#C86C29] hover:border-[#C86C29]`}
+                            className={`${small} border-[var(--ui-input)] text-[#C86C29] hover:border-[#C86C29]`}
                           >
                             View delivery
                           </button>
@@ -431,7 +431,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                           <button
                             type="button"
                             onClick={() => messageCreator(o)}
-                            className={`${small} border-[#D9CFC5] text-[#C86C29] hover:border-[#C86C29]`}
+                            className={`${small} border-[var(--ui-input)] text-[#C86C29] hover:border-[#C86C29]`}
                           >
                             Message
                           </button>
@@ -453,12 +453,12 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
             role="dialog"
             aria-modal="true"
             aria-label="Rate the creator"
-            className="relative z-10 w-full max-w-md rounded-2xl bg-[#FDFBF7] border border-[#EFE8E1] shadow-2xl p-6 text-[#2C221E]"
+            className="relative z-10 w-full max-w-md rounded-2xl bg-[var(--ui-bg)] border border-[var(--ui-border)] shadow-2xl p-6 text-[var(--ui-text)]"
           >
             <div className="flex items-start justify-between mb-4">
               <div>
                 <h2 className="text-lg font-bold">Rate the work</h2>
-                <p className="text-xs text-[#7D6E65]">
+                <p className="text-xs text-[var(--ui-muted)]">
                   {rating.number} · {rating.title}
                 </p>
               </div>
@@ -466,7 +466,7 @@ export default function OrdersSection({ viewer, orders, loading, error, onChange
                 type="button"
                 onClick={() => setRating(null)}
                 aria-label="Close"
-                className="text-[#7D6E65] hover:text-[#2C221E] text-lg leading-none"
+                className="text-[var(--ui-muted)] hover:text-[var(--ui-text)] text-lg leading-none"
               >
                 ✕
               </button>

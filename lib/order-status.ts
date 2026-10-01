@@ -64,12 +64,12 @@ export function statusLabel(
 }
 
 export const TONE_CLASSES: Record<Tone, string> = {
-  waiting: "bg-purple-100 text-purple-800",
-  active: "bg-amber-100 text-amber-800",
-  review: "bg-blue-100 text-blue-800",
-  done: "bg-green-100 text-green-800",
-  stopped: "bg-gray-100 text-gray-700",
-  alert: "bg-red-100 text-red-800",
+  waiting: "bg-purple-100 dark:bg-purple-500/20 text-purple-800 dark:text-purple-200",
+  active: "bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-200",
+  review: "bg-blue-100 dark:bg-blue-500/20 text-blue-800 dark:text-blue-200",
+  done: "bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-200",
+  stopped: "bg-[var(--ui-soft)] text-[var(--ui-text)]",
+  alert: "bg-red-100 dark:bg-red-500/20 text-red-800 dark:text-red-200",
 };
 
 /** One row of the dashboards' order tables, as returned by GET /api/orders. */

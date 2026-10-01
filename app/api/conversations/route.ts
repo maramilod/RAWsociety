@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { randomUUID } from "node:crypto";
 import { execute, query, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
+import { clientAccess } from "@/lib/subscriptions";
 
 interface ConversationRow extends RowDataPacket {
   id: string;
@@ -72,6 +73,11 @@ export async function POST(request: Request) {
       { error: "Only client accounts can message creators." },
       { status: 403 }
     );
+  }
+
+  const access = await clientAccess(me.id);
+  if (access.rules.messagesPerMonth === 0) {
+    return NextResponse.json({ error: "Messaging creators is part of Business Pro and Enterprise. Upgrade your plan to start a conversation.", upgrade: true }, { status: 403 });
   }
 
   let creatorId = "";

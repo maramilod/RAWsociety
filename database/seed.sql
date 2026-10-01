@@ -26,12 +26,12 @@ INSERT INTO plans (code, audience, name, price, limits, features, sort_order) VA
         '["Unlimited works","Featured profile placement","Priority support"]', 3),
     ('client_free', 'client', 'Free', 0,
         '{"max_briefs":3,"can_message":false,"branding":false}',
-        '["Browse creator portfolios","Send up to 3 project briefs","Standard support","No custom company branding / logo"]', 1),
+        '["See up to 6 offers","Creator names and profiles stay hidden","Cannot order services","No messaging with creators","No company logo or branding"]', 1),
     ('client_pro', 'client', 'Business Pro', 150,
         '{"max_briefs":null,"can_message":true,"branding":true,"verified_filter":true}',
-        '["Unlimited project briefs","Direct chat & file sharing","Verified creator filter","Custom company branding & logo"]', 2),
+        '["See all offers and all creators","Order any listed service, no limit","Hire me: 3 requests per month","Up to 50 messages per month","Company identity: logo and branding"]', 2),
     ('client_enterprise', 'client', 'Enterprise', 350,
         '{"max_briefs":null,"can_message":true,"branding":true,"verified_filter":true,"account_manager":true}',
-        '["Dedicated account manager","Custom contracts & invoicing","VIP talent matchmaking","Custom company branding & logo"]', 3);
+        '["See all offers and all creators","Order any listed service, no limit","Unlimited Hire me requests to the creators you choose","Unlimited messages to creators","Post your own job and receive offers from creators","Company identity: logo and branding"]', 3);
 
 COMMIT;

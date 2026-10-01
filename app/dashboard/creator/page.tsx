@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useSession, signOut } from "next-auth/react";
 import Messenger from "@/components/Messenger";
 import PlanBanner from "@/components/PlanBanner";
+import PayoutNotice from "@/components/PayoutNotice";
 import ServicesSection from "@/components/services/ServicesSection";
 import ServiceModal from "@/components/services/ServiceModal";
 import {
@@ -61,7 +62,7 @@ export default function CreatorDashboardPage() {
   }, [loadServices]);
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#2C221E] px-4 py-5 sm:p-6 md:p-10 overflow-x-hidden">
+    <div className="min-h-screen bg-[var(--ui-bg)] text-[var(--ui-text)] px-4 py-5 sm:p-6 md:p-10 overflow-x-hidden">
       {/* Header Section */}
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 md:mb-10">
         <div>
@@ -69,7 +70,7 @@ export default function CreatorDashboardPage() {
             <p className="text-lg font-semibold text-[#C86C29] mb-1">Hey, {userName}</p>
           )}
           <h1 className="text-2xl sm:text-3xl font-bold tracking-tight">Creator Dashboard</h1>
-          <p className="text-sm text-[#7D6E65] mt-1">
+          <p className="text-sm text-[var(--ui-muted)] mt-1">
             Welcome back! Here is an overview of your active projects and total earnings.
           </p>
         </div>
@@ -77,19 +78,25 @@ export default function CreatorDashboardPage() {
         <div className="grid grid-cols-2 sm:flex sm:flex-wrap sm:items-center gap-2 sm:gap-3 [&>*]:text-center [&>*]:min-h-11 sm:[&>*]:min-h-0 [&>*]:flex [&>*]:items-center [&>*]:justify-center">
           <Link
             href="/onboarding/creator"
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-[#C86C29] transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
           >
             Edit Profile
           </Link>
           <Link
+            href="/onboarding/payout?edit=1"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
+          >
+            Payout details
+          </Link>
+          <Link
             href="/dashboard/creator/jobs"
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-[#C86C29] transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
           >
             Jobs
           </Link>
           <Link
             href="/dashboard/plan"
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-[#C86C29] transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
           >
             Membership
           </Link>
@@ -103,7 +110,7 @@ export default function CreatorDashboardPage() {
           <button
             type="button"
             onClick={() => signOut({ callbackUrl: "/" })}
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-red-400 hover:text-red-600 transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-red-400 hover:text-red-600 transition bg-[var(--ui-surface)]"
           >
             Log out
           </button>
@@ -112,26 +119,27 @@ export default function CreatorDashboardPage() {
 
       <div className="max-w-7xl mx-auto space-y-6 md:space-y-8">
         <PlanBanner />
+        <PayoutNotice />
         {/* Analytics Cards */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-5">
-          <div className="p-4 sm:p-6 rounded-2xl bg-white border border-[#EFE8E1] shadow-sm">
-            <p className="text-sm font-medium text-[#7D6E65]">Total Revenue</p>
-            <p className="text-2xl sm:text-3xl font-extrabold mt-2 text-[#2C221E]">
+          <div className="p-4 sm:p-6 rounded-2xl bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm">
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Total Revenue</p>
+            <p className="text-2xl sm:text-3xl font-extrabold mt-2 text-[var(--ui-text)]">
               {stats ? formatPrice(stats.revenue, "LYD") : "–"}
             </p>
-            <span className="inline-block mt-2 text-xs font-semibold text-green-600 bg-green-50 px-2.5 py-1 rounded-md">
+            <span className="inline-block mt-2 text-xs font-semibold text-green-600 dark:text-green-400 bg-green-50 dark:bg-green-500/10 px-2.5 py-1 rounded-md">
               {stats && stats.escrow > 0
                 ? `${formatPrice(stats.escrow, "LYD")} held until approval`
                 : "After the platform fee"}
             </span>
           </div>
 
-          <div className="p-4 sm:p-6 rounded-2xl bg-white border border-[#EFE8E1] shadow-sm">
-            <p className="text-sm font-medium text-[#7D6E65]">Active Orders</p>
-            <p className="text-2xl sm:text-3xl font-extrabold mt-2 text-[#2C221E]">{stats?.active ?? "–"}</p>
+          <div className="p-4 sm:p-6 rounded-2xl bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm">
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Active Orders</p>
+            <p className="text-2xl sm:text-3xl font-extrabold mt-2 text-[var(--ui-text)]">{stats?.active ?? "–"}</p>
             <span
               className={`inline-block mt-2 text-xs font-semibold px-2.5 py-1 rounded-md ${
-                stats && stats.requests > 0 ? "text-purple-700 bg-purple-50" : "text-orange-600 bg-orange-50"
+                stats && stats.requests > 0 ? "text-purple-700 dark:text-purple-200 bg-purple-50 dark:bg-purple-500/10" : "text-orange-600 dark:text-orange-400 bg-orange-50 dark:bg-orange-500/10"
               }`}
             >
               {stats
@@ -142,23 +150,23 @@ export default function CreatorDashboardPage() {
             </span>
           </div>
 
-          <div className="p-4 sm:p-6 rounded-2xl bg-white border border-[#EFE8E1] shadow-sm">
-            <p className="text-sm font-medium text-[#7D6E65]">Completed Projects</p>
-            <p className="text-2xl sm:text-3xl font-extrabold mt-2 text-[#2C221E]">{stats?.completed ?? "–"}</p>
-            <span className="inline-block mt-2 text-xs font-semibold text-blue-600 bg-blue-50 px-2.5 py-1 rounded-md">
+          <div className="p-4 sm:p-6 rounded-2xl bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm">
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Completed Projects</p>
+            <p className="text-2xl sm:text-3xl font-extrabold mt-2 text-[var(--ui-text)]">{stats?.completed ?? "–"}</p>
+            <span className="inline-block mt-2 text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-500/10 px-2.5 py-1 rounded-md">
               All time
             </span>
           </div>
 
-          <div className="p-4 sm:p-6 rounded-2xl bg-white border border-[#EFE8E1] shadow-sm">
-            <p className="text-sm font-medium text-[#7D6E65]">Rating</p>
+          <div className="p-4 sm:p-6 rounded-2xl bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm">
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Rating</p>
             <div className="flex items-center gap-2 mt-2">
-              <p className="text-2xl sm:text-3xl font-extrabold text-[#2C221E]">
+              <p className="text-2xl sm:text-3xl font-extrabold text-[var(--ui-text)]">
                 {stats && stats.reviews > 0 ? stats.rating.toFixed(1) : "–"}
               </p>
               <span className="text-amber-500 text-lg">★</span>
             </div>
-            <span className="inline-block mt-2 text-xs font-semibold text-[#7D6E65]">
+            <span className="inline-block mt-2 text-xs font-semibold text-[var(--ui-muted)]">
               {stats
                 ? stats.reviews > 0
                   ? `Based on ${stats.reviews} ${stats.reviews === 1 ? "review" : "reviews"}`

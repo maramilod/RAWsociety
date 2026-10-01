@@ -30,11 +30,11 @@ const MAX_IMAGE_BYTES = 2 * 1024 * 1024;
 const IMAGE_TYPES = ["image/png", "image/jpeg", "image/webp"];
 
 const inputClass =
-  "w-full h-11 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition";
+  "w-full h-11 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition";
 const textareaClass =
-  "w-full rounded-xl border border-[#D9CFC5] bg-white p-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition resize-none";
+  "w-full rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] p-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 transition resize-none";
 const smallButton =
-  "px-2.5 py-1 text-xs font-semibold rounded-lg border border-[#D9CFC5] bg-white hover:border-[#C86C29] transition disabled:opacity-40";
+  "px-2.5 py-1 text-xs font-semibold rounded-lg border border-[var(--ui-input)] bg-[var(--ui-surface)] hover:border-[#C86C29] transition disabled:opacity-40";
 
 let keyCounter = 0;
 const nextKey = () => `k${++keyCounter}`;
@@ -43,7 +43,7 @@ function Section({ title, hint, children }: { title: string; hint?: string; chil
   return (
     <section>
       <h3 className="text-sm font-bold">{title}</h3>
-      {hint && <p className="text-xs text-[#7D6E65] mt-0.5 mb-2">{hint}</p>}
+      {hint && <p className="text-xs text-[var(--ui-muted)] mt-0.5 mb-2">{hint}</p>}
       <div className={hint ? "" : "mt-2"}>{children}</div>
     </section>
   );
@@ -244,9 +244,9 @@ export default function ServiceModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="service-modal-title"
-        className="relative z-10 w-full max-w-2xl max-h-[92dvh] flex flex-col rounded-2xl bg-[#FDFBF7] border border-[#EFE8E1] shadow-2xl text-[#2C221E]"
+        className="relative z-10 w-full max-w-2xl max-h-[92dvh] flex flex-col rounded-2xl bg-[var(--ui-bg)] border border-[var(--ui-border)] shadow-2xl text-[var(--ui-text)]"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#EFE8E1] bg-white rounded-t-2xl shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ui-border)] bg-[var(--ui-surface)] rounded-t-2xl shrink-0">
           <h2 id="service-modal-title" className="text-lg font-bold">
             {initial ? "Edit service" : "New service"}
           </h2>
@@ -255,7 +255,7 @@ export default function ServiceModal({
             onClick={onClose}
             disabled={saving}
             aria-label="Close"
-            className="text-[#7D6E65] hover:text-[#2C221E] text-lg leading-none"
+            className="text-[var(--ui-muted)] hover:text-[var(--ui-text)] text-lg leading-none"
           >
             ✕
           </button>
@@ -263,7 +263,7 @@ export default function ServiceModal({
 
         <div className="p-6 space-y-7 overflow-y-auto">
           {!hasProfile && (
-            <p className="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-800">
+            <p className="rounded-xl border border-amber-200 dark:border-amber-500/30 bg-amber-50 dark:bg-amber-500/10 px-4 py-3 text-sm text-amber-800 dark:text-amber-200">
               Complete your creator profile first, so clients know who you are.{" "}
               <Link href="/onboarding/creator" className="font-semibold underline">
                 Set up profile
@@ -319,7 +319,7 @@ export default function ServiceModal({
                   placeholder="What do clients get? What makes your work different?"
                   className={textareaClass}
                 />
-                <p className="mt-1 text-right text-[11px] text-[#7D6E65]">{description.length}/2000</p>
+                <p className="mt-1 text-right text-[11px] text-[var(--ui-muted)]">{description.length}/2000</p>
               </div>
             </div>
           </Section>
@@ -332,8 +332,8 @@ export default function ServiceModal({
             {images.length > 0 && (
               <ul className="grid grid-cols-2 sm:grid-cols-3 gap-3 mb-3">
                 {images.map((img, i) => (
-                  <li key={img.key} className="rounded-xl border border-[#E5DCD2] bg-white overflow-hidden">
-                    <div className="relative aspect-[4/3] bg-[#F7F4F0]">
+                  <li key={img.key} className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] overflow-hidden">
+                    <div className="relative aspect-[4/3] bg-[var(--ui-soft)]">
                       {/* eslint-disable-next-line @next/next/no-img-element */}
                       <img src={img.url} alt={`Service image ${i + 1}`} className="h-full w-full object-cover" />
                       {i === 0 && (
@@ -366,7 +366,7 @@ export default function ServiceModal({
                       <button
                         type="button"
                         onClick={() => removeImage(i)}
-                        className={`${smallButton} text-red-600`}
+                        className={`${smallButton} text-red-600 dark:text-red-400`}
                       >
                         Remove
                       </button>
@@ -499,14 +499,14 @@ export default function ServiceModal({
                 {tags.map((t) => (
                   <span
                     key={t}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#F0EAE1] pl-3 pr-1.5 py-1 text-xs font-medium"
+                    className="inline-flex items-center gap-1 rounded-full bg-[var(--ui-soft)] pl-3 pr-1.5 py-1 text-xs font-medium"
                   >
                     {t}
                     <button
                       type="button"
                       onClick={() => setTags((prev) => prev.filter((x) => x !== t))}
                       aria-label={`Remove ${t}`}
-                      className="h-4 w-4 rounded-full text-[#7D6E65] hover:bg-[#E0D6C8] leading-none"
+                      className="h-4 w-4 rounded-full text-[var(--ui-muted)] hover:bg-[var(--ui-border2)] leading-none"
                     >
                       ×
                     </button>
@@ -541,13 +541,13 @@ export default function ServiceModal({
               {links.map((l) => {
                 const option = LINK_KIND_OPTIONS.find((o) => o.kind === l.kind);
                 return (
-                  <div key={l.key} className="rounded-xl border border-[#E5DCD2] bg-white p-3 space-y-2">
+                  <div key={l.key} className="rounded-xl border border-[var(--ui-border2)] bg-[var(--ui-surface)] p-3 space-y-2">
                     <div className="flex gap-2">
                       <select
                         value={l.kind}
                         onChange={(e) => updateLink(l.key, { kind: e.target.value as LinkKind })}
                         aria-label="Link type"
-                        className="h-10 w-40 shrink-0 rounded-xl border border-[#D9CFC5] bg-white px-2 text-sm outline-none focus:border-[#C86C29]"
+                        className="h-10 w-40 shrink-0 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-2 text-sm outline-none focus:border-[#C86C29]"
                       >
                         {LINK_KIND_OPTIONS.map((o) => (
                           <option key={o.kind} value={o.kind}>
@@ -562,7 +562,7 @@ export default function ServiceModal({
                         inputMode="url"
                         aria-label="Link address"
                         placeholder={option?.placeholder ?? "https://"}
-                        className="h-10 min-w-0 flex-1 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29]"
+                        className="h-10 min-w-0 flex-1 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29]"
                       />
                       <button
                         type="button"
@@ -579,7 +579,7 @@ export default function ServiceModal({
                       maxLength={60}
                       aria-label="Link label (optional)"
                       placeholder="Button text (optional), e.g. See the source code"
-                      className="h-9 w-full rounded-lg border border-[#E5DCD2] bg-[#FDFBF7] px-3 text-xs outline-none focus:border-[#C86C29]"
+                      className="h-9 w-full rounded-lg border border-[var(--ui-border2)] bg-[var(--ui-bg)] px-3 text-xs outline-none focus:border-[#C86C29]"
                     />
                   </div>
                 );
@@ -618,23 +618,23 @@ export default function ServiceModal({
               className="h-4 w-4 accent-[#C86C29]"
             />
             <span>
-              Show this service on Explore <span className="text-[#7D6E65]">(you can pause it any time)</span>
+              Show this service on Explore <span className="text-[var(--ui-muted)]">(you can pause it any time)</span>
             </span>
           </label>
 
           {error && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
               {error}
             </p>
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#EFE8E1] bg-white rounded-b-2xl shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--ui-border)] bg-[var(--ui-surface)] rounded-b-2xl shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={saving}
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-[#C86C29] transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
           >
             Cancel
           </button>

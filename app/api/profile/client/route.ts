@@ -4,7 +4,9 @@ import { authOptions } from "@/lib/auth";
 import { execute, queryOne, type RowDataPacket } from "@/lib/db";
 import { saveImage, UploadError } from "@/lib/uploads";
 
-const INDUSTRIES = ["Technology", "Marketing & Advertising", "Design & Creative", "E-commerce", "Finance"];
+// "All fields" is the default for a client who did not say which industry they work in
+const ALL_FIELDS = "All fields";
+const INDUSTRIES = [ALL_FIELDS, "Technology", "Marketing & Advertising", "Design & Creative", "E-commerce", "Finance"];
 const COMPANY_SIZES = ["1 - 10", "11 - 50", "51 - 200", "200+"];
 const BUDGETS = ["Less than 1000 LYD", "1000 - 5000 LYD", "5000+ LYD"];
 const SERVICES = ["Design", "Web Development", "Photography", "Writing"];
@@ -85,9 +87,31 @@ export async function POST(request: Request) {
   }
 
   const text = (key: string, max: number) => String(form.get(key) ?? "").trim().slice(0, max);
-  const nickname = text("nickname", 60);
+
+  // The name of the account is the default nickname
+  const account = await queryOne<RowDataPacket & { name: string }>("SELECT name FROM users WHERE id = ?", [auth.userId]);
+  const accountName = (account?.name ?? "").slice(0, 60);
+
+  // "Skip": make a profile with the defaults, unless one already exists (then nothing changes)
+  const skipped = form.get("skip") === "1";
+  if (skipped) {
+    try {
+      await execute(
+        `INSERT INTO client_profiles (user_id, nickname, industry, services_needed)
+         VALUES (?, ?, ?, ?)
+         ON DUPLICATE KEY UPDATE user_id = user_id`,
+        [auth.userId, accountName || null, ALL_FIELDS, JSON.stringify(SERVICES)]
+      );
+      return NextResponse.json({ ok: true });
+    } catch (err) {
+      console.error("skip client profile failed:", err);
+      return NextResponse.json({ error: "Could not save your profile." }, { status: 500 });
+    }
+  }
+
+  const nickname = text("nickname", 60) || accountName;
   const company = text("company", 160);
-  const industry = text("industry", 100);
+  const industry = text("industry", 100) || ALL_FIELDS;
   const companySize = text("companySize", 40);
   const budget = text("budget", 60);
   const description = text("description", 2000);

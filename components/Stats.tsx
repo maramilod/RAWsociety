@@ -20,7 +20,9 @@ const stats = [
 export default function Stats() {
   return (
     <section
+      id="numbers"
       className="
+      scroll-mt-20
       max-w-6xl
       mx-auto
       py-12

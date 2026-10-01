@@ -25,13 +25,15 @@ export interface Translator {
 /** Builds a translator: exact texts first, then patterns such as "{} applications" (each {} matches any text). */
 export function buildTranslator(dict: Dictionary): Translator {
   const exact = new Map<string, string>();
-  const patterns: { re: RegExp; to: string }[] = [];
+  const patterns: { re: RegExp; to: string; weight: number }[] = [];
   for (const [en, ar] of Object.entries(dict)) {
     if (en.includes("{}")) {
       const re = new RegExp("^" + en.split("{}").map((p) => p.replace(REGEX_CHARS, "\\$&")).join("(.{0,60}?)") + "$");
-      patterns.push({ re, to: ar });
+      patterns.push({ re, to: ar, weight: en.replace(/\{\}/g, "").length });
     } else exact.set(en, ar);
   }
+  // the pattern with the most fixed words wins ("{} · from {} {}" before "{} LYD")
+  patterns.sort((a, b) => b.weight - a.weight);
 
   /** The Arabic for an already trimmed text, or null. Pieces matched by {} are translated too ("Delivery in {}" + "2 days"). */
   const find = (trimmed: string, depth: number): string | null => {

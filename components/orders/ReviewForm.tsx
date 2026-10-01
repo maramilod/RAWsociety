@@ -50,7 +50,7 @@ export default function ReviewForm({ orderId, creatorName, onDone, onSkip }: Pro
     <form onSubmit={submit} className="space-y-4">
       <div>
         <p className="text-sm font-semibold">How was your experience with {creatorName}?</p>
-        <p className="text-xs text-[#7D6E65] mt-0.5">
+        <p className="text-xs text-[var(--ui-muted)] mt-0.5">
           Your review appears on their profile and helps other clients. You cannot change it later.
         </p>
       </div>
@@ -78,7 +78,7 @@ export default function ReviewForm({ orderId, creatorName, onDone, onSkip }: Pro
               ★
             </button>
           ))}
-          <span className="ml-3 text-sm font-medium text-[#554f49]" aria-live="polite">
+          <span className="ml-3 text-sm font-medium text-[var(--ui-text2)]" aria-live="polite">
             {LABELS[shown]}
           </span>
         </div>
@@ -86,7 +86,7 @@ export default function ReviewForm({ orderId, creatorName, onDone, onSkip }: Pro
 
       <div>
         <label htmlFor="review-comment" className="block mb-1.5 text-sm font-medium">
-          Comment <span className="font-normal text-[#7D6E65]">(optional)</span>
+          Comment <span className="font-normal text-[var(--ui-muted)]">(optional)</span>
         </label>
         <textarea
           id="review-comment"
@@ -95,12 +95,12 @@ export default function ReviewForm({ orderId, creatorName, onDone, onSkip }: Pro
           maxLength={1000}
           rows={4}
           placeholder="What went well? Was the work on time and as agreed?"
-          className="w-full rounded-xl border border-[#D9CFC5] bg-white p-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 resize-none"
+          className="w-full rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] p-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20 resize-none"
         />
       </div>
 
       {error && (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
           {error}
         </p>
       )}
@@ -111,7 +111,7 @@ export default function ReviewForm({ orderId, creatorName, onDone, onSkip }: Pro
             type="button"
             onClick={onSkip}
             disabled={sending}
-            className="rounded-xl border border-[#D9CFC5] bg-white px-4 py-2 text-xs font-semibold hover:border-[#C86C29] transition"
+            className="rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-4 py-2 text-xs font-semibold hover:border-[#C86C29] transition"
           >
             Maybe later
           </button>

@@ -1,5 +1,5 @@
 import { queryOne, type RowDataPacket } from "@/lib/db";
-import { APPLICATIONS_PER_MONTH, CAN_POST_JOBS, FREE_PLAN } from "@/lib/plan-rules";
+import { APPLICATIONS_PER_MONTH, CAN_POST_JOBS, FREE_PLAN, clientRules, type ClientPlanRules } from "@/lib/plan-rules";
 
 export type PlanAudience = "creator" | "client";
 
@@ -96,4 +96,42 @@ export async function onboardingState(userId: string): Promise<OnboardingState> 
 export async function exploreRouteFor(user: { id: string; role: string } | null): Promise<"/explore" | "/explore/free" | null> {
   if (!user || user.role !== "client") return null;
   return (await currentPlanCode(user.id, "client")) === FREE_PLAN.client ? "/explore/free" : "/explore";
+}
+
+/**
+ * Does this client have a dashboard? Not on the free plan: they only browse the limited Explore page.
+ * A client whose paid plan ended keeps the dashboard while there are orders or requests to follow.
+ */
+export async function clientHasDashboard(clientId: string): Promise<boolean> {
+  if ((await currentPlanCode(clientId, "client")) !== FREE_PLAN.client) return true;
+  const row = await queryOne<RowDataPacket & { n: number }>(
+    `SELECT (SELECT COUNT(*) FROM orders WHERE client_id = ?)
+          + (SELECT COUNT(*) FROM custom_requests WHERE client_id = ?)
+          + (SELECT COUNT(*) FROM job_posts WHERE client_id = ?) AS n`,
+    [clientId, clientId, clientId]
+  );
+  return Number(row?.n ?? 0) > 0;
+}
+
+export interface ClientAccess {
+  plan: string;
+  rules: ClientPlanRules;
+  hireMeUsed: number;
+  messagesUsed: number;
+}
+
+const MONTH_START = "DATE_FORMAT(UTC_TIMESTAMP(), '%Y-%m-01')";
+
+/** What a client's plan allows and how much of this month's allowance is already used */
+export async function clientAccess(clientId: string): Promise<ClientAccess> {
+  const plan = await currentPlanCode(clientId, "client");
+  const hire = await queryOne<RowDataPacket & { n: number }>(
+    `SELECT COUNT(*) AS n FROM custom_requests WHERE client_id = ? AND created_at >= ${MONTH_START}`,
+    [clientId]
+  );
+  const msg = await queryOne<RowDataPacket & { n: number }>(
+    `SELECT COUNT(*) AS n FROM messages WHERE sender_id = ? AND created_at >= ${MONTH_START}`,
+    [clientId]
+  );
+  return { plan, rules: clientRules(plan), hireMeUsed: Number(hire?.n ?? 0), messagesUsed: Number(msg?.n ?? 0) };
 }

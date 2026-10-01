@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { execute, query, queryOne, type RowDataPacket } from "@/lib/db";
 import { getSessionUser } from "@/lib/session";
+import { clientAccess } from "@/lib/subscriptions";
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const MAX_LENGTH = 2000;
@@ -100,6 +101,23 @@ export async function POST(
   if (!body) return NextResponse.json({ error: "Message is empty." }, { status: 400 });
   if (body.length > MAX_LENGTH) {
     return NextResponse.json({ error: `Message is too long (max ${MAX_LENGTH} characters).` }, { status: 400 });
+  }
+
+  // a client's messages count against the plan (creators answering are never limited)
+  if (me.role === "client") {
+    const { rules, messagesUsed } = await clientAccess(me.id);
+    if (rules.messagesPerMonth !== null && messagesUsed >= rules.messagesPerMonth) {
+      return NextResponse.json(
+        {
+          error:
+            rules.messagesPerMonth === 0
+              ? "Messaging creators is part of Business Pro and Enterprise. Upgrade your plan to send messages."
+              : `You used all ${rules.messagesPerMonth} messages of this month. Upgrade to Enterprise for unlimited messages.`,
+          upgrade: true,
+        },
+        { status: 403 }
+      );
+    }
   }
 
   try {

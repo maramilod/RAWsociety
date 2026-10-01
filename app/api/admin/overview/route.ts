@@ -3,6 +3,7 @@ import { query, queryOne, type RowDataPacket } from "@/lib/db";
 import { requireAdmin } from "@/lib/admin";
 import { runOrderSweeps } from "@/lib/order-sweeps";
 import { providerLabel } from "@/lib/payments/providers";
+import { payoutMethod } from "@/lib/payout-methods";
 
 interface PendingPayment extends RowDataPacket {
   id: string;
@@ -48,6 +49,10 @@ interface PayoutRow extends RowDataPacket {
   completed_at: Date | null;
   creator_name: string;
   creator_email: string;
+  pd_method: string | null;
+  pd_name: string | null;
+  pd_number: string | null;
+  pd_bank: string | null;
 }
 
 // What the admin has to do: payments to confirm, and creators waiting to be paid
@@ -78,8 +83,10 @@ export async function GET() {
       ),
       query<PayoutRow>(
         `SELECT o.id, o.order_number, o.title, o.amount, o.platform_fee, o.creator_payout, o.currency, o.completed_at,
-                cr.name AS creator_name, cr.email AS creator_email
+                cr.name AS creator_name, cr.email AS creator_email,
+                pd.method AS pd_method, pd.account_name AS pd_name, pd.account_number AS pd_number, pd.bank_name AS pd_bank
            FROM orders o JOIN users cr ON cr.id = o.creator_id
+           LEFT JOIN creator_payout_details pd ON pd.user_id = o.creator_id
           WHERE o.payout_status = 'released'
           ORDER BY o.completed_at ASC`
       ),
@@ -133,6 +140,9 @@ export async function GET() {
         currency: o.currency,
         completedAt: o.completed_at ? o.completed_at.toISOString() : null,
         creator: { name: o.creator_name, email: o.creator_email },
+        payTo: o.pd_method
+          ? { method: payoutMethod(o.pd_method)?.label ?? o.pd_method, accountName: o.pd_name, accountNumber: o.pd_number, bankName: o.pd_bank }
+          : null,
       })),
       disputes: disputes.map((d) => ({
         orderId: d.id,

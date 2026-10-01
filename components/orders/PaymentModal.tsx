@@ -50,7 +50,7 @@ function timeLeft(iso: string | null): string | null {
 }
 
 const inputClass =
-  "w-full h-11 rounded-xl border border-[#D9CFC5] bg-white px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
+  "w-full h-11 rounded-xl border border-[var(--ui-input)] bg-[var(--ui-surface)] px-3 text-sm outline-none focus:border-[#C86C29] focus:ring-2 focus:ring-[#C86C29]/20";
 
 export default function PaymentModal({ orderId, endpoint, heading, onClose, onSubmitted }: Props) {
   const url = endpoint ?? `/api/orders/${orderId}/payment`;
@@ -162,9 +162,9 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
         role="dialog"
         aria-modal="true"
         aria-labelledby="payment-title"
-        className="relative z-10 w-full max-w-lg max-h-[92dvh] flex flex-col rounded-2xl bg-[#FDFBF7] border border-[#EFE8E1] shadow-2xl text-[#2C221E]"
+        className="relative z-10 w-full max-w-lg max-h-[92dvh] flex flex-col rounded-2xl bg-[var(--ui-bg)] border border-[var(--ui-border)] shadow-2xl text-[var(--ui-text)]"
       >
-        <div className="flex items-center justify-between px-6 py-4 border-b border-[#EFE8E1] bg-white rounded-t-2xl shrink-0">
+        <div className="flex items-center justify-between px-6 py-4 border-b border-[var(--ui-border)] bg-[var(--ui-surface)] rounded-t-2xl shrink-0">
           <h2 id="payment-title" className="text-lg font-bold">
             {heading ?? "Pay for your order"}
           </h2>
@@ -173,35 +173,35 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
             onClick={onClose}
             disabled={sending}
             aria-label="Close"
-            className="text-[#7D6E65] hover:text-[#2C221E] text-lg leading-none"
+            className="text-[var(--ui-muted)] hover:text-[var(--ui-text)] text-lg leading-none"
           >
             ✕
           </button>
         </div>
 
         <div className="p-6 space-y-5 overflow-y-auto">
-          {status === "loading" && <p className="text-sm text-[#7D6E65]">Loading...</p>}
+          {status === "loading" && <p className="text-sm text-[var(--ui-muted)]">Loading...</p>}
           {status === "error" && (
-            <p role="alert" className="text-sm font-medium text-red-600">
+            <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
               {loadError}
             </p>
           )}
 
           {status === "ready" && info && (
             <>
-              <div className="rounded-xl border border-[#EFE8E1] bg-white p-4">
-                <p className="text-xs text-[#7D6E65]">{info.order.number}</p>
+              <div className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
+                <p className="text-xs text-[var(--ui-muted)]">{info.order.number}</p>
                 <p className="font-semibold">{info.order.title}</p>
                 <p className="mt-2 text-2xl font-extrabold text-[#C86C29]">
                   {formatPrice(info.order.amount, info.order.currency)}
                 </p>
                 {left && (
-                  <p className={`mt-1 text-xs font-medium ${left === "Expired" ? "text-red-600" : "text-[#7D6E65]"}`}>
+                  <p className={`mt-1 text-xs font-medium ${left === "Expired" ? "text-red-600 dark:text-red-400" : "text-[var(--ui-muted)]"}`}>
                     Pay within: {left}
                   </p>
                 )}
                 {isOrder && (
-                  <p className="mt-2 text-xs text-[#7D6E65]">
+                  <p className="mt-2 text-xs text-[var(--ui-muted)]">
                     Your money is held safely by RAW society. The creator only receives it after you approve the delivered
                     work.
                   </p>
@@ -209,7 +209,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
               </div>
 
               {info.payment.state === "pending" && (
-                <p role="status" className="rounded-xl border border-blue-200 bg-blue-50 px-4 py-3 text-sm text-blue-900">
+                <p role="status" className="rounded-xl border border-blue-200 dark:border-blue-500/30 bg-blue-50 dark:bg-blue-500/10 px-4 py-3 text-sm text-blue-900 dark:text-blue-200">
                   We received your payment details
                   {info.payment.senderName ? ` (sent by ${info.payment.senderName})` : ""} and are checking our account.
                   {isOrder ? "The order starts as soon as it is confirmed." : "Your plan starts as soon as it is confirmed."}
@@ -217,7 +217,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
               )}
 
               {info.payment.state === "rejected" && (
-                <p role="alert" className="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-800">
+                <p role="alert" className="rounded-xl border border-red-200 dark:border-red-500/30 bg-red-50 dark:bg-red-500/10 px-4 py-3 text-sm text-red-800 dark:text-red-200">
                   Your last payment could not be confirmed
                   {info.payment.note ? `: ${info.payment.note.replace(/[.\s]+$/, "")}.` : "."} Please check and send it
                   again.
@@ -233,7 +233,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
                         <label
                           key={m.id}
                           className={`flex cursor-pointer items-start gap-3 rounded-xl border p-3 transition ${
-                            methodId === m.id ? "border-[#C86C29] bg-[#C86C29]/5" : "border-[#D9CFC5] bg-white"
+                            methodId === m.id ? "border-[#C86C29] bg-[#C86C29]/5" : "border-[var(--ui-input)] bg-[var(--ui-surface)]"
                           }`}
                         >
                           <input
@@ -246,7 +246,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
                           />
                           <span>
                             <span className="block text-sm font-medium">{m.label}</span>
-                            <span className="block text-xs text-[#7D6E65]">{m.description}</span>
+                            <span className="block text-xs text-[var(--ui-muted)]">{m.description}</span>
                           </span>
                         </label>
                       ))}
@@ -254,9 +254,9 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
                   </fieldset>
 
                   {method && (
-                    <div className="rounded-xl border border-[#EFE8E1] bg-white p-4">
+                    <div className="rounded-xl border border-[var(--ui-border)] bg-[var(--ui-surface)] p-4">
                       <p className="text-sm font-semibold mb-2">How to pay with {method.label}</p>
-                      <ol className="list-decimal space-y-1.5 pl-5 text-sm text-[#554f49]">
+                      <ol className="list-decimal space-y-1.5 pl-5 text-sm text-[var(--ui-text2)]">
                         {method.instructions.map((step, i) => (
                           <li key={i}>{step}</li>
                         ))}
@@ -310,7 +310,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
                         className={inputClass}
                       />
                       {differs && (
-                        <p className="mt-1 text-xs text-amber-700">
+                        <p className="mt-1 text-xs text-amber-700 dark:text-amber-200">
                           This is different from the {isOrder ? "order" : "plan"} amount ({formatPrice(info.order.amount, info.order.currency)}).
                           If you sent less, we will ask you to send the rest.
                         </p>
@@ -319,7 +319,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
 
                     <div>
                       <label htmlFor="pay-receipt" className="block mb-1.5 text-sm font-medium">
-                        Photo of the receipt <span className="font-normal text-[#7D6E65]">(recommended)</span>
+                        Photo of the receipt <span className="font-normal text-[var(--ui-muted)]">(recommended)</span>
                       </label>
                       <input
                         ref={fileInput}
@@ -327,9 +327,9 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
                         type="file"
                         accept="image/png,image/jpeg,image/webp,application/pdf"
                         onChange={(e) => chooseReceipt(e.target.files?.[0] ?? null)}
-                        className="block w-full text-sm text-[#554f49] file:mr-3 file:rounded-lg file:border file:border-[#D9CFC5] file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[#2C221E] hover:file:border-[#C86C29]"
+                        className="block w-full text-sm text-[var(--ui-text2)] file:mr-3 file:rounded-lg file:border file:border-[var(--ui-input)] file:bg-white file:px-3 file:py-2 file:text-xs file:font-semibold file:text-[var(--ui-text)] hover:file:border-[#C86C29]"
                       />
-                      <p className="mt-1 text-xs text-[#7D6E65]">
+                      <p className="mt-1 text-xs text-[var(--ui-muted)]">
                         A photo or screenshot of the transfer receipt (PNG, JPG, WebP or PDF, up to 5 MB). Only you and
                         our team can see it.
                       </p>
@@ -337,7 +337,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
 
                     <div>
                       <label htmlFor="pay-ref" className="block mb-1.5 text-sm font-medium">
-                        Transaction number <span className="font-normal text-[#7D6E65]">(if the receipt has one)</span>
+                        Transaction number <span className="font-normal text-[var(--ui-muted)]">(if the receipt has one)</span>
                       </label>
                       <input
                         id="pay-ref"
@@ -353,7 +353,7 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
               )}
 
               {error && (
-                <p role="alert" className="text-sm font-medium text-red-600">
+                <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
                   {error}
                 </p>
               )}
@@ -361,12 +361,12 @@ export default function PaymentModal({ orderId, endpoint, heading, onClose, onSu
           )}
         </div>
 
-        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[#EFE8E1] bg-white rounded-b-2xl shrink-0">
+        <div className="flex items-center justify-end gap-3 px-6 py-4 border-t border-[var(--ui-border)] bg-[var(--ui-surface)] rounded-b-2xl shrink-0">
           <button
             type="button"
             onClick={onClose}
             disabled={sending}
-            className="px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-[#C86C29] transition bg-white"
+            className="px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-[#C86C29] transition bg-[var(--ui-surface)]"
           >
             {info?.payment.state === "pending" ? "Close" : "Cancel"}
           </button>

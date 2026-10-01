@@ -39,6 +39,8 @@ export type Service = {
   createdAt: string;
   rating: number | null;
   reviewsCount: number;
+  /** How this month is going for the service (a free creator's service closes after a few requests) */
+  monthly?: { used: number; cap: number | null; full: boolean; reopensAt: string } | null;
 };
 
 export type Category = { id: number; name: string };

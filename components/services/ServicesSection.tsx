@@ -51,11 +51,11 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
   };
 
   return (
-    <div className="bg-white border border-[#EFE8E1] rounded-2xl p-6 shadow-sm">
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[#EFE8E1] pb-5 mb-6">
+    <div className="bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-2xl p-6 shadow-sm">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--ui-border)] pb-5 mb-6">
         <div>
           <h2 className="text-xl font-bold">My Services</h2>
-          <p className="text-sm text-[#7D6E65] mt-1">
+          <p className="text-sm text-[var(--ui-muted)] mt-1">
             What clients can hire you for. Live services appear on Explore and on your profile.
           </p>
         </div>
@@ -69,21 +69,21 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
       </div>
 
       {actionError && (
-        <p role="alert" className="mb-4 text-sm font-medium text-red-600">
+        <p role="alert" className="mb-4 text-sm font-medium text-red-600 dark:text-red-400">
           {actionError}
         </p>
       )}
 
-      {loading && <p className="text-sm text-[#7D6E65]">Loading your services...</p>}
+      {loading && <p className="text-sm text-[var(--ui-muted)]">Loading your services...</p>}
       {!loading && loadError && (
-        <p role="alert" className="text-sm font-medium text-red-600">
+        <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
           {loadError}
         </p>
       )}
 
       {!loading && !loadError && services.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-sm text-[#7D6E65] mb-4">You haven&apos;t added any services yet.</p>
+          <p className="text-sm text-[var(--ui-muted)] mb-4">You haven&apos;t added any services yet.</p>
           <button
             type="button"
             onClick={onNew}
@@ -95,17 +95,17 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
       )}
 
       {services.length > 0 && (
-        <ul className="divide-y divide-[#EFE8E1]">
+        <ul className="divide-y divide-[var(--ui-border)]">
           {services.map((s) => {
             const delivery = formatDelivery(s.deliveryDays);
             return (
               <li key={s.id} className="py-4 flex flex-col md:flex-row md:items-center gap-3 md:gap-6">
-                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-[#EFE8E1] bg-[#F7F4F0]">
+                <div className="h-16 w-24 shrink-0 overflow-hidden rounded-lg border border-[var(--ui-border)] bg-[var(--ui-soft)]">
                   {s.coverUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={s.coverUrl} alt="" className="h-full w-full object-cover" />
                   ) : (
-                    <div className="flex h-full items-center justify-center text-[10px] text-[#7D6E65]">No image</div>
+                    <div className="flex h-full items-center justify-center text-[10px] text-[var(--ui-muted)]">No image</div>
                   )}
                 </div>
                 <div className="flex-1 min-w-0">
@@ -113,21 +113,32 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
                     <h3 className="font-semibold text-sm truncate">{s.title}</h3>
                     <span
                       className={`px-2 py-0.5 rounded-full text-[11px] font-medium ${
-                        s.isActive ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-600"
+                        s.isActive ? "bg-green-100 dark:bg-green-500/20 text-green-800 dark:text-green-200" : "bg-[var(--ui-soft)] text-[var(--ui-muted)]"
                       }`}
                     >
                       {s.isActive ? "Live" : "Paused"}
                     </span>
+                    {s.monthly?.full && (
+                      <span className="px-2 py-0.5 rounded-full text-[11px] font-medium bg-amber-100 dark:bg-amber-500/20 text-amber-800 dark:text-amber-200">
+                        Full this month
+                      </span>
+                    )}
                   </div>
-                  <p className="text-xs text-[#7D6E65] mt-1">
+                  <p className="text-xs text-[var(--ui-muted)] mt-1">
                     {s.category}
                     {delivery ? ` · Delivery in ${delivery}` : ""}
                     {s.images.length ? ` · ${s.images.length} image${s.images.length === 1 ? "" : "s"}` : ""}
                     {s.links.length ? ` · ${s.links.length} link${s.links.length === 1 ? "" : "s"}` : ""}
                   </p>
+                  {s.monthly && s.monthly.cap !== null && (
+                    <p className="mt-1 text-xs text-[var(--ui-muted)]">
+                      {s.monthly.used} of {s.monthly.cap} requests this month
+                      {s.monthly.full ? `, opens again on ${new Date(s.monthly.reopensAt).toLocaleDateString([], { month: "long", day: "numeric" })}` : ""}
+                    </p>
+                  )}
                   <RatingLine rating={s.rating} count={s.reviewsCount} className="mt-1 text-xs" />
                   {s.description && (
-                    <p className="text-xs text-[#7D6E65] mt-1 line-clamp-2">{s.description}</p>
+                    <p className="text-xs text-[var(--ui-muted)] mt-1 line-clamp-2">{s.description}</p>
                   )}
                 </div>
 
@@ -138,7 +149,7 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
                     type="button"
                     onClick={() => onEdit(s)}
                     disabled={busyId === s.id}
-                    className="px-3 py-1.5 rounded-lg border border-[#D9CFC5] hover:border-[#C86C29] transition"
+                    className="px-3 py-1.5 rounded-lg border border-[var(--ui-input)] hover:border-[#C86C29] transition"
                   >
                     Edit
                   </button>
@@ -146,7 +157,7 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
                     type="button"
                     onClick={() => toggle(s)}
                     disabled={busyId === s.id}
-                    className="px-3 py-1.5 rounded-lg border border-[#D9CFC5] hover:border-[#C86C29] transition"
+                    className="px-3 py-1.5 rounded-lg border border-[var(--ui-input)] hover:border-[#C86C29] transition"
                   >
                     {s.isActive ? "Pause" : "Resume"}
                   </button>
@@ -154,7 +165,7 @@ export default function ServicesSection({ services, loading, loadError, onNew, o
                     type="button"
                     onClick={() => remove(s)}
                     disabled={busyId === s.id}
-                    className="px-3 py-1.5 rounded-lg border border-[#D9CFC5] text-red-600 hover:border-red-400 transition"
+                    className="px-3 py-1.5 rounded-lg border border-[var(--ui-input)] text-red-600 dark:text-red-400 hover:border-red-400 transition"
                   >
                     Delete
                   </button>

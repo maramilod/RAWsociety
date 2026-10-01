@@ -33,6 +33,7 @@ type Payout = {
   currency: string;
   completedAt: string | null;
   creator: { name: string; email: string };
+  payTo: { method: string; accountName: string | null; accountNumber: string | null; bankName: string | null } | null;
 };
 
 type Dispute = {
@@ -149,24 +150,24 @@ export default function AdminPage() {
     call(d.orderId, `/api/admin/disputes/${d.orderId}`, { action, note });
   };
 
-  const card = "p-6 rounded-2xl bg-white border border-[#EFE8E1] shadow-sm";
+  const card = "p-6 rounded-2xl bg-[var(--ui-surface)] border border-[var(--ui-border)] shadow-sm";
   const btn = "px-3 py-1.5 text-xs font-semibold rounded-lg border transition disabled:opacity-50";
   const th = "pb-3 pt-3 px-4 font-semibold";
 
   return (
-    <div className="min-h-screen bg-[#FDFBF7] text-[#2C221E] p-6 md:p-10">
+    <div className="min-h-screen bg-[var(--ui-bg)] text-[var(--ui-text)] p-6 md:p-10">
       <div className="max-w-7xl mx-auto flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-10">
         <div>
           {session?.user?.name && (
             <p className="text-lg font-semibold text-[#C86C29] mb-1">Hey, {session.user.name}</p>
           )}
           <h1 className="text-3xl font-bold tracking-tight">Admin</h1>
-          <p className="text-sm text-[#7D6E65] mt-1">Confirm client payments and send creators their earnings.</p>
+          <p className="text-sm text-[var(--ui-muted)] mt-1">Confirm client payments and send creators their earnings.</p>
         </div>
         <button
           type="button"
           onClick={() => signOut({ callbackUrl: "/" })}
-          className="self-start px-4 py-2 text-sm font-medium border border-[#D9CFC5] rounded-xl hover:border-red-400 hover:text-red-600 transition bg-white"
+          className="self-start px-4 py-2 text-sm font-medium border border-[var(--ui-input)] rounded-xl hover:border-red-400 hover:text-red-600 transition bg-[var(--ui-surface)]"
         >
           Log out
         </button>
@@ -175,63 +176,63 @@ export default function AdminPage() {
       <div className="max-w-7xl mx-auto space-y-8">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-5">
           <div className={card}>
-            <p className="text-sm font-medium text-[#7D6E65]">Payments to confirm</p>
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Payments to confirm</p>
             <p className="text-3xl font-extrabold mt-2">{data?.payments.length ?? "–"}</p>
           </div>
-          <div className={`${card} ${data && data.disputes.length > 0 ? "border-red-300" : ""}`}>
-            <p className="text-sm font-medium text-[#7D6E65]">Open disputes</p>
+          <div className={`${card} ${data && data.disputes.length > 0 ? "border-red-300 dark:border-red-500/30" : ""}`}>
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Open disputes</p>
             <p className="text-3xl font-extrabold mt-2">{data?.disputes.length ?? "–"}</p>
           </div>
           <div className={card}>
-            <p className="text-sm font-medium text-[#7D6E65]">Payouts to send</p>
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Payouts to send</p>
             <p className="text-3xl font-extrabold mt-2">{data?.payouts.length ?? "–"}</p>
           </div>
           <div className={card}>
-            <p className="text-sm font-medium text-[#7D6E65]">Held in escrow</p>
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Held in escrow</p>
             <p className="text-3xl font-extrabold mt-2">{data ? formatPrice(data.totals.held, "LYD") : "–"}</p>
-            <span className="inline-block mt-2 text-xs text-[#7D6E65]">Paid, not yet approved</span>
+            <span className="inline-block mt-2 text-xs text-[var(--ui-muted)]">Paid, not yet approved</span>
           </div>
           <div className={card}>
-            <p className="text-sm font-medium text-[#7D6E65]">Platform fees earned</p>
+            <p className="text-sm font-medium text-[var(--ui-muted)]">Platform fees earned</p>
             <p className="text-3xl font-extrabold mt-2">{data ? formatPrice(data.totals.earnedFees, "LYD") : "–"}</p>
-            <span className="inline-block mt-2 text-xs text-[#7D6E65]">From approved orders</span>
+            <span className="inline-block mt-2 text-xs text-[var(--ui-muted)]">From approved orders</span>
           </div>
         </div>
 
         {actionError && (
-          <p role="alert" className="text-sm font-medium text-red-600">
+          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
             {actionError}
           </p>
         )}
-        {loading && <p className="text-sm text-[#7D6E65]">Loading...</p>}
+        {loading && <p className="text-sm text-[var(--ui-muted)]">Loading...</p>}
         {!loading && error && (
-          <p role="alert" className="text-sm font-medium text-red-600">
+          <p role="alert" className="text-sm font-medium text-red-600 dark:text-red-400">
             {error}
           </p>
         )}
 
         {/* Disputes: the client reported a problem with the delivered work */}
         {data && data.disputes.length > 0 && (
-          <section className="bg-white border border-red-200 rounded-2xl p-6 shadow-sm">
+          <section className="bg-[var(--ui-surface)] border border-red-200 dark:border-red-500/30 rounded-2xl p-6 shadow-sm">
             <h2 className="text-xl font-bold mb-1">Reported problems</h2>
-            <p className="text-sm text-[#7D6E65] mb-5">
+            <p className="text-sm text-[var(--ui-muted)] mb-5">
               The client says something is wrong with the delivered work. Read both sides, look at the delivery, then
               decide. The money stays held until you do.
             </p>
             <ul className="space-y-4">
               {data.disputes.map((d) => (
-                <li key={d.orderId} className="rounded-xl border border-[#EFE8E1] p-4">
+                <li key={d.orderId} className="rounded-xl border border-[var(--ui-border)] p-4">
                   <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-3">
                     <div className="min-w-0">
                       <p className="font-semibold">
                         {d.orderNumber} · {d.title}{" "}
-                        <span className="font-normal text-[#7D6E65]">({formatPrice(d.amount, d.currency)})</span>
+                        <span className="font-normal text-[var(--ui-muted)]">({formatPrice(d.amount, d.currency)})</span>
                       </p>
-                      <p className="text-xs text-[#7D6E65] mt-1">
+                      <p className="text-xs text-[var(--ui-muted)] mt-1">
                         Client: {d.client.name} ({d.client.email}) · Creator: {d.creator.name} ({d.creator.email}) ·
                         Reported {dateTime(d.reportedAt)}
                       </p>
-                      <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-sm text-red-900 whitespace-pre-line">
+                      <p className="mt-3 rounded-lg bg-red-50 dark:bg-red-500/10 px-3 py-2 text-sm text-red-900 dark:text-red-200 whitespace-pre-line">
                         <span className="font-semibold">Client says: </span>
                         {d.reason}
                       </p>
@@ -240,7 +241,7 @@ export default function AdminPage() {
                       <button
                         type="button"
                         onClick={() => setViewingId(d.orderId)}
-                        className={`${btn} border-[#D9CFC5] text-[#C86C29] hover:border-[#C86C29]`}
+                        className={`${btn} border-[var(--ui-input)] text-[#C86C29] hover:border-[#C86C29]`}
                       >
                         View delivery
                       </button>
@@ -256,7 +257,7 @@ export default function AdminPage() {
                         type="button"
                         disabled={busyId === d.orderId}
                         onClick={() => resolve(d, "revision")}
-                        className={`${btn} border-[#D9CFC5] hover:border-[#C86C29]`}
+                        className={`${btn} border-[var(--ui-input)] hover:border-[#C86C29]`}
                       >
                         Send back to fix
                       </button>
@@ -264,7 +265,7 @@ export default function AdminPage() {
                         type="button"
                         disabled={busyId === d.orderId}
                         onClick={() => resolve(d, "refund")}
-                        className={`${btn} border-[#D9CFC5] text-red-600 hover:border-red-400`}
+                        className={`${btn} border-[var(--ui-input)] text-red-600 dark:text-red-400 hover:border-red-400`}
                       >
                         Refund the client
                       </button>
@@ -277,16 +278,16 @@ export default function AdminPage() {
         )}
 
         {/* Payments to confirm */}
-        <section className="bg-white border border-[#EFE8E1] rounded-2xl p-6 shadow-sm">
+        <section className="bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold mb-1">Payments to confirm</h2>
-          <p className="text-sm text-[#7D6E65] mb-5">
+          <p className="text-sm text-[var(--ui-muted)] mb-5">
             Clients report a payment with its transaction number. Check it in your bank or wallet, then confirm.
           </p>
-          {data && data.payments.length === 0 && <p className="text-sm text-[#7D6E65]">Nothing waiting. All caught up.</p>}
+          {data && data.payments.length === 0 && <p className="text-sm text-[var(--ui-muted)]">Nothing waiting. All caught up.</p>}
           {data && data.payments.length > 0 && (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#FDFBF7] text-[#7D6E65] border-b border-[#EFE8E1]">
+                <thead className="bg-[var(--ui-bg)] text-[var(--ui-muted)] border-b border-[var(--ui-border)]">
                   <tr>
                     <th className={th}>Order</th>
                     <th className={th}>Client</th>
@@ -300,22 +301,22 @@ export default function AdminPage() {
                     <th className={`${th} text-right`}>Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#EFE8E1]">
+                <tbody className="divide-y divide-[var(--ui-border)]">
                   {data.payments.map((p) => (
                     <tr key={p.id} className="align-top">
                       <td className="py-4 px-4">
                         <div className="font-medium whitespace-nowrap">{p.orderNumber}</div>
-                        <div className="text-xs text-[#7D6E65]">{p.title}</div>
+                        <div className="text-xs text-[var(--ui-muted)]">{p.title}</div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="font-medium">{p.client.name}</div>
-                        <div className="text-xs text-[#7D6E65]">{p.client.email}</div>
+                        <div className="text-xs text-[var(--ui-muted)]">{p.client.email}</div>
                       </td>
                       <td className="py-4 px-4">{p.creator}</td>
                       <td className="py-4 px-4 font-semibold whitespace-nowrap">{formatPrice(p.amount, p.currency)}</td>
                       <td className="py-4 px-4">
                         <div className="font-medium">{p.senderName ?? "—"}</div>
-                        <div className="text-xs text-[#7D6E65]">
+                        <div className="text-xs text-[var(--ui-muted)]">
                           {p.senderBank ? `${p.senderBank} · ` : ""}
                           {p.methodLabel}
                         </div>
@@ -325,14 +326,14 @@ export default function AdminPage() {
                           "—"
                         ) : (
                           <>
-                            <span className={p.paidAmount === p.amount ? "font-semibold" : "font-semibold text-red-600"}>
+                            <span className={p.paidAmount === p.amount ? "font-semibold" : "font-semibold text-red-600 dark:text-red-400"}>
                               {formatPrice(p.paidAmount, p.currency)}
                             </span>
                             {p.paidAmount < p.amount && (
-                              <div className="text-[11px] text-red-600">Less than the order</div>
+                              <div className="text-[11px] text-red-600 dark:text-red-400">Less than the order</div>
                             )}
                             {p.paidAmount > p.amount && (
-                              <div className="text-[11px] text-amber-700">More than the order</div>
+                              <div className="text-[11px] text-amber-700 dark:text-amber-200">More than the order</div>
                             )}
                           </>
                         )}
@@ -349,10 +350,10 @@ export default function AdminPage() {
                             View receipt
                           </a>
                         ) : (
-                          <span className="text-xs text-[#7D6E65]">None</span>
+                          <span className="text-xs text-[var(--ui-muted)]">None</span>
                         )}
                       </td>
-                      <td className="py-4 px-4 text-xs text-[#7D6E65] whitespace-nowrap">{dateTime(p.submittedAt)}</td>
+                      <td className="py-4 px-4 text-xs text-[var(--ui-muted)] whitespace-nowrap">{dateTime(p.submittedAt)}</td>
                       <td className="py-4 px-4">
                         <div className="flex justify-end gap-2">
                           <button
@@ -367,7 +368,7 @@ export default function AdminPage() {
                             type="button"
                             disabled={busyId === p.id}
                             onClick={() => rejectPayment(p)}
-                            className={`${btn} border-[#D9CFC5] text-red-600 hover:border-red-400`}
+                            className={`${btn} border-[var(--ui-input)] text-red-600 dark:text-red-400 hover:border-red-400`}
                           >
                             Reject
                           </button>
@@ -382,41 +383,54 @@ export default function AdminPage() {
         </section>
 
         {/* Payouts to send */}
-        <section className="bg-white border border-[#EFE8E1] rounded-2xl p-6 shadow-sm">
+        <section className="bg-[var(--ui-surface)] border border-[var(--ui-border)] rounded-2xl p-6 shadow-sm">
           <h2 className="text-xl font-bold mb-1">Payouts to send</h2>
-          <p className="text-sm text-[#7D6E65] mb-5">
+          <p className="text-sm text-[var(--ui-muted)] mb-5">
             The client approved the work. Send the creator their share, then mark it as sent.
           </p>
-          {data && data.payouts.length === 0 && <p className="text-sm text-[#7D6E65]">No payouts waiting.</p>}
+          {data && data.payouts.length === 0 && <p className="text-sm text-[var(--ui-muted)]">No payouts waiting.</p>}
           {data && data.payouts.length > 0 && (
             <div className="overflow-x-auto">
               <table className="w-full text-left text-sm">
-                <thead className="bg-[#FDFBF7] text-[#7D6E65] border-b border-[#EFE8E1]">
+                <thead className="bg-[var(--ui-bg)] text-[var(--ui-muted)] border-b border-[var(--ui-border)]">
                   <tr>
                     <th className={th}>Order</th>
                     <th className={th}>Creator</th>
                     <th className={th}>Order amount</th>
                     <th className={th}>Platform fee</th>
                     <th className={th}>Send to creator</th>
+                    <th className={th}>Pay to</th>
                     <th className={th}>Approved</th>
                     <th className={`${th} text-right`}>Action</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-[#EFE8E1]">
+                <tbody className="divide-y divide-[var(--ui-border)]">
                   {data.payouts.map((o) => (
                     <tr key={o.orderId} className="align-top">
                       <td className="py-4 px-4">
                         <div className="font-medium whitespace-nowrap">{o.orderNumber}</div>
-                        <div className="text-xs text-[#7D6E65]">{o.title}</div>
+                        <div className="text-xs text-[var(--ui-muted)]">{o.title}</div>
                       </td>
                       <td className="py-4 px-4">
                         <div className="font-medium">{o.creator.name}</div>
-                        <div className="text-xs text-[#7D6E65]">{o.creator.email}</div>
+                        <div className="text-xs text-[var(--ui-muted)]">{o.creator.email}</div>
                       </td>
                       <td className="py-4 px-4 whitespace-nowrap">{formatPrice(o.amount, o.currency)}</td>
                       <td className="py-4 px-4 whitespace-nowrap">{formatPrice(o.platformFee, o.currency)}</td>
                       <td className="py-4 px-4 font-semibold whitespace-nowrap">{formatPrice(o.creatorPayout, o.currency)}</td>
-                      <td className="py-4 px-4 text-xs text-[#7D6E65] whitespace-nowrap">{dateTime(o.completedAt)}</td>
+                      <td className="py-4 px-4 text-xs">
+                        {o.payTo ? (
+                          <div className="space-y-0.5">
+                            <div className="font-semibold">{o.payTo.method}</div>
+                            <div>{o.payTo.accountName}</div>
+                            {o.payTo.bankName && <div>{o.payTo.bankName}</div>}
+                            <div className="select-all font-mono text-sm">{o.payTo.accountNumber}</div>
+                          </div>
+                        ) : (
+                          <span className="font-medium text-red-600 dark:text-red-400">The creator has not added payout details yet</span>
+                        )}
+                      </td>
+                      <td className="py-4 px-4 text-xs text-[var(--ui-muted)] whitespace-nowrap">{dateTime(o.completedAt)}</td>
                       <td className="py-4 px-4">
                         <div className="flex justify-end">
                           <button
